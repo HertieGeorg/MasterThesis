@@ -1,0 +1,319 @@
+---
+title: "Evaluation of MTurk classifications of Congress Member edits on Wikipedia"
+author: "Simon Munzert"
+output:
+  html_document:
+    toc: true
+    theme: united
+    highlight: tango
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### load packages and functions
+
+```{r, warning=F, message=F}
+source("packages.r")
+
+install.packages("dplyr")
+
+
+```
+
+
+### preparations
+
+```{r, echo=F}
+# load data
+mturk_df <- read.csv("../data/congress-edits-classification/Batch_199231_batch_results-PRETEST-2.csv", stringsAsFactors = FALSE)
+mturk_df <- read.csv("../data/congress-edits-classification/Batch_200780_batch_results.csv", stringsAsFactors = FALSE)
+
+#Georg
+mturk_df <- read_csv("Batch_200780_batch_results.csv")
+
+
+varnames <- read_xlsx("../data/congress-edits-classification/codebook_edits_classification.xlsx")
+
+library(readxl)
+varnames  <- read_excel("codebook_edits_classification.xlsx")
+
+
+# drop unused variables
+mturk_df <- dplyr::select(mturk_df, -c(HITTypeId, Title, Description, Keywords, Reward, CreationTime, RequesterAnnotation, AssignmentDurationInSeconds, AutoApprovalDelayInSeconds, Expiration, NumberOfSimilarHITs, LifetimeInSeconds, AssignmentStatus, AutoApprovalTime, ApprovalTime, RejectionTime, RequesterFeedback, LifetimeApprovalRate, Last30DaysApprovalRate, Last7DaysApprovalRate, Approve, Reject))
+
+mturk_df$WorkerId
+
+# keep only Angie's and Lorenzo's classifications
+mturk_df <- mturk_df %>% filter( WorkerId == "A1TWO417PJY35G" | WorkerId == "AEW8FLMJ3C4U8")
+mturk_df$worker_name <- ifelse(mturk_df$WorkerId == "AEW8FLMJ3C4U8", "Angie", ifelse(mturk_df$WorkerId == "A1TWO417PJY35G", "Lorenzo", "Unknown"))
+```
+
+### generate variables
+
+```{r, echo=F}
+
+# create edit ID
+mturk_df$id <- as.numeric(as.factor(mturk_df$Input.website_url))
+
+
+# set up empty variables
+for(i in 1:nrow(varnames)) {
+  mturk_df[,paste(varnames$criterion[i], varnames$varname[i], sep = "_")] <- NA
+}
+
+# deal with content judgement variables
+mturk_df <- dplyr::select(mturk_df, -matches("^content_"))
+mturk_df$content_added <- mturk_df$Answer.content_added
+mturk_df$content_removed <- mturk_df$Answer.content_removed
+mturk_df$content_shifted <- mturk_df$Answer.content_shifted
+
+levels_contentjudgement <- c("mostly_harmful", "rather_harmful", "neutral", "rather_beneficial", "mostly_beneficial")
+mturk_df$content_added <- factor(mturk_df$content_added, levels = levels_contentjudgement)
+mturk_df$content_removed <- factor(mturk_df$content_removed, levels = levels_contentjudgement)
+mturk_df$content_shifted <- factor(mturk_df$content_shifted, levels = levels_contentjudgement)
+mturk_df$content_added_num <- as.numeric(mturk_df$content_added)
+mturk_df$content_added_num[mturk_df$content_added_num == 6] <- NA
+mturk_df$content_removed_num <- as.numeric(mturk_df$content_removed)
+mturk_df$content_removed_num[mturk_df$content_removed_num == 6] <- NA
+mturk_df$content_shifted_num <- as.numeric(mturk_df$content_shifted)
+mturk_df$content_shifted_num[mturk_df$content_shifted_num == 6] <- NA
+
+# create single topic variable
+mturk_df$Answer.topic <- paste(mturk_df$Answer.topic_personal, mturk_df$Answer.topic_career, mturk_df$Answer.topic_views, mturk_df$Answer.topic_other, sep = "|") %>% str_replace("\\|{2,}", "\\|") %>% str_replace("^\\|", "") %>% str_replace("\\|$", "")
+
+# create topic dummies
+varnames_topic <- filter(varnames, criterion == "topic")
+for(i in 1:nrow(varnames_topic)) {
+  mturk_df[,paste(varnames_topic$criterion[i], varnames_topic$varname[i], sep = "_")] <- ifelse(str_detect(mturk_df$Answer.topic, varnames_topic$varname[i]), TRUE, FALSE)
+} 
+
+# create characteristics dummies
+varnames_characteristics <- filter(varnames, criterion == "characteristic")
+for(i in 1:nrow(varnames_characteristics)) {
+  mturk_df[,paste(varnames_characteristics$criterion[i], varnames_characteristics$varname[i], sep = "_")] <- ifelse(str_detect(mturk_df$Answer.characteristics, varnames_characteristics$varname[i]), TRUE, FALSE)
+} 
+```
+
+
+### basic statistics
+
+```{r}
+# average work time in minutes
+mean(mturk_df$WorkTimeInSeconds/60)
+
+# average work time in minutes by worker
+filter(mturk_df, WorkTimeInSeconds < 1000) %>% group_by(worker_name) %>% summarize(mean = mean(WorkTimeInSeconds/60))
+```
+
+
+
+### descriptives
+
+```{r, echo=F}
+p <- str_split(mturk_df$Answer.topic, "\\|") %>% unlist %>% tabyl() %>% dplyr::arrange(desc(percent))
+ggplot(p, aes(x = reorder(., percent), y = percent)) + geom_bar(stat="identity") + coord_flip() + xlab("") +  ggtitle("Associated topics, by frequency")
+```
+
+```{r, echo=F}
+p <- str_split(mturk_df$Answer.characteristics, "\\|") %>% unlist %>% tabyl() %>% dplyr::arrange(desc(percent))
+ggplot(p, aes(x = reorder(., percent), y = percent)) + geom_bar(stat="identity") + coord_flip() + xlab("") +  ggtitle("Associated characteristics, by frequency")
+```
+
+#### Edit statistics
+```{r}
+# % edits with content added
+mean(!is.na(mturk_df$content_added))
+
+# % edits with content removed
+mean(!is.na(mturk_df$content_removed))
+
+# % edits with content shifted
+mean(!is.na(mturk_df$content_shifted))
+```
+
+
+```{r, echo=F}
+p <- tabyl(mturk_df$content_added, sort = TRUE, show_na = FALSE)
+ggplot(p, aes(x = p[,1], y = percent)) + geom_bar(stat="identity") + xlab("") +  ggtitle("Implication of content added")
+```
+
+```{r, echo=F}
+p <- tabyl(mturk_df$content_removed, sort = TRUE, show_na = FALSE)
+ggplot(p, aes(x = p[,1], y = percent)) + geom_bar(stat="identity") + xlab("") +  ggtitle("Implication of content removed")
+```
+
+
+```{r, echo=F}
+p <- tabyl(mturk_df$content_shifted, sort = TRUE, show_na = FALSE)
+ggplot(p, aes(x = p[,1], y = percent)) + geom_bar(stat="identity") + xlab("") +  ggtitle("Implication of content shifted")
+```
+
+
+
+
+
+### assess coder reliability
+
+#### prepare data
+```{r}
+# how many cases with n >= 2 classifications in total?
+table(mturk_df$Input.website_url) %>% table() %>% .[as.numeric(names(.)) > 1] %>% sum
+
+# how many classifications per revision?
+table(mturk_df$Input.website_url) %>% table()
+edits_classifications_counts <- as.data.frame(table(mturk_df$Input.website_url), stringsAsFactors = FALSE)
+names(edits_classifications_counts) <- c("Input.website_url", "classification_count")
+
+# reduce to revisions with n == 2 classifications
+mturk_sub <- left_join(mturk_df, edits_classifications_counts, by = "Input.website_url")
+mturk_sub <- filter(mturk_sub, classification_count == 2)
+table(mturk_sub$classification_count)
+```
+
+#### content judgements
+```{r, echo=F}
+# agreement in judgements content added
+mturk_sub_sum <- mturk_sub %>% group_by(Input.website_url) %>% 
+                 summarize(content_added_mean = mean(content_added_num, na.rm = TRUE),
+                           content_added_unique = length(unique(content_added_num)),
+                           content_added_var = var(content_added_num, na.rm = TRUE),
+                           content_removed_mean = mean(content_removed_num, na.rm = TRUE),
+                           content_removed_unique = length(unique(content_removed_num)),
+                           content_removed_var = var(content_removed_num, na.rm = TRUE),
+                           content_shifted_mean = mean(content_shifted_num, na.rm = TRUE),
+                           content_shifted_unique = length(unique(content_shifted_num)),
+                           content_shifted_var = var(content_shifted_num, na.rm = TRUE)
+                           )
+```
+
+```{r}
+# full agreement on content judgements
+tabyl(mturk_sub_sum$content_added_unique == 1)
+tabyl(mturk_sub_sum$content_removed_unique == 1)
+tabyl(mturk_sub_sum$content_shifted_unique == 1)
+
+# mean variance on content judgements (0 = perfect alignment)
+mean(mturk_sub_sum$content_added_var, na.rm = TRUE)
+mean(mturk_sub_sum$content_removed_var, na.rm = TRUE)
+mean(mturk_sub_sum$content_shifted_var, na.rm = TRUE)
+```
+
+#### topic selections
+```{r, echo=F}
+# agreement in judgements content added
+mturk_sub_sum <- mturk_sub %>% group_by(Input.website_url) %>% 
+  summarize(topic_early_life_var = var(topic_early_life, na.rm = TRUE),
+            topic_religion_var = var(topic_religion, na.rm = TRUE),
+            topic_family_current_life_var = var(topic_family_current_life, na.rm = TRUE),
+            topic_character_var = var(topic_character, na.rm = TRUE),
+            topic_financial_earnings_var = var(topic_financial_earnings, na.rm = TRUE),
+            topic_activities_memberships_var = var(topic_activities_memberships, na.rm = TRUE),
+            topic_achievements_awards_var = var(topic_achievements_awards, na.rm = TRUE),
+            topic_early_career_var = var(topic_early_career, na.rm = TRUE),
+            topic_early_political_career_var = var(topic_early_political_career, na.rm = TRUE),
+            topic_election_campaign_var = var(topic_election_campaign, na.rm = TRUE),
+            topic_congress_offices_var = var(topic_congress_offices, na.rm = TRUE),
+            topic_legislation_var = var(topic_legislation, na.rm = TRUE),
+            topic_district_service_var = var(topic_district_service, na.rm = TRUE),
+            topic_tenure_activity_var = var(topic_tenure_activity, na.rm = TRUE),
+            topic_scandals_political_var = var(topic_scandals_political, na.rm = TRUE),
+            topic_issue_views_var = var(topic_issue_views, na.rm = TRUE),
+            topic_support_politicians_var = var(topic_support_politicians, na.rm = TRUE),
+            topic_ideology_var = var(topic_ideology, na.rm = TRUE),
+            topic_statements_controversial_var = var(topic_statements_controversial, na.rm = TRUE),
+            topic_external_link_var = var(topic_external_link, na.rm = TRUE),
+            topic_publications_var = var(topic_publications, na.rm = TRUE),
+            topic_references_var = var(topic_references, na.rm = TRUE),
+            topic_categorization_var = var(topic_categorization, na.rm = TRUE),
+            topic_other_other_var = var(topic_other_other, na.rm = TRUE))
+p <- data.frame(varname = str_replace_all(colnames(mturk_sub_sum[,2:ncol(mturk_sub_sum)]), "topic_|_var", ""), value = colMeans(mturk_sub_sum[,2:ncol(mturk_sub_sum)]), stringsAsFactors = FALSE)
+#ggplot(p, aes(x = reorder(varname, value), y = value)) + geom_bar(stat="identity") + coord_flip() + xlab("") + ylab("Variance") + ggtitle("Variance in classifications of topics")
+```
+
+```{r}
+# share of disagreement
+mturk_sub_sum <- mturk_sub_sum[,2:ncol(mturk_sub_sum)]
+mturk_sub_sum[mturk_sub_sum > 0] <- 1
+p <- data.frame(varname = str_replace_all(colnames(mturk_sub_sum), "topic_|_var", ""), value = colMeans(mturk_sub_sum), stringsAsFactors = FALSE)
+ggplot(p, aes(x = reorder(varname, value), y = value)) + geom_bar(stat="identity") + coord_flip() + xlab("") + ylab("Variance") + ggtitle("Share of disagreement in classifications of topics")
+```
+
+
+#### characteristic selections
+```{r, echo=F}
+# agreement in judgements content added
+mturk_sub_sum <- mturk_sub %>% group_by(Input.website_url) %>% 
+  summarize(characteristic_insults_mockery_var = var(characteristic_insults_mockery, na.rm = TRUE),
+            characteristic_praise_adulation_var = var(characteristic_praise_adulation, na.rm = TRUE),
+            characteristic_reformatting_var = var(characteristic_reformatting, na.rm = TRUE),
+            characteristic_corrections_var = var(characteristic_corrections, na.rm = TRUE),
+            characteristic_mass_removal_var = var(characteristic_mass_removal, na.rm = TRUE),
+            characteristic_poor_style_var = var(characteristic_poor_style, na.rm = TRUE))
+p <- data.frame(varname = str_replace_all(colnames(mturk_sub_sum[,2:ncol(mturk_sub_sum)]), "characteristic_|_var", ""), value = colMeans(mturk_sub_sum[,2:ncol(mturk_sub_sum)]), stringsAsFactors = FALSE)
+#ggplot(p, aes(x = reorder(varname, value), y = value)) + geom_bar(stat="identity") + coord_flip() + xlab("") + ylab("Variance") + ggtitle("Variance in classifications of characteristics")
+```
+
+```{r}
+# share of disagreement
+mturk_sub_sum <- mturk_sub_sum[,2:ncol(mturk_sub_sum)]
+mturk_sub_sum[mturk_sub_sum > 0] <- 1
+p <- data.frame(varname = str_replace_all(colnames(mturk_sub_sum), "characteristic_|_var", ""), value = colMeans(mturk_sub_sum), stringsAsFactors = FALSE)
+ggplot(p, aes(x = reorder(varname, value), y = value)) + geom_bar(stat="identity") + coord_flip() + xlab("") + ylab("Variance") + ggtitle("Share of disagreement in classifications of characteristics")
+```
+
+
+#### comparison between raters
+```{r}
+# agreement in judgements content added
+(foo <- tabyl(mturk_sub, worker_name, content_added))
+select_if(foo, is.numeric) %>% rowSums
+
+# agreement in judgements content removed
+(foo <- tabyl(mturk_sub, worker_name, content_removed))
+select_if(foo, is.numeric) %>% rowSums
+
+# agreement in judgements content shifted
+(foo <- tabyl(mturk_sub, worker_name, content_shifted))
+select_if(foo, is.numeric) %>% rowSums
+
+# dplyr::select(mturk_sub, Input.website_url, id, worker_name, content_added) %>% View()
+# dplyr::select(mturk_sub, Input.website_url, id, worker_name, content_removed) %>% View()
+
+# characteristics
+tabyl(mturk_sub, worker_name, characteristic_reformatting)
+tabyl(mturk_sub, worker_name, characteristic_praise_adulation)
+tabyl(mturk_sub, worker_name, characteristic_corrections)
+tabyl(mturk_sub, worker_name, characteristic_insults_mockery)
+tabyl(mturk_sub, worker_name, characteristic_poor_style)
+tabyl(mturk_sub, worker_name, characteristic_mass_removal)
+
+# topics
+tabyl(mturk_sub, worker_name, topic_district_service)
+tabyl(mturk_sub, worker_name, topic_external_link)
+tabyl(mturk_sub, worker_name, topic_congress_offices)
+tabyl(mturk_sub, worker_name, topic_legislation)
+tabyl(mturk_sub, worker_name, topic_early_career)
+tabyl(mturk_sub, worker_name, topic_election_campaign)
+tabyl(mturk_sub, worker_name, topic_references)
+tabyl(mturk_sub, worker_name, topic_character)
+tabyl(mturk_sub, worker_name, topic_tenure_activity)
+tabyl(mturk_sub, worker_name, topic_publications)
+tabyl(mturk_sub, worker_name, topic_issue_views)
+tabyl(mturk_sub, worker_name, topic_activities_memberships)
+tabyl(mturk_sub, worker_name, topic_support_politicians)
+tabyl(mturk_sub, worker_name, topic_ideology)
+tabyl(mturk_sub, worker_name, topic_statements_controversial)
+tabyl(mturk_sub, worker_name, topic_early_political_career)
+tabyl(mturk_sub, worker_name, topic_family_current_life)
+tabyl(mturk_sub, worker_name, topic_early_life)
+tabyl(mturk_sub, worker_name, topic_religion)
+tabyl(mturk_sub, worker_name, topic_other_other)
+tabyl(mturk_sub, worker_name, topic_achievements_awards)
+tabyl(mturk_sub, worker_name, topic_scandals_political)
+tabyl(mturk_sub, worker_name, topic_financial_earnings)
+tabyl(mturk_sub, worker_name, topic_categorization)
+```
+
