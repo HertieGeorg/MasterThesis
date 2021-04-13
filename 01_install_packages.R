@@ -36,6 +36,12 @@ library(dplyr)
 require(data.table) 
 library(stringr)
 
+library(devtools)
+devtools::install_github("strengejacke/sjmisc")
+install.packages("sjmisc")
+library(sjmisc)
+
+
 #10
 install.packages("pscl")
 install.packages("MASS")

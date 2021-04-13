@@ -60,7 +60,10 @@ source("08_creating_MoC_Main_Dataset.R")
 source("09_Counting_Congress_Edits.R") 
 # adding the number of edits coming from within Congress to main dataset that contains information about all MoCs (serving in 109-114)
 # in: BothChambers_Data_MoCs, main_dataframe_dates
-# out: main_dataframe_core, 
+# out: main_dataframe_core, Characteristics_Data_MoCs 
+#(also out: Inside_Congress_Edits_Politically_PositiveNegative -> list of edits from Congress with Dummy for positive and negative political motivation)
+#(also out: Inside_Congress_Edits_Politically -> list of edits from within Congress wiht Dummy for politically motivation)
+
 
 
 source("10_analysis_distribution_of_edits.R") 

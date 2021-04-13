@@ -4,7 +4,7 @@
 
 # Checking whether data is skewed: visualized probability distribution of numbers of edits seen by each MoC
 
-edit_distribution <- main_dataframe_core %>% select( c(pageid))
+edit_distribution <- main_dataframe_core %>% dplyr::select( c(pageid))
 edit_distribution$count = 1
 
 edit_distribution <- aggregate(edit_distribution$count, by=list(pageid=edit_distribution$pageid), FUN=sum)

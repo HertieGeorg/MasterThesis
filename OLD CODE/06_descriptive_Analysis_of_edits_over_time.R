@@ -211,6 +211,7 @@ edits_30days_elections <- data %>%
   geom_vline(xintercept = list_of_biggest_general_election_dates, color = "orange", size=0.7) 
 edits_30days_elections  
 
+
 # linetype="dotted"
 
 

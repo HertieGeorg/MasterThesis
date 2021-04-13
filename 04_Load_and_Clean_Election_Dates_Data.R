@@ -77,6 +77,11 @@ list_of_biggest_general_election_dates  <- calculate_mode(election_data$date)
 
 
 
+#Out: list_of_biggest_general_election_dates
+# Saving Dataframe 
+# save(list_of_biggest_general_election_dates, file = "list_of_biggest_general_election_dates.Rdata")
+
+
 
 # I will focus first on general elections but it might be interesting at...
 # ...a later point in time to also assess the connection between primary elections and edit-volume

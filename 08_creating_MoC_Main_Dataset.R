@@ -21,12 +21,13 @@
 #-------------------------------------------------------------------------------------------------------------------
 
 #Data used: 
-load("~/Documents/GitHub/MasterThesis/LegislatoR_Data/house_core_LegislatoR.Rdata")
-load("~/Documents/GitHub/MasterThesis/LegislatoR_Data/house_history_LegislatoR.Rdata")
-load("~/Documents/GitHub/MasterThesis/LegislatoR_Data/house_political_LegislatoR.Rdata")
-load("~/Documents/GitHub/MasterThesis/LegislatoR_Data/senate_core_LegislatoR.Rdata")
-load("~/Documents/GitHub/MasterThesis/LegislatoR_Data/senate_history_LegislatoR.Rdata")
-load("~/Documents/GitHub/MasterThesis/LegislatoR_Data/senate_political_LegislatoR.Rdata")
+load("~/Documents/GitHub/LegislatoR_Data/house_core_LegislatoR.Rdata")
+load("~/Documents/GitHub/LegislatoR_Data/house_history_LegislatoR.Rdata")
+load("~/Documents/GitHub/LegislatoR_Data/house_political_LegislatoR.Rdata")
+load("~/Documents/GitHub/LegislatoR_Data/senate_core_LegislatoR.Rdata")
+load("~/Documents/GitHub/LegislatoR_Data/senate_history_LegislatoR.Rdata")
+load("~/Documents/GitHub/LegislatoR_Data/senate_political_LegislatoR.Rdata")
+
 
 
 #Merge Core and Political Data Set for 1. House, 2. Senate by page-id
@@ -581,7 +582,8 @@ Total_Edits_by_Tenure_BothChambers <- Total_Edits_by_Tenure_BothChambers %>% dpl
 
 BothChambers_Data_MoCs <-  left_join(BothChambers_Data_MoCs, Total_Edits_by_Tenure_BothChambers , by = "pageid_chamber")
 
-# OUT: BothChambers_Data_MoCs
+# OUT:  Saving Dataframe BothChambers_Data_MoCs
+save(BothChambers_Data_MoCs , file = "BothChambers_Data_MoCs.Rdata")
 
 
 #-------------------------------------------------------------------------------------------------------------------
