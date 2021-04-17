@@ -1,6 +1,18 @@
 
 #Source: https://github.com/saschagobel/legislatoR
 
+
+# load and attach legislatoR and dplyr
+library(devtools)
+devtools::install_github("saschagobel/legislatoR")
+install.packages("legislatoR")
+library(legislatoR)
+library(dplyr)
+
+
+
+
+
 # HOUSE-DATA
 
 # Get core data 
@@ -22,10 +34,8 @@ house_us_history <- get_history(legislature = "usa_house")
 
 
 # Get wikipedia traffic data 
-#house_us_traffic <- get_traffic(legislature = "usa_house") 
-#save(house_us_traffic, file = "house_traffic_LegislatoR.Rdata")
-
-
+house_us_traffic <- get_traffic(legislature = "usa_house") 
+save(house_us_traffic, file = "house_traffic_LegislatoR.Rdata")
 
 
 # SENATE-DATA

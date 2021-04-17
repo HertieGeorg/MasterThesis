@@ -272,6 +272,9 @@ for(i in 1:2601) {
 table(Inside_Congress_Edits_Politically$politically_motivated) # 0 -> 1140  ,  1 -> 1461 
 
 #Out: Inside_Congress_Edits_Politically -> list of edits from within Congress wiht Dummy for politically motivation for each edit
+# Saving Dataframe 
+save(Inside_Congress_Edits_Politically , file = "Inside_Congress_Edits_Politically.Rdata")
+
 
 
 # Aggregation Politically Edits from within Congress per MoC: 
