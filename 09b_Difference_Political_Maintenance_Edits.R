@@ -92,7 +92,7 @@ linear_model4 <- lm(Inside_Congress_Edits_Politically$Answer.topic_other_dummy ~
 
 stargazer(linear_model1 , linear_model2, linear_model3 ,linear_model4,
           title="Table (1). Difference between political edits and maintenance edits",
-          type = "text", style = "default", out="Table(1)_Löschbar.html")
+          type = "text", style = "default", out="Table(2)Diff_Topics.html")
 
 
 
@@ -231,7 +231,7 @@ linear_model7b <- lm(Inside_Congress_Edits_Politically$Answer.topic_personal_act
 
 stargazer(linear_model1b , linear_model2b , linear_model3b , linear_model4b , linear_model5b , linear_model6b , linear_model7b , 
           title="Table (1). Difference between political edits and maintenance edits",
-          type = "text", style = "default", out="Table(1)_Löschbar.html")
+          type = "text", style = "default", out="Table(1)Diff_Personal.html")
 
 
 
@@ -396,8 +396,8 @@ dim(Inside_Congress_Edits_Politically$politically_motivated)
 # Regression Models Output
 
 stargazer(linear_model1c , linear_model2c , linear_model3c , linear_model4c , linear_model5c , linear_model6c , linear_model7c , linear_model8c , 
-          title="Table (1). Difference between political edits and maintenance edits",
-          type = "text", style = "default", out="Table(3)_Löschbar.html")
+          title="Table (1). Difference between political edits and maintenance edits",  covariate.labels = c("1",  "2",  "3" , "4", "5", "6", "7", "8"),
+          type = "text", style = "default", out="Table(4)Diff_Career.html")
 
 
 
@@ -519,7 +519,7 @@ linear_model4d <- lm(Inside_Congress_Edits_Politically$Answer.topic_views_statem
 
 stargazer(linear_model1d , linear_model2d , linear_model3d , linear_model4d ,
           title="Table (1). Difference between political edits and maintenance edits",
-          type = "text", style = "default", out="Table(4)_Löschbar.html")
+          type = "text", style = "default", out="Table(5)Diff_Views.html")
 
 
 
@@ -658,7 +658,7 @@ linear_model5e <- lm(Inside_Congress_Edits_Politically$Answer.topic_other_other_
 
 stargazer(linear_model1e , linear_model2e , linear_model3e , linear_model4e, linear_model5e,
           title="Table (1). Difference between political edits and maintenance edits",
-          type = "text", style = "default", out="Table(6)_Löschbar.html")
+          type = "text", style = "default", out="Table(6)Diff_Other.html")
 
 
 
@@ -672,7 +672,7 @@ stargazer(linear_model1e , linear_model2e , linear_model3e , linear_model4e, lin
 Distribution_Topics_Political_vs_Maintenance <- rbind( Distribution_Topics_Congress_Edits, 
                                              Distribution_TopicsPersonal_Congress_Edits, 
                                              Distribution_TopicsCareer_Congress_Edits, 
-                                             Distribution_Topicsother_Congress_Edits,
+                                             Distribution_TopicsViews_Congress_Edits,
                                              Distribution_TopicsOther_Congress_Edits )
 
 

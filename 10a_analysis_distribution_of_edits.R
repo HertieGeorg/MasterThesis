@@ -89,29 +89,6 @@ table(data$All_Non_Politically_CongressEdits_Per_MoC == 0)
 
 
 
-# 2.----------- Checking whether data is overdispersed 
-
-#Source: https://stats.stackexchange.com/questions/66586/is-there-a-test-to-determine-whether-glm-overdispersion-is-significant
-# https://www.sciencedirect.com/science/article/abs/pii/030440769090014K
-
-library(AER)
-data(RecreationDemand)
-rd <- glm(trips ~ ., data = RecreationDemand, family = poisson)
-dispersiontest(rd,trafo=1)
-
-
-rd <- glm(AllCongressEdits_Per_MoC ~ YearBirth, data = data , family = poisson)
-dispersiontest(rd,trafo=1)
-
-
-Overdispersion test
-
-data:  rd
-z = 2.4116, p-value = 0.007941
-alternative hypothesis: true dispersion is greater than 0
-sample estimates:
-  dispersion 
-5.5658 
 
 
 

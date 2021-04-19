@@ -1,0 +1,39 @@
+
+<table style="text-align:center"><caption><strong>Comparing Model Results (All Congress Edits)</strong></caption>
+<tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td colspan="5"><em>Dependent variable:</em></td></tr>
+<tr><td></td><td colspan="5" style="border-bottom: 1px solid black"></td></tr>
+<tr><td style="text-align:left"></td><td colspan="5">AllCongressEdits_Per_MoC</td></tr>
+<tr><td style="text-align:left"></td><td><em>Poisson</em></td><td><em>glm: quasipoisson</em></td><td><em>negative</em></td><td><em>hurdle</em></td><td><em>zero-inflated</em></td></tr>
+<tr><td style="text-align:left"></td><td><em></em></td><td><em>link = log</em></td><td><em>binomial</em></td><td><em></em></td><td><em>count data</em></td></tr>
+<tr><td style="text-align:left"></td><td>GLM-Pois</td><td>Quasi-Pois</td><td>GLM-NegBin</td><td>Hurdle-NegBin</td><td>ZINB</td></tr>
+<tr><td style="text-align:left"></td><td>(1)</td><td>(2)</td><td>(3)</td><td>(4)</td><td>(5)</td></tr>
+<tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Category_Vote_MaxDiff</td><td>0.130<sup>***</sup></td><td>0.130<sup>***</sup></td><td>0.119<sup>***</sup></td><td>0.108<sup>*</sup></td><td>0.102<sup>**</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.020)</td><td>(0.050)</td><td>(0.045)</td><td>(0.062)</td><td>(0.046)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">sexmale</td><td>0.268<sup>***</sup></td><td>0.268<sup>*</sup></td><td>0.216<sup>*</sup></td><td>0.262</td><td>0.278<sup>**</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.059)</td><td>(0.145)</td><td>(0.126)</td><td>(0.163)</td><td>(0.121)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">YearBirth</td><td>0.006<sup>***</sup></td><td>0.006</td><td>0.004</td><td>0.015</td><td>0.011</td></tr>
+<tr><td style="text-align:left"></td><td>(0.002)</td><td>(0.005)</td><td>(0.004)</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">InternetAccess</td><td>-0.010<sup>**</sup></td><td>-0.010</td><td>-0.008</td><td>-0.009</td><td>-0.011</td></tr>
+<tr><td style="text-align:left"></td><td>(0.004)</td><td>(0.010)</td><td>(0.010)</td><td>(0.013)</td><td>(0.010)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">ViewCategory</td><td>0.079<sup>***</sup></td><td>0.079<sup>*</sup></td><td>0.040</td><td>-0.029</td><td>0.012</td></tr>
+<tr><td style="text-align:left"></td><td>(0.019)</td><td>(0.047)</td><td>(0.043)</td><td>(0.059)</td><td>(0.046)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">Overall_Edits_During_Tenure_Sum</td><td>0.0001<sup>***</sup></td><td>0.0001</td><td>0.0002<sup>***</sup></td><td>0.0001</td><td>0.0001</td></tr>
+<tr><td style="text-align:left"></td><td>(0.00002)</td><td>(0.0001)</td><td>(0.0001)</td><td>(0.0001)</td><td>(0.0001)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">Day_Served_Sum</td><td>0.0003<sup>***</sup></td><td>0.0003<sup>***</sup></td><td>0.0003<sup>***</sup></td><td>0.0002<sup>***</sup></td><td>0.0002<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.00002)</td><td>(0.00004)</td><td>(0.00004)</td><td>(0.0001)</td><td>(0.00005)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">Constant</td><td>-12.353<sup>***</sup></td><td>-12.353</td><td>-7.381</td><td>-28.325<sup>***</sup></td><td>-20.670<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(3.698)</td><td>(9.157)</td><td>(8.315)</td><td>(0.926)</td><td>(0.224)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Observations</td><td>972</td><td>972</td><td>972</td><td>972</td><td>972</td></tr>
+<tr><td style="text-align:left">Log Likelihood</td><td>-2,875.705</td><td></td><td>-1,956.019</td><td>-1,916.684</td><td>-1,925.484</td></tr>
+<tr><td style="text-align:left">theta</td><td></td><td></td><td>0.639<sup>***</sup> (0.043)</td><td></td><td></td></tr>
+<tr><td style="text-align:left">Akaike Inf. Crit.</td><td>5,767.410</td><td></td><td>3,928.038</td><td></td><td></td></tr>
+<tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"><em>Note:</em></td><td colspan="5" style="text-align:right"><sup>*</sup>p<0.1; <sup>**</sup>p<0.05; <sup>***</sup>p<0.01</td></tr>
+</table>

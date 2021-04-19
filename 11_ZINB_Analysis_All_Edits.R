@@ -1,4 +1,4 @@
-# 10_ZINB_Analysis
+# 10_ZINB_Analysis for ALL CONGRESS EDITS 
 
 
 install.packages("pscl")
@@ -30,6 +30,17 @@ library(boot)
 
 df_Zinb <- Characteristics_Data_MoCs
 
+# Versuch: Make Categorical Variable out of Combined_Mean_vote_maxdiff_relative
+df_Zinb$Combined_Mean_vote_maxdiff_relative[is.na(df_Zinb$Combined_Mean_vote_maxdiff_relative)] <- 0 # deal with NAs in Combined_Mean_vote_maxdiff_relative
+
+Number_of_Breaks =  c(0,1/4,2/4, 3/4, 1) 
+xs = quantile(df_Zinb$Combined_Mean_vote_maxdiff_relative, Number_of_Breaks)
+
+df_Zinb <- df_Zinb %>% mutate(Category_Vote_MaxDiff = cut(Combined_Mean_vote_maxdiff_relative, breaks=xs ))#, labels= LABELS))
+
+df_Zinb$Category_Vote_MaxDiff <- as.double(df_Zinb$Category_Vote_MaxDiff)
+
+
 
 # Last Steps in Data Preparation
 df_Zinb$AllCongressEdits_Per_MoC[is.na(df_Zinb$AllCongressEdits_Per_MoC)] <- 0 # Setting all NAs to 0 
@@ -39,7 +50,7 @@ names(df_Zinb)[names(df_Zinb) == "Individual lives in household with Internet us
 df_Zinb$InternetAccess <- as.double(df_Zinb$InternetAccess) # turn character into double 
 
 # Choose variables I need for analysis (include party as well?)
-df_Zinb <- df_Zinb %>%  dplyr::select(c(pageid, AllCongressEdits_Per_MoC, sex, Day_Served_Sum, YearBirth, InternetAccess, ViewCategory, Overall_Edits_During_Tenure_Sum, Combined_Mean_vote_maxdiff_relative ))
+df_Zinb <- df_Zinb %>%  dplyr::select(c(pageid, AllCongressEdits_Per_MoC, sex, Day_Served_Sum, YearBirth, InternetAccess, ViewCategory, Overall_Edits_During_Tenure_Sum, Combined_Mean_vote_maxdiff_relative, Category_Vote_MaxDiff ))
 
 
 # Show Correlation of all Independent Variables 
@@ -73,7 +84,7 @@ library(lmtest)
 
 df_Zinb <- drop_na(df_Zinb) # dropping NAs first 
 
-M1 <- glm(AllCongressEdits_Per_MoC ~ Combined_Mean_vote_maxdiff_relative + sex + YearBirth + InternetAccess + ViewCategory + Overall_Edits_During_Tenure_Sum + Day_Served_Sum, 
+M1 <- glm(AllCongressEdits_Per_MoC ~ Category_Vote_MaxDiff + sex + YearBirth + InternetAccess + ViewCategory + Overall_Edits_During_Tenure_Sum + Day_Served_Sum, 
           family = 'poisson',
           data = df_Zinb)
 
@@ -104,7 +115,7 @@ abline(0,1) ## 'variance = mean' line
 # We can see that the majority of the variance is larger than the mean, which is a warning of overdispersion.
 
 #Dealing with Dispersion: 1. Allow Dispersion Estimation
-M1_quasi <- glm(AllCongressEdits_Per_MoC ~ Combined_Mean_vote_maxdiff_relative + sex + YearBirth + InternetAccess + ViewCategory + Overall_Edits_During_Tenure_Sum + Day_Served_Sum, 
+M1_quasi <- glm(AllCongressEdits_Per_MoC ~ Category_Vote_MaxDiff + sex + YearBirth + InternetAccess + ViewCategory + Overall_Edits_During_Tenure_Sum + Day_Served_Sum, 
           family=quasipoisson,
           data = df_Zinb)
 
@@ -112,8 +123,11 @@ summary(M1_quasi) # Dispersion parameter is the same as calculated manually
 
 
 # MODEL TWO: Negative BinomialGLM
+# A good way to address overdispersion in count data is to use a Negative Binomial Model  
+
 library(MASS)
-M2_negBinom <- glm.nb(AllCongressEdits_Per_MoC ~ Combined_Mean_vote_maxdiff_relative + sex + YearBirth + InternetAccess + ViewCategory + Overall_Edits_During_Tenure_Sum + Day_Served_Sum, 
+M2_negBinom <- glm.nb(AllCongressEdits_Per_MoC ~ Category_Vote_MaxDiff + sex + YearBirth +
+                        InternetAccess + ViewCategory + Overall_Edits_During_Tenure_Sum + Day_Served_Sum, 
           data = df_Zinb)
 
 summary(M2_negBinom )
@@ -125,13 +139,70 @@ summary(M2_negBinom )
 # https://biometry.github.io/APES/LectureNotes/2016-JAGS/Overdispersion/OverdispersionJAGS.pdf
 # https://data.princeton.edu/wws509/r/overdispersion
 
+
+
+
+
 # MODEL THREE: 
 
-# Zero-Inflation: Does data really have more Zeros than Poisson would predict? 
+typeof(YearBirth)
 
 
-M2_negBinom <- zeroinfl(AllCongressEdits_Per_MoC ~ Combined_Mean_vote_maxdiff_relative + sex + YearBirth + InternetAccess + ViewCategory + Overall_Edits_During_Tenure_Sum + Day_Served_Sum, 
-                      data = df_Zinb)
+M3_ZeroInfl <- zeroinfl(AllCongressEdits_Per_MoC ~ Category_Vote_MaxDiff + sex + YearBirth + 
+                          InternetAccess + ViewCategory + Overall_Edits_During_Tenure_Sum + Day_Served_Sum, 
+                      data = df_Zinb,  dist = "negbin")
+
+M3_2_ZeroInfl <- zeroinfl(AllCongressEdits_Per_MoC ~ Combined_Mean_vote_maxdiff_relative + sex + YearBirth + 
+                            InternetAccess + ViewCategory + Overall_Edits_During_Tenure_Sum + Day_Served_Sum |  sex + YearBirth + 
+                           Overall_Edits_During_Tenure_Sum + Day_Served_Sum  ,
+                          data = df_Zinb , dist = "negbin")
+
+summary(M3_ZeroInfl)
+summary(M3_2_ZeroInfl)
+
+# Waldtest can be used to compare different variable selection 
+waldtest(M3_ZeroInfl, M3_2_ZeroInfl)
+
+# Theory behind what variables to include in Logit-Model predicting the occurence of zeros:
+# What factors predict that an MoC is not doing edits at all? 
+# 1. ViewCategory: as I expect more popular MoCs to not edit their profiles 
+# 2. InternetAccess: as I expect MoCs running in low internet-access elections districts to not care to much about political communication onine 
+# 3. NOT sex and YearBirth 
+# 4. Combined_Mean_vote_maxdiff_relative 
+
+
+
+
+
+
+# MODELL FOUR: Hurdle regression 
+# Source: https://cran.r-project.org/web/packages/pscl/vignettes/countreg.pdf
+
+
+M4_Hurdle  <- hurdle(AllCongressEdits_Per_MoC ~ Category_Vote_MaxDiff + sex + YearBirth + 
+                       InternetAccess + ViewCategory + Overall_Edits_During_Tenure_Sum + Day_Served_Sum, 
+                     data = df_Zinb,  dist = "negbin")
+
+
+summary(M4_Hurdle)
+
+
+
+# Comparing Results of Different Models
+
+fm <- list("GLM-Pois" = M1, "Quasi-Pois" = M1_quasi, "GLM-NegBin" = M2_negBinom ,
+               "Hurdle-NegBin" = M4_Hurdle, "ZINB" = M3_ZeroInfl)
+
+sapply(fm, function(x) coef(x)[1:8])
+
+install.packages("stargazer")
+library(stargazer)
+
+stargazer(M1, M1_quasi, M2_negBinom, M4_Hurdle, M3_ZeroInfl, 
+          title="Comparing Model Results (All Congress Edits)", 
+          column.labels = c("GLM-Pois", "Quasi-Pois", "GLM-NegBin",
+               "Hurdle-NegBin", "ZINB"),
+          type = "text", style = "default", out="Model_Results(1).html")
 
 
 # old ZINB
@@ -140,3 +211,9 @@ df_Zinb$AllCongressEdits_Per_MoC_Per_DayServed <- as.integer(df_Zinb$AllCongress
 df_Zinb  <- drop_na(df_Zinb)
 model <- zeroinfl(AllCongressEdits_Per_MoC_Per_DayServed ~ sex + YearBirth + Combined_Mean_vote_maxdiff_relative | OverallEdits_inTenure_perDayServed, data = df_Zinb, dist = "negbin", EM = T)
 summary(model)
+
+
+
+
+
+
