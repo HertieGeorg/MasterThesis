@@ -451,6 +451,10 @@ for(i in 1:2601) {
 
 
 #Out: Inside_Congress_Edits_Politically_PositiveNegative -> list of edits from within Congress with Dummy for positive and negative political motivation for each edit
+# Saving Dataframe 
+#save(Inside_Congress_Edits_Politically_PositiveNegative , file = "Inside_Congress_Edits_Politically_PositiveNegative.Rdata")
+
+
 
 
 # Aggregation positive Politically Edits from within Congress per MoC: 
@@ -488,8 +492,6 @@ Characteristics_Data_MoCs <- left_join(Characteristics_Data_MoCs, Inside_Congres
 #Out: Characteristics_Data_MoCs
 # Saving Dataframe 
 #save(Characteristics_Data_MoCs , file = "Characteristics_Data_MoCs.Rdata")
-
-
 
 
 
