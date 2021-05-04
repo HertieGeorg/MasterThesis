@@ -177,7 +177,7 @@ save(Characteristics_Data_MoCs , file = "Characteristics_Data_MoCs.Rdata")
 
 
 
-# Fromer Approach to Aggregate View Data: 
+# Former Approach to Aggregate View Data: 
 
 # Aggretating House Views
 house_us_traffic_tf <- house_us_traffic

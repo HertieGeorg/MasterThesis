@@ -79,13 +79,12 @@ Distribution_Topics_Congress_Edits <- left_join(Distribution_Topics_Politically 
 
 # (1a) Bar-Plot: Political vs. Maintenance in BROAD TOPICS
 
-dat9 <- data.frame(
+data_1a_Barplot <- data.frame(
   Response = factor(c("Political","Political","Political","Political", "Maintenance",  "Maintenance",  "Maintenance",  "Maintenance")),
   Category = factor( c("Personal", "Career","Views","Other", "Personal", "Career","Views","Other"),
                      levels=c("Personal", "Career","Views","Other")),
   percentage = c(520/2626, 1165/2626, 466/2626, 475/2626, 281/1423, 766/1423, 119/1423, 257/1423))
-
-ggplot(data=dat9, aes(x=Category, y=percentage, fill=Response,)) +
+Figure_1a_Barplot <- ggplot(data=data_1a_Barplot, aes(x=Category, y=percentage, fill=Response,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
   scale_fill_brewer(palette = "Set1",name = "Subgroups of Edits") + 
   ggtitle("Distribution of Political versus Maintenance Edits") +
@@ -131,7 +130,7 @@ linear_model4 <- lm(Inside_Congress_Edits_Politically$Answer.topic_other_dummy ~
 
 stargazer(linear_model1 , linear_model2, linear_model3 ,linear_model4,
           title="Table (1a). Difference between political edits and maintenance edits in broad categories",
-          type = "text", style = "default", out="Table(1a)Diff_Topics_Political_Maintenance.html")
+          type = "text", style = "default", out="Table(1a) Diff_Topics_Political_Maintenance.html")
 
 
 
@@ -605,8 +604,8 @@ linear_model4d <- lm(Inside_Congress_Edits_Politically$Answer.topic_views_statem
 
 # Regression Models Output
 stargazer(linear_model1d , linear_model2d , linear_model3d , linear_model4d ,
-          title="Table (1). Difference between political edits and maintenance edits",
-          type = "text", style = "default", out="Table(5)Diff_Views.html")
+          title="Table (1d). Difference between political edits and maintenance edits",
+          type = "text", style = "default", out="Table(1d)Diff_Views.html")
 
 
 
@@ -1386,7 +1385,6 @@ BarPlot_2e <- ggplot(data_BarPlot_2e , aes(x=Category, y=percentage, fill=Respon
   ylab("Distribution over Categories") +
   scale_x_discrete(guide = guide_axis(angle = 45))  +
   theme(legend.position = c(0.85, 0.85))
-
 
 
 

@@ -506,7 +506,7 @@ length(unique(BothChambers_Data_MoCs$wikititle)) #all MoC that appear twice have
 
 
 #-------------------------------------------------------------------------------------------------------------------
-#-------------------------- Same shit but this time only for the years an MOC has severd ---------------------------
+#------------- Again total Number of Edits but this time only for the years an MOC has severd ----------------------
 #-------------------------------------------------------------------------------------------------------------------
 
 #House
