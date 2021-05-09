@@ -48,8 +48,8 @@ library(RColorBrewer)
 # ------------------------------------------------------------------------------------------------------------------
 
 # Devide dataset into politically and non-politically 
-Edits_Politically <- Inside_Congress_Edits_Politically %>% filter(politically_motivated == 1)
-Edits_Non_Politically <- Inside_Congress_Edits_Politically %>% filter(politically_motivated == 0)
+Edits_Politically <- Inside_Congress_Edits_Politically %>% filter(politically_motivated == 1) #1461
+Edits_Non_Politically <- Inside_Congress_Edits_Politically %>% filter(politically_motivated == 0) #1140
 
 
 # ----------------------------------------------------------------------------------------------------------------------------
