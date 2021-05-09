@@ -48,8 +48,8 @@ library(RColorBrewer)
 # ------------------------------------------------------------------------------------------------------------------
 
 # Devide dataset into politically and non-politically 
-Edits_Politically <- Inside_Congress_Edits_Politically %>% filter(politically_motivated == 1) #1461
-Edits_Non_Politically <- Inside_Congress_Edits_Politically %>% filter(politically_motivated == 0) #1140
+Edits_Politically <- Inside_Congress_Edits_Politically %>% filter(politically_motivated == 1) #1373
+Edits_Non_Politically <- Inside_Congress_Edits_Politically %>% filter(politically_motivated == 0) #1075
 
 
 # ----------------------------------------------------------------------------------------------------------------------------
@@ -62,8 +62,8 @@ table(is.na(Edits_Politically$Answer.topic_career))
 table(is.na(Edits_Politically$Answer.topic_views))
 table(is.na(Edits_Politically$Answer.topic_other))
 
-sum(520, 1165, 466, 475) #2626
-Distribution_Topics_Politically <- data.frame (Topic = c("Personal", "Career","Views","Other"), Political = c(520/2626, 1165/2626, 466/2626, 475/2626))
+sum(489, 1096, 544, 458) #2587
+Distribution_Topics_Politically <- data.frame (Topic = c("Personal", "Career","Views","Other"), Political = c(489/2587, 1096/2587, 544/2587, 458/2587))
 
 #  For Non-politically 
 table(is.na(Edits_Non_Politically$Answer.topic_personal))
@@ -71,8 +71,8 @@ table(is.na(Edits_Non_Politically$Answer.topic_career))
 table(is.na(Edits_Non_Politically$Answer.topic_views))
 table(is.na(Edits_Non_Politically$Answer.topic_other))
 
-sum(281, 766, 119, 257) #1423
-Distribution_Topics_Non_Politically <- data.frame(Topic = c("Personal", "Career","Views","Other"), Maintenance  = c(281/1423, 766/1423, 119/1423, 257/1423))
+sum(260, 727, 113, 244) #1344
+Distribution_Topics_Non_Politically <- data.frame(Topic = c("Personal", "Career","Views","Other"), Maintenance  = c(260/1344, 727/1344, 113/1344, 244/1344))
 
 Distribution_Topics_Congress_Edits <- left_join(Distribution_Topics_Politically , Distribution_Topics_Non_Politically   , by ="Topic")
 
@@ -83,11 +83,12 @@ data_1a_Barplot <- data.frame(
   Response = factor(c("Political","Political","Political","Political", "Maintenance",  "Maintenance",  "Maintenance",  "Maintenance")),
   Category = factor( c("Personal", "Career","Views","Other", "Personal", "Career","Views","Other"),
                      levels=c("Personal", "Career","Views","Other")),
-  percentage = c(520/2626, 1165/2626, 466/2626, 475/2626, 281/1423, 766/1423, 119/1423, 257/1423))
+  percentage = c(489/2587, 1096/2587, 544/2587, 458/2587, 260/1344, 727/1344, 113/1344, 244/1344))
+
 Figure_1a_Barplot <- ggplot(data=data_1a_Barplot, aes(x=Category, y=percentage, fill=Response,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
   scale_fill_brewer(palette = "Set1",name = "Subgroups of Edits") + 
-  ggtitle("Distribution of Political versus Maintenance Edits") +
+  ggtitle("Distribution of Political versus Maintenance Edits: Broad Categories") +
   xlab("Category") + 
   ylab("Distribution over Categories") +
   scale_x_discrete(guide = guide_axis(angle = 45))  +
@@ -130,9 +131,7 @@ linear_model4 <- lm(Inside_Congress_Edits_Politically$Answer.topic_other_dummy ~
 
 stargazer(linear_model1 , linear_model2, linear_model3 ,linear_model4,
           title="Table (1a). Difference between political edits and maintenance edits in broad categories",
-          type = "text", style = "default", out="Table(1a) Diff_Topics_Political_Maintenance.html")
-
-
+          type = "text", style = "default", out="Table(1a)NEW Diff_Topics_Political_Maintenance.html")
 
 
 
@@ -173,8 +172,8 @@ table(Edits_Politically$early_life == 1)
 table(Edits_Politically$achievements_awards == 1)
 table(Edits_Politically$activities_memberships == 1)
 
-sum(44, 76, 152, 212, 128, 78, 73) #/763
-Personal_Subcategories_Pol = c(44/763, 76/763, 152/763, 212/763, 128/763, 78/763, 73/763)
+sum(43, 73, 143, 200, 119, 75, 70) #/723
+Personal_Subcategories_Pol = c(43/723, 73/723, 143/723, 200/723, 119/723, 75/723, 70/723)
 
 Label_Names =  c("Personal:Religion", "Personal:Financial Earnings","Personal:Family/Current Life","Personal:Character", "Personal:Early Life", "Personal:Achievements/Awards", "Personal:Activites/Memberships")
 Distribution_TopicPERSONAL_Politically <- data.frame(Topic = Label_Names,  Political  = Personal_Subcategories_Pol)
@@ -212,8 +211,8 @@ table(Edits_Non_Politically$early_life == 1)
 table(Edits_Non_Politically$achievements_awards == 1)
 table(Edits_Non_Politically$activities_memberships == 1)
 
-sum(19, 4, 120, 37,109, 11, 34) #/334
-Personal_Subcategories_NonPol = c(19/334, 4/334, 120/334, 37/334,109/334, 11/334, 34/334)
+sum(18, 4, 110, 37,102, 10, 29) #/310
+Personal_Subcategories_NonPol = c(18/310, 4/310, 110/310, 37/310, 102/310, 10/310, 29/310)
 
 Distribution_TopicPERSONAL_Non_Politically <- data.frame(Topic = Label_Names,  Maintenance  = Personal_Subcategories_NonPol)
 
@@ -227,7 +226,7 @@ Distribution_TopicsPersonal_Congress_Edits <- left_join(Distribution_TopicPERSON
 data_BarPlot_1b <- data.frame(Response = factor(c("Political","Political","Political","Political","Political","Political","Political", "Maintenance",  "Maintenance",  "Maintenance",  "Maintenance", "Maintenance",  "Maintenance",  "Maintenance")),
                               Category = factor( c("Religion", "Financial Earnings","Family/Current Life","Character", "Early Life", "Achievements/Awards", "Activites/Memberships", "Religion", "Financial Earnings","Family/Current Life","Character", "Early Life", "Achievements/Awards", "Activites/Memberships"),
                                                  levels=  c("Religion", "Financial Earnings","Family/Current Life","Character", "Early Life", "Achievements/Awards", "Activites/Memberships")),
-                              percentage = c(44/763, 76/763, 152/763, 212/763, 128/763, 78/763, 73/763, 19/334, 4/334, 120/334, 37/334, 109/334, 11/334, 34/334 ))
+                              percentage = c(43/723, 73/723, 143/723, 200/723, 119/723, 75/723, 70/723, 18/310, 4/310, 110/310, 37/310, 102/310, 10/310, 29/310 ))
 
 BarPlot_1b <- ggplot(data_BarPlot_1b , aes(x=Category, y=percentage, fill=Response,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
@@ -284,7 +283,7 @@ linear_model7b <- lm(Inside_Congress_Edits_Politically$Answer.topic_personal_act
 
 stargazer(linear_model1b , linear_model2b , linear_model3b , linear_model4b , linear_model5b , linear_model6b , linear_model7b , 
           title="Table (1b). Difference between political edits and maintenance edits: Personal",
-          type = "text", style = "default", out="Table(1b)Diff_Personal.html")
+          type = "text", style = "default", out="Table(1b)NEWDiff_Personal.html")
 
 
 
@@ -336,8 +335,8 @@ table(Edits_Politically$early_political_career == 1)
 table(Edits_Politically$congress_offices == 1)
 table(Edits_Politically$early_career == 1)
 
-sum(243, 310, 166, 410, 150, 0, 383, 129) #/1791
-Career_Subcategories_Pol = c(243/1791, 310/1791, 166/1791, 410/1791, 150/1791, 0/1791, 383/1791, 129/1791) 
+sum(218, 297, 156, 387, 138, 0, 366, 121) #/1683
+Career_Subcategories_Pol = c(218/1683, 297/1683, 156/1683, 387/1683, 138/1683, 0/1683, 366/1683, 121/1683) 
 
 
 Label_Names =  c("Career: Congress election campaign", "Career: Political scandals/controversis","Career: Activities during tenure","Career: Legislation", "Career: District service", 
@@ -383,8 +382,8 @@ table(Edits_Non_Politically$early_political_career == 1)
 table(Edits_Non_Politically$congress_offices == 1)
 table(Edits_Non_Politically$early_career == 1)
 
-sum(105, 9, 19, 81, 65, 26, 485, 49) #/839
-Career_Subcategories_NonPol = c(105/839, 9/839, 19/839, 81/839, 65/839, 26/839, 485/839, 49/839)
+sum(95, 8, 18, 77, 62, 23, 468, 46) #/797
+Career_Subcategories_NonPol = c(95/797, 8/797, 18/797, 77/797, 62/797, 23/797, 468/797, 46/797)
 
 Distribution_TopicCareer_Non_Politically <- data.frame(Topic = Label_Names,  Maintenance  = Career_Subcategories_NonPol)
 
@@ -403,7 +402,7 @@ data_BarPlot_1c <- data.frame(Response = factor(c("Political","Political","Polit
                                                    "Early political career", "Offices/memberships in Congress", "Early non-political career"),
                                                  levels=  c("Congress election campaign", "Political scandals/controversis","Activities during tenure","Legislation", "District service", 
                                                             "Early political career", "Offices/memberships in Congress", "Early non-political career")),
-                              percentage = c( 243/1791, 310/1791, 166/1791, 410/1791, 150/1791, 0/1791, 383/1791, 129/1791, 105/839, 9/839, 19/839, 81/839, 65/839, 26/839, 485/839, 49/839 ))
+                              percentage = c( 218/1683, 297/1683, 156/1683, 387/1683, 138/1683, 0/1683, 366/1683, 121/1683, 95/797, 8/797, 18/797, 77/797, 62/797, 23/797, 468/797, 46/797))
 
 
 BarPlot_1c <- ggplot(data_BarPlot_1c , aes(x=Category, y=percentage, fill=Response,)) +
@@ -471,7 +470,7 @@ dim(Inside_Congress_Edits_Politically$politically_motivated)
 
 stargazer(linear_model1c , linear_model2c , linear_model3c , linear_model4c , linear_model5c , linear_model6c , linear_model7c , linear_model8c , 
           title="Table (1c). Difference between political edits and maintenance edits: Career",  covariate.labels = c("1",  "2",  "3" , "4", "5", "6", "7", "8"),
-          type = "text", style = "default", out="Table(1c)Diff_Career.html")
+          type = "text", style = "default", out="Table(1c)NEWDiff_Career.html")
 
 
 
@@ -515,8 +514,8 @@ table(Edits_Politically$ideology == 1)
 table(Edits_Politically$statements_controversial == 1)
 
 
-sum(359, 204, 157, 162) #/882
-Views_Subcategories_Pol = c(359/882, 204/882, 157/882, 162/882)
+sum(346, 195, 152, 157) #/850
+Views_Subcategories_Pol = c(346/850, 195/850, 152/850, 157/850)
 
 
 Label_Names =  c("Views: Issue-specific views", "Views: Support of other politicians","Views: Ideology","Views: Controversial statements")
@@ -547,8 +546,8 @@ table(Edits_Non_Politically$ideology == 1)
 table(Edits_Non_Politically$statements_controversial == 1)
 
 
-sum(62, 47, 25, 9) #/143
-Views_Subcategories_NonPol = c(62/143, 47/143, 25/143, 9/143)
+sum(54, 45, 23, 9) #/131
+Views_Subcategories_NonPol = c(54/131, 45/131, 23/131, 9/131)
 
 Distribution_TopicViews_Non_Politically <- data.frame(Topic = Label_Names,  Maintenance  = Views_Subcategories_NonPol)
 
@@ -565,7 +564,7 @@ Distribution_TopicsViews_Congress_Edits <- left_join(Distribution_TopicViews_Pol
 data_BarPlot_1d <- data.frame(Response = factor(c("Political","Political","Political","Political", "Maintenance",  "Maintenance",  "Maintenance",  "Maintenance")),
                               Category = factor( c("Issue-specific views", "Support of other politicians","Ideology","Controversial statements", "Issue-specific views", "Support of other politicians","Ideology","Controversial statements"),
                                                  levels=  c("Issue-specific views", "Support of other politicians","Ideology","Controversial statements")),
-                              percentage = c(359/882, 204/882, 157/882, 162/882, 62/143, 47/143, 25/143, 9/143 ))
+                              percentage = c(346/850, 195/850, 152/850, 157/850, 54/131, 45/131, 23/131, 9/131 ))
 
 
 BarPlot_1d <- ggplot(data_BarPlot_1d , aes(x=Category, y=percentage, fill=Response,)) +
@@ -605,7 +604,7 @@ linear_model4d <- lm(Inside_Congress_Edits_Politically$Answer.topic_views_statem
 # Regression Models Output
 stargazer(linear_model1d , linear_model2d , linear_model3d , linear_model4d ,
           title="Table (1d). Difference between political edits and maintenance edits",
-          type = "text", style = "default", out="Table(1d)Diff_Views.html")
+          type = "text", style = "default", out="Table(1d)NEWDiff_Views.html")
 
 
 
@@ -650,8 +649,8 @@ table(Edits_Politically$references == 1)
 table(Edits_Politically$categorization == 1)
 table(Edits_Politically$other_other == 1)
 
-sum(155, 38, 338, 6, 35) #/572
-Other_Subcategories_Pol = c(155/572, 38/572, 338/572, 6/572, 35/572)
+sum(153, 37, 326, 5, 33) #/554
+Other_Subcategories_Pol = c(153/554, 37/554, 326/554, 5/554, 33/554)
 
 Label_Names =  c("Other: External link", "Other: Publications","Other: References","Other: Categorization","Other: Other")
 Distribution_TopicOther_Politically <- data.frame(Topic = Label_Names,  Political  = Other_Subcategories_Pol)
@@ -680,8 +679,8 @@ table(Edits_Non_Politically$references == 1)
 table(Edits_Non_Politically$categorization == 1)
 table(Edits_Non_Politically$other_other == 1)
 
-sum(75, 7, 66, 16, 115) #/279
-Other_Subcategories_NonPol = c(75/279, 7/279, 66/279, 16/279, 115/279)
+sum(74, 7, 60, 15, 109) #/265
+Other_Subcategories_NonPol = c(74/265, 7/265, 60/265, 15/265, 109/265)
 Distribution_TopicOther_Non_Politically <- data.frame(Topic = Label_Names,  Maintenance  = Other_Subcategories_NonPol)
 
 # Join political and non-political
@@ -695,7 +694,7 @@ Distribution_TopicsOther_Congress_Edits <- left_join(Distribution_TopicOther_Pol
 data_BarPlot_1e <- data.frame(Response = factor(c("Political","Political","Political","Political","Political", "Maintenance",  "Maintenance",  "Maintenance",  "Maintenance",  "Maintenance")),
                               Category = factor( c("External link", "Publications","References","Categorization","Other","External link", "Publications","References","Categorization","Other"),
                                                  levels=  c("External link", "Publications","References","Categorization","Other")),
-                              percentage = c(155/572, 38/572, 338/572, 6/572, 35/572, 75/279, 7/279, 66/279, 16/279, 115/279))
+                              percentage = c(153/554, 37/554, 326/554, 5/554, 33/554, 74/265, 7/265, 60/265, 15/265, 109/265))
 
 
 BarPlot_1e <- ggplot(data_BarPlot_1e , aes(x=Category, y=percentage, fill=Response,)) +
@@ -743,7 +742,12 @@ linear_model5e <- lm(Inside_Congress_Edits_Politically$Answer.topic_other_other_
 
 stargazer(linear_model1e , linear_model2e , linear_model3e , linear_model4e, linear_model5e,
           title="Table (1e). Difference between political edits and maintenance edits in category: Other",
-          type = "text", style = "default", out="Table(1e)Diff_Other.html")
+          type = "text", style = "default", out="Table(1e)NEWDiff_Other.html")
+
+
+# Save Inside_Congress_Edits_Politically with dummies that were create in this file
+Inside_Congress_Edits_Politically_Dummies <- Inside_Congress_Edits_Politically
+#save(Inside_Congress_Edits_Politically_Dummies, file = "Inside_Congress_Edits_Politically_Dummies.Rdata")
 
 
 
@@ -810,8 +814,8 @@ table(is.na(Edits_Beneficial$Answer.topic_career))
 table(is.na(Edits_Beneficial$Answer.topic_views))
 table(is.na(Edits_Beneficial$Answer.topic_other))
 
-sum(787, 248, 730, 804) #/2569
-# 787/2569, 248/2569, 730/2569, 804/2569
+sum(746, 236, 689, 756) #/2427
+# 746/2427, 236/2427, 689/2427, 756/2427
 
 # Harmful
 table(is.na(Edits_Harmful$Answer.topic_personal))
@@ -819,8 +823,8 @@ table(is.na(Edits_Harmful$Answer.topic_career))
 table(is.na(Edits_Harmful$Answer.topic_views))
 table(is.na(Edits_Harmful$Answer.topic_other))
 
-sum(86, 37, 102, 111) #/336
-# 86/336, 37/336, 102/336, 111/336
+sum(75, 30, 84, 94) #/283
+# 75/283, 30/283, 84/283, 94/283
 
 
 # (2a) Bar-Plot: Political vs. Maintenance in BROAD TOPICS
@@ -829,7 +833,7 @@ data_BarPlot_2a <- data.frame(
   Response = factor(c("Beneficial Political", "Beneficial Political", "Beneficial Political", "Beneficial Political", "Harmful Political", "Harmful Political", "Harmful Political", "Harmful Political")),
   Category = factor( c("Personal", "Career","Views","Other", "Personal", "Career","Views","Other"),
                      levels=c("Personal", "Career","Views","Other")),
-  percentage = c(787/2569, 248/2569, 730/2569, 804/2569, 86/336, 37/336, 102/336, 111/336 ))
+  percentage = c( 746/2427, 236/2427, 689/2427, 756/2427, 75/283, 30/283, 84/283, 94/283 ))
 
 BarPlot_2a <- ggplot(data= data_BarPlot_2a, aes(x=Category, y=percentage, fill=Response,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
@@ -879,7 +883,7 @@ linear_model4 <- lm(Inside_Congress_Edits_Politically_PositiveNegative$Answer.to
 
 stargazer(linear_model1 , linear_model2, linear_model3 ,linear_model4,
           title="Table (2a). Difference between beneficial and harmfl political edits in broad categories",
-          type = "text", style = "default", out="Table(2a)Diff_Topics_Political_Maintenance.html")
+          type = "text", style = "default", out="Table(2a)NEWDiff_Topics_Political_Maintenance.html")
 
 
 
@@ -923,8 +927,8 @@ table(Edits_Beneficial$early_life == 1)
 table(Edits_Beneficial$achievements_awards == 1)
 table(Edits_Beneficial$activities_memberships == 1)
 
-sum(42, 67, 130, 176, 111, 72, 71) #/669
-# (42/669, 67/669, 130/669, 176/669, 111/669, 72/669, 71/669) 
+sum(41, 65, 125, 171, 105, 70, 68) #/645
+# 41/645, 65/645, 125/645, 171/645, 105/645, 70/645, 68/645
 
 
 
@@ -960,8 +964,8 @@ table(Edits_Harmful$early_life == 1)
 table(Edits_Harmful$achievements_awards == 1)
 table(Edits_Harmful$activities_memberships == 1)
 
-sum(1, 4, 14, 31, 10, 2, 2) #/64
-# (1/64, 4/64, 14/64, 31/64, 10/64, 2/64, 2/64)
+sum(1, 4, 11, 25, 7, 1, 2) #/51
+# 1/51, 4/51, 11/51, 25/51, 7/51, 1/51, 2/51
 
 
 # (2b) Bar-Plot: Beneficial vs Harmful in PERSONAL 
@@ -969,7 +973,7 @@ sum(1, 4, 14, 31, 10, 2, 2) #/64
 data_BarPlot_2b <- data.frame(Response = factor(c("Beneficial Political", "Beneficial Political", "Beneficial Political", "Beneficial Political", "Beneficial Political", "Beneficial Political", "Beneficial Political", "Harmful Political", "Harmful Political", "Harmful Political", "Harmful Political", "Harmful Political", "Harmful Political", "Harmful Political")),
                               Category = factor( c("Religion", "Financial Earnings","Family/Current Life","Character", "Early Life", "Achievements/Awards", "Activites/Memberships", "Religion", "Financial Earnings","Family/Current Life","Character", "Early Life", "Achievements/Awards", "Activites/Memberships"),
                                                  levels=  c("Religion", "Financial Earnings","Family/Current Life","Character", "Early Life", "Achievements/Awards", "Activites/Memberships")),
-                              percentage = c(42/669, 67/669, 130/669, 176/669, 111/669, 72/669, 71/669, 1/64, 4/64, 14/64, 31/64, 10/64, 2/64, 2/64 ))
+                              percentage = c(41/645, 65/645, 125/645, 171/645, 105/645, 70/645, 68/645, 1/51, 4/51, 11/51, 25/51, 7/51, 1/51, 2/51 ))
 
 BarPlot_2b <- ggplot(data_BarPlot_2b , aes(x=Category, y=percentage, fill=Response,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
@@ -1026,7 +1030,7 @@ linear_model7b <- lm(Inside_Congress_Edits_Politically_PositiveNegative$Answer.t
 
 stargazer(linear_model1b , linear_model2b , linear_model3b , linear_model4b , linear_model5b , linear_model6b , linear_model7b , 
           title="Table (2b). Difference between political edits and maintenance edits: Personal",
-          type = "text", style = "default", out="Table(2b)Diff_Personal.html")
+          type = "text", style = "default", out="Table(2b)NEWDiff_Personal.html")
 
 
 
@@ -1072,8 +1076,8 @@ table(Edits_Beneficial$early_political_career == 1)
 table(Edits_Beneficial$congress_offices == 1)
 table(Edits_Beneficial$early_career == 1)
 
-sum(203, 260, 135, 362, 133, 0, 324, 116) #/1533
-# (203/1533, 260/1533, 135/1533, 362/1533, 133/1533, 0/1533, 324/1533, 116/1533) 
+sum(186, 253, 128, 346, 124, 0, 311, 109) #/1457
+# 186/1457, 253/1457, 128/1457, 346/1457, 124/1457, 0/1457, 311/1457, 109/1457
 
 
 
@@ -1114,8 +1118,8 @@ table(Edits_Harmful$early_political_career == 1)
 table(Edits_Harmful$congress_offices == 1)
 table(Edits_Harmful$early_career == 1)
 
-sum(17, 31, 18, 23, 10, 3, 39, 6) #/147
-# (17/147, 31/147, 18/147, 23/147, 10/147, 3/147, 39/147, 6/147)
+sum(14, 27, 15, 18, 7, 3, 36, 5) #/125
+# 14/125, 27/125, 15/125, 18/125, 7/125, 3/125, 36/125, 5/125
 
 
 # (2c) Bar-Plot: Political vs. Maintenance in CAREER
@@ -1126,7 +1130,7 @@ data_BarPlot_2c <- data.frame(Response = factor(c( "Beneficial Political", "Bene
                                                    "Early political career", "Offices/memberships in Congress", "Early non-political career"),
                                                  levels=  c("Congress election campaign", "Political scandals/controversis","Activities during tenure","Legislation", "District service", 
                                                             "Early political career", "Offices/memberships in Congress", "Early non-political career")),
-                              percentage = c( 203/1533, 260/1533, 135/1533, 362/1533, 133/1533, 0/1533, 324/1533, 116/1533, 17/147, 31/147, 18/147, 23/147, 10/147, 3/147, 39/147, 6/147))
+                              percentage = c( 186/1457, 253/1457, 128/1457, 346/1457, 124/1457, 0/1457, 311/1457, 109/1457, 14/125, 27/125, 15/125, 18/125, 7/125, 3/125, 36/125, 5/125))
 
 
 BarPlot_2c <- ggplot(data_BarPlot_2c , aes(x=Category, y=percentage, fill=Response,)) +
@@ -1193,7 +1197,7 @@ linear_model8c <- lm(Inside_Congress_Edits_Politically_PositiveNegative$Answer.t
 
 stargazer(linear_model1c , linear_model2c , linear_model3c , linear_model4c , linear_model5c , linear_model6c , linear_model7c , linear_model8c , 
           title="Table (2c). Difference between political edits and maintenance edits: Career",  
-          type = "text", style = "default", out="Table(2c)Diff_Career.html")
+          type = "text", style = "default", out="Table(2c)NEWDiff_Career.html")
 
 
 
@@ -1226,8 +1230,8 @@ table(Edits_Beneficial$ideology == 1)
 table(Edits_Beneficial$statements_controversial == 1)
 
 
-sum(320, 177, 142, 146) #/785
-# 320/785, 177/785, 142/785, 146/785
+sum(309, 169, 137, 141) #/756
+# 309/756, 169/756, 137/756, 141/756
 
 
 # Non Politically
@@ -1253,8 +1257,8 @@ table(Edits_Harmful$ideology == 1)
 table(Edits_Harmful$statements_controversial == 1)
 
 
-sum(22, 15, 10, 9) #/56
-# 22/56, 15/56, 10/56, 9/56
+sum(20, 14, 10, 9) #/53
+# 20/53, 14/53, 10/53, 9/53
 
 
 # (2d) Bar-Plot: Political vs. Maintenance in VIEWS
@@ -1262,7 +1266,7 @@ sum(22, 15, 10, 9) #/56
 data_BarPlot_2d <- data.frame(Response = factor(c("Beneficial Political", "Beneficial Political", "Beneficial Political", "Beneficial Political", "Harmful Political", "Harmful Political", "Harmful Political", "Harmful Political" )),
                               Category = factor( c("Issue-specific views", "Support of other politicians","Ideology","Controversial statements", "Issue-specific views", "Support of other politicians","Ideology","Controversial statements"),
                                                  levels=  c("Issue-specific views", "Support of other politicians","Ideology","Controversial statements")),
-                              percentage = c(320/785, 177/785, 142/785, 146/785, 22/56, 15/56, 10/56, 9/56 ))
+                              percentage = c(309/756, 169/756, 137/756, 141/756, 20/53, 14/53, 10/53, 9/53 ))
 
 
 BarPlot_2d <- ggplot(data_BarPlot_2d , aes(x=Category, y=percentage, fill=Response,)) +
@@ -1302,7 +1306,7 @@ linear_model4d <- lm(Inside_Congress_Edits_Politically_PositiveNegative$Answer.t
 # Regression Models Output
 stargazer(linear_model1d , linear_model2d , linear_model3d , linear_model4d ,
           title="Table (2d). Difference between beneficial versus harmful political edits",
-          type = "text", style = "default", out="Table(2d)Diff_Views.html")
+          type = "text", style = "default", out="Table(2d)NEWDiff_Views.html")
 
 
 
@@ -1336,8 +1340,8 @@ table(Edits_Beneficial$references == 1)
 table(Edits_Beneficial$categorization == 1)
 table(Edits_Beneficial$other_other == 1)
 
-sum(137, 28, 307, 5, 28) #/505
-# 137/505, 28/505, 307/505, 5/505, 28/505
+sum(136, 28, 298, 4, 27) #/493
+# 136/493, 28/493, 298/493, 4/493, 27/493
 
 
 # Non Politically
@@ -1364,8 +1368,8 @@ table(Edits_Harmful$references == 1)
 table(Edits_Harmful$categorization == 1)
 table(Edits_Harmful$other_other == 1)
 
-sum(10, 4, 16, 30, 6) #/66
-# 10/66, 4/66, 16/66, 30/66, 6/66
+sum(10, 4, 13, 26, 5) #/58
+# 10/58, 4/58, 13/58, 26/58, 5/58
 
 
 
@@ -1374,7 +1378,7 @@ sum(10, 4, 16, 30, 6) #/66
 data_BarPlot_2e <- data.frame(Response = factor(c("Beneficial Political","Beneficial Political","Beneficial Political","Beneficial Political","Beneficial Political", "Harmful Political", "Harmful Political", "Harmful Political", "Harmful Political", "Harmful Political")),
                               Category = factor( c("External link", "Publications","References","Categorization","Other","External link", "Publications","References","Categorization","Other"),
                                                  levels=  c("External link", "Publications","References","Categorization","Other")),
-                              percentage = c(137/505, 28/505, 307/505, 5/505, 28/505, 10/66, 4/66, 16/66, 30/66, 6/66))
+                              percentage = c(136/493, 28/493, 298/493, 4/493, 27/493, 10/58, 4/58, 13/58, 26/58, 5/58))
 
 
 BarPlot_2e <- ggplot(data_BarPlot_2e , aes(x=Category, y=percentage, fill=Response,)) +
@@ -1421,7 +1425,7 @@ linear_model5e <- lm(Inside_Congress_Edits_Politically_PositiveNegative$Answer.t
 
 stargazer(linear_model1e , linear_model2e , linear_model3e , linear_model4e, linear_model5e,
           title="Table (2e). Difference between beneficial versus harmful political edits in category: Other",
-          type = "text", style = "default", out="Table(2e)Diff_Other.html")
+          type = "text", style = "default", out="Table(2e)NEWDiff_Other.html")
 
 
 

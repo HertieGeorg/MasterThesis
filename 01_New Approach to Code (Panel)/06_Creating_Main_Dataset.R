@@ -55,7 +55,7 @@ BothChambers_Session_109_to_114_Short$pageid2 <- BothChambers_Session_109_to_114
 BothChambers_Session_109_to_114_Short$session2 <- BothChambers_Session_109_to_114_Short$session
 BothChambers_Session_109_to_114_Short <- BothChambers_Session_109_to_114_Short %>%  unite(pageid_session, pageid2, session2)
 
-# Out: BothChambers_Session_109_to_114_Short
+
 #-----------------------------------------------------------------------------------------------------------------
 
 
@@ -65,7 +65,6 @@ BothChambers_Session_109_to_114_Short <- BothChambers_Session_109_to_114_Short %
 # Get counts for political and maintenance edits 
 
 # In: main_dataframe_dates
-
 
 #-----------------------------------------------------------------------------------------------------------------
 #Subsetting datasets with Congress edits to the observed timeframe (109th-114th session)
@@ -352,50 +351,50 @@ pattern_6 = "mostly_harmful"
 # Set dummy for each edit in the columns politically_motivated_positive and politically_motivated_negative
 
 # Filtering Column: Answer.content_added
-for(i in 1:2601) {                                      
+for(i in 1:2448) {                                      
   if (sjmisc::str_contains(Inside_Congress_Edits_Politically_PositiveNegative$Answer.content_added[i], pattern_3, ignore.case = FALSE, logic = NULL, switch = FALSE)) {
     Inside_Congress_Edits_Politically_PositiveNegative$politically_motivated_positive[i] = 1 
   }
 }
 
-for(i in 1:2601) {
+for(i in 1:2448) {
   if (sjmisc::str_contains(Inside_Congress_Edits_Politically_PositiveNegative$Answer.content_added[i], pattern_4, ignore.case = FALSE, logic = NULL, switch = FALSE)) {
     Inside_Congress_Edits_Politically_PositiveNegative$politically_motivated_positive[i] = 1 
   }
 }
 
-for(i in 1:2601) {
+for(i in 1:2448) {
   if (sjmisc::str_contains(Inside_Congress_Edits_Politically_PositiveNegative$Answer.content_added[i], pattern_5, ignore.case = FALSE, logic = NULL, switch = FALSE)) {
     Inside_Congress_Edits_Politically_PositiveNegative$politically_motivated_negative[i] = 1 
   }
 }
 
-for(i in 1:2601) {
+for(i in 1:2448) {
   if (sjmisc::str_contains(Inside_Congress_Edits_Politically_PositiveNegative$Answer.content_added[i], pattern_6, ignore.case = FALSE, logic = NULL, switch = FALSE)) {
     Inside_Congress_Edits_Politically_PositiveNegative$politically_motivated_negative[i] = 1 
   }
 }
 
 # Filtering Column: Answer.content_removed
-for(i in 1:2601) {
+for(i in 1:2448) {
   if (sjmisc::str_contains(Inside_Congress_Edits_Politically_PositiveNegative$Answer.content_removed[i], pattern_3, ignore.case = FALSE, logic = NULL, switch = FALSE)) {
     Inside_Congress_Edits_Politically_PositiveNegative$politically_motivated_negative[i] = 1 
   }
 }
 
-for(i in 1:2601) {
+for(i in 1:2448) {
   if (sjmisc::str_contains(Inside_Congress_Edits_Politically_PositiveNegative$Answer.content_removed[i], pattern_4, ignore.case = FALSE, logic = NULL, switch = FALSE)) {
     Inside_Congress_Edits_Politically_PositiveNegative$politically_motivated_negative[i] = 1
   }
 }
 
-for(i in 1:2601) {
+for(i in 1:2448) {
   if (sjmisc::str_contains(Inside_Congress_Edits_Politically_PositiveNegative$Answer.content_removed[i], pattern_5, ignore.case = FALSE, logic = NULL, switch = FALSE)) {
     Inside_Congress_Edits_Politically_PositiveNegative$politically_motivated_positive[i] = 1 
   }
 }
 
-for(i in 1:2601) {
+for(i in 1:2448) {
   if (sjmisc::str_contains(Inside_Congress_Edits_Politically_PositiveNegative$Answer.content_removed[i], pattern_6, ignore.case = FALSE, logic = NULL, switch = FALSE)) {
     Inside_Congress_Edits_Politically_PositiveNegative$politically_motivated_positive[i] = 1
   }
@@ -720,6 +719,11 @@ vote_data_house$vote_maxdiff_relative <- (vote_data_house$vote_maxdiff_absolute 
 vote_data_house_merge <- vote_data_house %>% dplyr::select(c(district_id, vote_maxdiff_relative, vote_maxdiff_absolute))
 vote_data_house_merge <- unique(vote_data_house_merge)
 
+# Drop two rows that are still adressing the same MoC in the same session
+length(vote_data_house_merge$district_id) #2612
+vote_data_house_merge <- vote_data_house_merge[-2284,]
+vote_data_house_merge <- vote_data_house_merge[-2277,]
+
 #-------------------------------------------------------------------------------------------------------------------
 
 
@@ -870,15 +874,6 @@ vote_data_senate_winner <- vote_data_senate_winner %>%  unite(Election_id_Senate
 vote_data_senate_merge <- vote_data_senate_winner %>% dplyr::select(c(Election_id_Senate, vote_maxdiff_relative_Senate , vote_maxdiff_absolute_Senate ))
 
 
-####### Rest####
-# Take the mean for each of the 50 States
-#Senate_MeanVoteMargins_by_State <- aggregate(vote_data_senate_merge[, 3:4], list(vote_data_senate_merge$state), mean)
-
-# For the Senate not individual vote results of the Senorts in their own races are used for measuring the competitiveness, instead
-# the mean of all elections in the Senator's state is taken and used for competitiveness 
-# The real reason is: it was impossible to compute otherwise
-# The pled reason is: Senate elections are so seldom (only 6 years) that for some Senators only one result might apply
-# to get a more solid number, more elections are taken into account 
 
 
 # Merge Senate Vote Margins with Main Data: BothChambers_Session_109_to_114_Short
@@ -886,8 +881,10 @@ BothChambers_Session_109_to_114_Short$last_winner <- BothChambers_Session_109_to
 BothChambers_Session_109_to_114_Short$last_winner <- stringr::str_replace_all(BothChambers_Session_109_to_114_Short$last_winner, ", Jr.", "")
 BothChambers_Session_109_to_114_Short$last_winner <-  stringr::str_extract(BothChambers_Session_109_to_114_Short$last_winner, "[[:alpha:]]+$") 
 
+
+
 #Transform last names into uppercase 
-for (i in 1: 3321) {
+for (i in 1: 3319) {
   string <- BothChambers_Session_109_to_114_Short$last_winner[i] 
   STRING <- toupper(string)
   BothChambers_Session_109_to_114_Short$last_winner[i] <- STRING }
@@ -895,7 +892,7 @@ for (i in 1: 3321) {
 BothChambers_Session_109_to_114_Short <- BothChambers_Session_109_to_114_Short %>%  unite(Election_id_Senate, state_short, session, last_winner, sep = "_", remove = FALSE)
 
 #length(BothChambers_Session_109_to_114_Short$Chamber)
-for (i in 1: 3321) {
+for (i in 1: 3319) {
   if (BothChambers_Session_109_to_114_Short$Chamber[i] == "H") {
     BothChambers_Session_109_to_114_Short$Election_id_Senate[i] = NA
   }
@@ -923,6 +920,8 @@ for (i in 1: 981) {
   CCC <- rbind(CCC, BBB)
 }
 
+CCC <- CCC %>% filter(pageid != 0)
+
 table(is.na(CCC$vote_maxdiff_relative_Senate) ==T) #still 42 with missing values 
 # Solution: take State average 
 
@@ -938,7 +937,7 @@ CCC <- left_join(CCC, Senate_MeanVoteMargins_by_State , by = "state_short")
 # Replace NA by mean of state in vote_maxdiff_relatvie_Senate in CCC
 
 #length(CCC$pageid)
-for (i in 1:622) {
+for (i in 1:621) {
   if(is.na(CCC$vote_maxdiff_relative_Senate[i]) == T) {
     CCC$vote_maxdiff_relative_Senate[i] = CCC$vote_maxdiff_relative_Senate_MEAN[i] }
 }
@@ -952,7 +951,7 @@ BothChambers_Session_109_to_114_Short  <- left_join(BothChambers_Session_109_to_
 
 # But Vote_Max_Diff_Values into one column
 #length(BothChambers_Session_109_to_114_Short$pageid)
-for (i in 1:3322) {
+for (i in 1:3319) {
   if(is.na(BothChambers_Session_109_to_114_Short$vote_maxdiff_relative[i]) == T) {
     BothChambers_Session_109_to_114_Short$vote_maxdiff_relative[i] = BothChambers_Session_109_to_114_Short$vote_maxdiff_relative_Senate[i] }
 }
@@ -964,29 +963,13 @@ table((is.na(BothChambers_Session_109_to_114_Short$vote_maxdiff_relative) == T))
 BothChambers_Session_109_to_114_Short <- BothChambers_Session_109_to_114_Short %>%
   dplyr::select(-c(vote_maxdiff_relative_Senate, vote_maxdiff_absolute, last_winner, district_number, district_id, Election_id_Senate ))
 
+# Drop Tim Scott Senate Session 112 as he served only 1 day 
+BothChambers_Session_109_to_114_Short <- BothChambers_Session_109_to_114_Short[-2860,]
+
 
 # Out: BothChambers_Session_109_to_114_Short
 # Saving Dataframe 
-save(BothChambers_Session_109_to_114_Short , file = "BothChambers_Session_109_to_114_Short.Rdata")
-
-
-
-# What next: 
-
-# -> finsih dataset for visualization of differences in catgories between parties and genders 
-# -> do the visualizations
-
-# -> re-do graphs and stargazers for differencees maintenance and political
-
-# -> re-do graphs for timing of edits 
-
-
-
-
-
-
-
-
+#save(BothChambers_Session_109_to_114_Short , file = "BothChambers_Session_109_to_114_Short.Rdata")
 
 
 
