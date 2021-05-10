@@ -967,6 +967,26 @@ BothChambers_Session_109_to_114_Short <- BothChambers_Session_109_to_114_Short %
 BothChambers_Session_109_to_114_Short <- BothChambers_Session_109_to_114_Short[-2860,]
 
 
+# Sort MoCs from smaller Parties to either D or R in a new column
+
+BothChambers_Session_109_to_114_Short$party_dual <- BothChambers_Session_109_to_114_Short$party
+table(BothChambers_Session_109_to_114_Short$party_dual)
+
+BothChambers_Session_109_to_114_Short$party_dual <- stringr::str_replace_all(BothChambers_Session_109_to_114_Short$party_dual, "DFL", "D")
+BothChambers_Session_109_to_114_Short$party_dual <- stringr::str_replace_all(BothChambers_Session_109_to_114_Short$party_dual, "PNP/D", "D")
+BothChambers_Session_109_to_114_Short$party_dual <- stringr::str_replace_all(BothChambers_Session_109_to_114_Short$party_dual, "PNP/R", "R")
+BothChambers_Session_109_to_114_Short$party_dual <- stringr::str_replace_all(BothChambers_Session_109_to_114_Short$party_dual, "DFL", "D")
+BothChambers_Session_109_to_114_Short$party_dual <- stringr::str_replace_all(BothChambers_Session_109_to_114_Short$party_dual, " ", "")
+
+# Independents: all 5 independents in the data set were caucusing with the Democrats in the observed time frame 
+# Bernie_Sanders, Gregorio_Sablan, Joe_Lieberman ,Angus_King, Jim_Jeffords
+
+for (i in 1:length(BothChambers_Session_109_to_114_Short$party_dual)) {
+  if(BothChambers_Session_109_to_114_Short$party[i] == "Independent") {
+    BothChambers_Session_109_to_114_Short$party_dual[i] = "D" }
+}
+
+
 # Out: BothChambers_Session_109_to_114_Short
 # Saving Dataframe 
 #save(BothChambers_Session_109_to_114_Short , file = "BothChambers_Session_109_to_114_Short.Rdata")

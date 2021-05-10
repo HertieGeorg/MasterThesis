@@ -1,7 +1,7 @@
 
 #09b_Fiugres_EditsOverTimes_DescriptiveStatistics
 
-#This cript contains code for creating figures:
+#This script contains code for creating figures:
 # 1. All edits from within Congress over time (with markers for elections dates)
 # 2. Political edits from within Congress over time (with markers for elections dates)
 # 3. All edits and all edtis from within Congress in over time (comparison) in one graph 
@@ -31,7 +31,7 @@ library(dplyr)
 
 
 # Load Edit Data (Sessions 109th-114th)
-data <- main_dataframe_core
+data <- main_dataframe_true
 
 
 print(list_of_biggest_general_election_dates)
@@ -51,10 +51,28 @@ list_of_biggest_general_election_dates_short <- as.Date(c("2006-11-07" , "2010-1
 # Choosing observed time frame 
 house_us_history$year <- stringr::str_extract(house_us_history$timestamp , "^\\d{4}") 
 house_us_history_109_114 <- house_us_history  %>%  filter(year >= 2005) %>%  filter(year <= 2016)
+#Create Session Column
+house_us_history_109_114$session <- house_us_history_109_114$year
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2005", "109")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2006", "109")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2007", "110")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2008", "110")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2009", "111")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2010", "111")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2011", "112")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2012", "112")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2013", "113")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2014", "113")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2015", "114")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2016", "114")
 
-# Choosing the examined MoHs -> load: Characteristics_Data_MoCs
-list_pageids_MoH <- unique(Characteristics_Data_MoCs$pageid) #create list that contains pageids of the examined MoHs
-house_us_history_109_114 <- house_us_history_109_114 %>%  filter(pageid %in% list_pageids_MoH) 
+# Create merge-variable: pageid_session
+house_us_history_109_114 <- house_us_history_109_114 %>%  unite(pageid_session, pageid, session, sep = "_", remove = FALSE)
+
+
+# Choosing the examined MoHs -> load: BothChambers_Session_109_to_114_Short
+list_pageid_session_MoH <- unique(BothChambers_Session_109_to_114_Short$pageid_session) #create list that contains pageid_sessions of the examined MoHs
+house_us_history_109_114 <- house_us_history_109_114 %>%  filter(pageid_session %in% list_pageid_session_MoH) 
 
 # Creating Date Column without exat timestamp
 house_us_history_109_114$date <- stringr::str_extract(house_us_history_109_114$timestamp , "^\\d{4}-\\d{2}-\\d{2}") 
@@ -65,7 +83,7 @@ house_us_history_109_114$date <- as.Date(house_us_history_109_114$date)
 house_us_history_109_114$sample <- house_us_history_109_114$revid
 house_us_history_109_114$sample <- stringr::str_extract(house_us_history_109_114$sample, "\\d$") 
 table(house_us_history_109_114$sample) # is equally distributet over numbers 1-10 
-house_us_history_109_114_short <- sample_n(house_us_history_109_114, 50862)
+house_us_history_109_114_short <- sample_n(house_us_history_109_114, 39773) #10% of all observations N 397,733
 table(house_us_history_109_114_short$sample) # is also equally distributet over numbers 1-10 
 
 
@@ -74,25 +92,25 @@ table(house_us_history_109_114_short$sample) # is also equally distributet over 
 # Grey marked area indicates election year 
 AA3 <- ggplot(house_us_history_109_114_short, aes(x= date)) + 
   geom_rect(aes(xmin = as.Date("2004-01-24"), ymin = 0,  # "2004-11-02"
-                xmax = as.Date("2005-12-31"), ymax = 1500),
+                xmax = as.Date("2005-12-31"), ymax = 1300),
             fill = "lightgrey", alpha=0.01) +
   geom_rect(aes(xmin = as.Date("2006-01-01"), ymin = 0,  # "2006-11-07"
-                xmax = as.Date("2006-12-31"), ymax = 1500),
+                xmax = as.Date("2006-12-31"), ymax = 1300),
             fill = "lightgrey", alpha=0.01) +
   geom_rect(aes(xmin = as.Date("2008-01-01"), ymin = 0,  # "2008-11-04" 
-                xmax = as.Date("2008-12-31"), ymax = 1500),
+                xmax = as.Date("2008-12-31"), ymax = 1300),
             fill = "lightgrey", alpha=0.01) +
   geom_rect(aes(xmin = as.Date("2010-01-01"), ymin = 0,  # "2010-11-02"
-                xmax = as.Date("2010-12-31"), ymax = 1500),
+                xmax = as.Date("2010-12-31"), ymax = 1300),
             fill = "lightgrey", alpha=0.01) +
   geom_rect(aes(xmin = as.Date("2012-01-01"), ymin = 0,  #"2012-11-06"
-                xmax = as.Date("2012-12-31"), ymax = 1500),
+                xmax = as.Date("2012-12-31"), ymax = 1300),
             fill = "lightgrey", alpha=0.01) +
   geom_rect(aes(xmin = as.Date("2014-01-01"), ymin = 0,  #"2014-11-04"
-                xmax = as.Date("2014-12-31"), ymax = 1500),
+                xmax = as.Date("2014-12-31"), ymax = 1300),
             fill = "lightgrey", alpha=0.01) +
   geom_rect(aes(xmin = as.Date("2016-01-01"), ymin = 0,  # "2016-11-08"
-                xmax = as.Date("2016-12-31"), ymax = 1500),
+                xmax = as.Date("2016-12-31"), ymax = 1300),
             fill = "lightgrey", alpha=0.01) +
   geom_histogram(bins=144, size = 0.6, alpha=1,  color = "black", fill = "black") + 
   geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
@@ -452,19 +470,19 @@ grid.arrange(CC9, AA10, BB10, ncol = 1, nrow = 3)
 #----------------------------------------------------------------------------------
 
 
-#F: Showing political edits over entire frame with timeframe marker around elections 
+#E: Showing political edits over entire frame with timeframe marker around elections 
 #once for Democrats and once for Republicans (1 Figure, 2 Graphs)
 
-
-Pageid_Party <- Characteristics_Data_MoCs %>% select(c("pageid", "party"))
+Pageid_Party <- BothChambers_Session_109_to_114_Short %>% dplyr::select(c("pageid", "party_dual"))
+Pageid_Party <- unique(Pageid_Party)
 Inside_Congress_Edits_Politically_Party <- left_join(Inside_Congress_Edits_Politically, Pageid_Party, by = "pageid")
 
 
-data_D1 <- Inside_Congress_Edits_Politically_Party %>% filter(politically_motivated == 1) %>% filter(party == "D")
-data_D2 <- Inside_Congress_Edits_Politically_Party %>% filter(politically_motivated == 0) %>% filter(party == "D") 
+data_D1 <- Inside_Congress_Edits_Politically_Party %>% filter(politically_motivated == 1) %>% filter(party_dual == "D")
+data_D2 <- Inside_Congress_Edits_Politically_Party %>% filter(politically_motivated == 0) %>% filter(party_dual == "D") 
 
-data_R1 <- Inside_Congress_Edits_Politically_Party %>% filter(politically_motivated == 1) %>% filter(party == "R")
-data_R2 <- Inside_Congress_Edits_Politically_Party %>% filter(politically_motivated == 0) %>% filter(party == "R") 
+data_R1 <- Inside_Congress_Edits_Politically_Party %>% filter(politically_motivated == 1) %>% filter(party_dual == "R")
+data_R2 <- Inside_Congress_Edits_Politically_Party %>% filter(politically_motivated == 0) %>% filter(party_dual == "R") 
 
 
 
@@ -492,7 +510,7 @@ AD1 <- ggplot(data_D1, aes(x= date_LegislatoR)) +
             fill = "lightgrey", alpha=0.01) +
   geom_histogram(bins=144, size = 0.6,  alpha=1, color = "blue", fill = "black") + 
   geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
-  labs(y="Aggregated", x = "(a)  Political edits from the Congress IT network on profiles of Democratic MoCs") + 
+  labs(y="Aggregated", x = "(a) Political edits from the Congress IT network on profiles of Democratic MoCs") + 
   theme_classic() +
   xlim( as.Date(c("2005-01-24","2017-01-02"))) 
 
@@ -601,30 +619,48 @@ grid.arrange(AD2, AR2, ncol = 1, nrow = 2)
 #once for MPs running in top 20% competitive Districts and once for lower 20% (1 Figure, 2 Graphs)
 
 
+# Set NAs in competitiveness to median (which occur for US terretories. e.g. Puerto Rico, DC, etc.)
+# Median not mean to not distrub the distribution 
 
-# Set NAs in competitiveness (which occur for US terretories. e.g. Puerto Rico, DC, etc.)
-Characteristics_Data_MoCs <- Characteristics_Data_MoCs %>% drop_na(Combined_Mean_vote_maxdiff_relative)
-table(is.na(Characteristics_Data_MoCs$Combined_Mean_vote_maxdiff_relative)) #check whether it worked 
+summary(BothChambers_Session_109_to_114_Short$vote_maxdiff_relative)
+#  Min.     1st Qu.  Median    Mean       3rd Qu.    Max.      NA's 
+#0.00011   0.15703   0.28742   0.32365   0.43315   1.00000      34 
 
-summary(Characteristics_Data_MoCs$Combined_Mean_vote_maxdiff_relative)
-#     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-#0.000734 0.152832 0.256164 0.293194 0.398327 1.000000 
+for(i in 1:length(BothChambers_Session_109_to_114_Short$pageid)) {
+  if (is.na(BothChambers_Session_109_to_114_Short$vote_maxdiff_relative[i]) ==  TRUE) {
+    BothChambers_Session_109_to_114_Short$vote_maxdiff_relative[i] = 0.28742}
+}
 
-Characteristics_Data_MoCs$Competitive_Dummy <- 0
 
-for(i in 1:length(Characteristics_Data_MoCs$pageid)) {
-  if (Characteristics_Data_MoCs$Combined_Mean_vote_maxdiff_relative[i] >=  0.398327) {
-    Characteristics_Data_MoCs$Competitive_Dummy[i] = "Top25"}
-  else if (Characteristics_Data_MoCs$Combined_Mean_vote_maxdiff_relative[i] <=  0.152832) {
-    Characteristics_Data_MoCs$Competitive_Dummy[i] = "Bottom25" 
+
+
+Vote_Diff_Mean <- BothChambers_Session_109_to_114_Short %>% dplyr::select(c(pageid, vote_maxdiff_relative))
+
+Vote_Diff_Mean <- aggregate(Vote_Diff_Mean[, 2], list(Vote_Diff_Mean$pageid), mean)
+Vote_Diff_Mean<- rename(Vote_Diff_Mean, "vote_maxdiff_relative_MoC_MEAN" = x)
+Vote_Diff_Mean <- rename(Vote_Diff_Mean, "pageid" = Group.1)
+
+summary(Vote_Diff_Mean$vote_maxdiff_relative_MoC_MEAN)
+#Min.       1st Qu.   Median     Mean  3rd Qu.   Max. 
+#0.000734 0.149963 0.260440 0.293957 0.401551 1.000000 
+
+Vote_Diff_Mean$Competitive_Dummy <- 0
+
+for(i in 1:length(Vote_Diff_Mean$pageid)) {
+  if (Vote_Diff_Mean$vote_maxdiff_relative_MoC_MEAN[i] >=  0.401551) {
+    Vote_Diff_Mean$Competitive_Dummy[i] = "Top25"}
+  else if (Vote_Diff_Mean$vote_maxdiff_relative_MoC_MEAN[i] <=   0.149963) {
+    Vote_Diff_Mean$Competitive_Dummy[i] = "Bottom25" 
   }
 }
-table(Characteristics_Data_MoCs$Competitive_Dummy)
 
-Pageid_Competitive <- Characteristics_Data_MoCs %>% select(c( "pageid", "Competitive_Dummy"))
+
+Pageid_Competitive <- Vote_Diff_Mean %>% dplyr::select(c( "pageid", "Competitive_Dummy"))
 
 Inside_Congress_Edits_Politically_Competitive <- left_join(Inside_Congress_Edits_Politically, Pageid_Competitive, by = "pageid")
-
+# Two edits are listed twice in Inside_Congress_Edits_Politically_Competitive 
+# However, they are both labels as 0 in Competitive_Dummy and will therefore be dropped in the following
+#doubles <- Inside_Congress_Edits_Politically_Competitive %>% group_by(revid) %>% filter(n()>1) # -> no doubles, each edit appears just once in the dataset
 
 
 data_CompetitiveT25 <- Inside_Congress_Edits_Politically_Competitive %>% filter(politically_motivated == 1) %>% filter(Competitive_Dummy == "Top25")
@@ -663,25 +699,25 @@ ATop25 <- ggplot(data_CompetitiveT25, aes(x= date_LegislatoR)) +
 
 ABottom25 <- ggplot(data_CompetitiveB25, aes(x= date_LegislatoR)) + 
   geom_rect(aes(xmin = as.Date("2004-01-02"), ymin = 0,  # "2004-11-02"
-                xmax = as.Date("2004-11-02"), ymax = 25),
+                xmax = as.Date("2004-11-02"), ymax = 22),
             fill = "lightgrey", alpha=0.01) +
   geom_rect(aes(xmin = as.Date("2006-01-07"), ymin = 0,  # "2006-11-07"
-                xmax = as.Date("2006-11-07"), ymax = 25),
+                xmax = as.Date("2006-11-07"), ymax = 22),
             fill = "lightgrey", alpha=0.01) +
   geom_rect(aes(xmin = as.Date("2008-01-04"), ymin = 0,  # "2008-11-04" 
-                xmax = as.Date("2008-11-04"), ymax = 25),
+                xmax = as.Date("2008-11-04"), ymax = 22),
             fill = "lightgrey", alpha=0.01) +
   geom_rect(aes(xmin = as.Date("2010-01-02"), ymin = 0,  # "2010-11-02"
-                xmax = as.Date("2010-11-02"), ymax = 25),
+                xmax = as.Date("2010-11-02"), ymax = 22),
             fill = "lightgrey", alpha=0.01) +
   geom_rect(aes(xmin = as.Date("2012-01-06"), ymin = 0,  #"2012-11-06"
-                xmax = as.Date("2012-11-06"), ymax = 25),
+                xmax = as.Date("2012-11-06"), ymax = 22),
             fill = "lightgrey", alpha=0.01) +
   geom_rect(aes(xmin = as.Date("2014-01-04"), ymin = 0,  #"2014-11-04"
-                xmax = as.Date("2014-11-04"), ymax = 25),
+                xmax = as.Date("2014-11-04"), ymax = 22),
             fill = "lightgrey", alpha=0.01) +
   geom_rect(aes(xmin = as.Date("2016-01-08"), ymin = 0,  # "2016-11-08"
-                xmax = as.Date("2016-11-08"), ymax = 25),
+                xmax = as.Date("2016-11-08"), ymax = 22),
             fill = "lightgrey", alpha=0.01) +
   geom_histogram(bins=72, size = 0.6,  alpha=1, color = "blue", fill = "blue") + 
   geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
@@ -689,7 +725,7 @@ ABottom25 <- ggplot(data_CompetitiveB25, aes(x= date_LegislatoR)) +
   theme_classic() +
   xlim( as.Date(c("2005-01-24","2017-01-02"))) 
 
-# We can  already see that Top25 (=418) see much more political edtis then Bottom25 (= 248) 
+# We can  already see that Top25 (=425) see much more political edtis then Bottom25 (= 226) 
 
 #Figure3F_EditsTime
 grid.arrange(ATop25, ABottom25, ncol = 1, nrow = 2)
