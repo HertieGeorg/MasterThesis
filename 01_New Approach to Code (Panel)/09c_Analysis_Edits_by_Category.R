@@ -35,6 +35,8 @@ for(i in 1:length(BothChambers_Session_109_to_114_Short$pageid)) {
     BothChambers_Session_109_to_114_Short$vote_maxdiff_relative[i] = 0.28742}
 }
 
+
+
 Vote_Diff_Mean <- BothChambers_Session_109_to_114_Short %>% dplyr::select(c(pageid, vote_maxdiff_relative))
 Vote_Diff_Mean <- aggregate(Vote_Diff_Mean[, 2], list(Vote_Diff_Mean$pageid), mean)
 Vote_Diff_Mean<- rename(Vote_Diff_Mean, "vote_maxdiff_relative_MoC_MEAN" = x)
@@ -44,9 +46,9 @@ Vote_Diff_Mean$Competitive_Dummy <- 0
 
 for(i in 1:length(Vote_Diff_Mean$pageid)) {
   if (Vote_Diff_Mean$vote_maxdiff_relative_MoC_MEAN[i] >=  0.401551) {
-    Vote_Diff_Mean$Competitive_Dummy[i] = "Top25"}
+    Vote_Diff_Mean$Competitive_Dummy[i] = "Bottom25"}
   else if (Vote_Diff_Mean$vote_maxdiff_relative_MoC_MEAN[i] <=   0.149963) {
-    Vote_Diff_Mean$Competitive_Dummy[i] = "Bottom25" 
+    Vote_Diff_Mean$Competitive_Dummy[i] = "Top25" 
   }
 }
 
@@ -57,13 +59,7 @@ df <- left_join(df, Pageid_Competitive, by = "pageid.x")
 Pageid_Competitive <- rename(Pageid_Competitive, "pageid" = "pageid.x")
 BothChambers_Session_109_to_114_Short <- left_join(BothChambers_Session_109_to_114_Short, Pageid_Competitive, by = "pageid")
 
-# Two edits are listed twice in Inside_Congress_Edits_Politically_Competitive 
-# However, they are both labels as 0 in Competitive_Dummy and will therefore be dropped in the following
-doubles <- df %>% group_by(revid) %>% filter(n()>1) # -> no doubles, each edit appears just once in the dataset
 
-table(df$Competitive_Dummy)
-#     0    Bottom25    Top25 
-#   1324      345       779 
 
 
 # Functions:
@@ -128,6 +124,8 @@ sexR[1,2] <- sexA[1,2] /N_female
 sexR[2,2] <- sexA[2,2] /N_male
 sexR$Freq <- round(sexR$Freq, digits = 2)
 
+
+
 partyA <- data.frame(table(df$party_dual)) 
 partyR <- partyA
 N_D <- length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$party_dual =="D"]))
@@ -139,8 +137,9 @@ partyR$Freq <- round(partyR$Freq, digits = 2)
 CompetA <- data.frame(table(df$Competitive_Dummy)) 
 CompetA <- CompetA[-1,]
 CompetR <- CompetA
-N_B <- length(unique(Vote_Diff_Mean$pageid.x[Vote_Diff_Mean$Competitive_Dummy =="Bottom25"]))
-N_T <- length(unique(Vote_Diff_Mean$pageid.x[Vote_Diff_Mean$Competitive_Dummy =="Top25"]))
+#Dividing by the number of MoC-Session pairs that fall into each category (independent whether they see an edits or not)
+N_B <- length(unique(BothChambers_Session_109_to_114_Short$pageid_session[BothChambers_Session_109_to_114_Short$Competitive_Dummy =="Bottom25"]))
+N_T <- length(unique(BothChambers_Session_109_to_114_Short$pageid_session[BothChambers_Session_109_to_114_Short$Competitive_Dummy =="Top25"]))
 CompetR[1,2] <- CompetA[1,2] /N_B
 CompetR[2,2] <- CompetA[2,2] /N_T
 CompetR$Freq <- round(CompetR$Freq, digits = 2)
@@ -285,8 +284,8 @@ party_P_R$Freq <- round(party_P_R$Freq, digits = 2)
 Compet_P_A <- data.frame(table(df_P$Competitive_Dummy)) 
 Compet_P_A <- Compet_P_A[-1,]
 Compet_P_R <- Compet_P_A
-N_B <- length(unique(Vote_Diff_Mean$pageid.x[Vote_Diff_Mean$Competitive_Dummy =="Bottom25"]))
-N_T <- length(unique(Vote_Diff_Mean$pageid.x[Vote_Diff_Mean$Competitive_Dummy =="Top25"]))
+N_B <- length(unique(BothChambers_Session_109_to_114_Short$pageid_session[BothChambers_Session_109_to_114_Short$Competitive_Dummy =="Bottom25"]))
+N_T <- length(unique(BothChambers_Session_109_to_114_Short$pageid_session[BothChambers_Session_109_to_114_Short$Competitive_Dummy =="Top25"]))
 Compet_P_R[1,2] <- Compet_P_A[1,2] /N_B
 Compet_P_R[2,2] <- Compet_P_A[2,2] /N_T
 Compet_P_R$Freq <- round(Compet_P_R$Freq, digits = 2)
@@ -346,6 +345,7 @@ grid.arrange(Figure4_AB_1_Plot1, Figure4_AB_1_Plot2, Figure4_AB_1_Plot3,Figure4_
 
 
 
+
 # --------------------------------------------------------------------------------------------------------------------------
 # Figure4_AC_1_Categories: Distribution of ALL Congress Edits over 4 broad categories by chamber, party, competiv and gender 
 # --------------------------------------------------------------------------------------------------------------------------
@@ -390,8 +390,8 @@ X_H_Broad <- get_distribution_table(df_H_BroadC, "House", 2036)
 X_S_Broad <- get_distribution_table(df_S_BroadC, "Senate", 412)
 Chamber_All_Broad <- rbind(X_H_Broad, X_S_Broad)
 
-X_T_Broad <- get_distribution_table(df_T_BroadC, "Top 25%", 779)
-X_B_Broad <- get_distribution_table(df_B_BroadC, "Bottom 25%", 345)
+X_T_Broad <- get_distribution_table(df_T_BroadC, "Top 25%", 345)
+X_B_Broad <- get_distribution_table(df_B_BroadC, "Bottom 25%", 779)
 Compet_All_Broad <- rbind(X_T_Broad, X_B_Broad)
 
 
@@ -523,6 +523,8 @@ Figure4_AC_1_Plot4x <- ggplot(Party_All_Broadx, aes(x=Category, y=Share, fill=Mo
 #Figure4_AC_1b_Categories
 grid.arrange(Figure4_AC_1_Plot1x, Figure4_AC_1_Plot2x, Figure4_AC_1_Plot3x ,Figure4_AC_1_Plot4x, ncol = 4, nrow = 1,
              top=("Distribution of all edits from the Congress IT network over broad categories by chamber, gender, competitiveness and party (Other dividing-mechanism)"))
+
+
 
 
 
@@ -690,9 +692,9 @@ X_RP <- get_distribution_table_SECOND(df_RP_Personal, "R") #1358
 Party_Political <- rbind(X_DP, X_RP)
 
 
-labels_PersonalLife <- c("Achievements/Awards", "Activities/Membershios", 
+labels_PersonalLife <- c("Achievements/Awards", "Activities/Memberships", 
                          "Personal Character", "Early Life",
-                         "Family and current life", "Financial erarnings",
+                         "Family and current life", "Financial earnings",
                          "Religion")
 
 #Figure4b_Categories
@@ -707,8 +709,8 @@ Figure4b_Categories <- ggplot(Party_Political, aes(x=Category, y=Share, fill=MoC
   theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
 
 
-#grid.arrange(Figure4a_Categories , Figure4b_Categories , ncol = 2, nrow = 1,
-#             top=("All edits and political edits from the Congress IT network by party (Personal life)"))
+grid.arrange(Figure4a_Categories , Figure4b_Categories , ncol = 2, nrow = 1,
+             top=("All edits and political edits from the Congress IT network by party (Personal life)"))
 
 
 
@@ -721,34 +723,9 @@ Figure4b_Categories <- ggplot(Party_Political, aes(x=Category, y=Share, fill=MoC
 df_F_Personal <- df_F %>% dplyr::select(personal_categories)
 df_M_Personal <- df_M %>% dplyr::select(personal_categories)
 
-X_F_Personal <- get_distribution_table(df_F_Personal, "Female",347)
-X_M_Personal <- get_distribution_table(df_M_Personal, "Male", 2101)
-Sex_All_Personal <- rbind(X_F_Personal, X_M_Personal)
-
-#Same but this time edits counts are divided by the total numbers of edtis per gender WITHIN the category Personal
 X_F_Personal2 <- get_distribution_table(df_F_Personal, "Female",107) #distribution within category
 X_M_Personal2 <- get_distribution_table(df_M_Personal, "Male", 926) #distribution within category
 Sex_All_Personal2 <- rbind(X_F_Personal2, X_M_Personal2)
-
-# Third Specification
-#df_2col <- df %>% dplyr::select(c(pageid.x, sex))
-#df_2col <- unique(df_2col)
-#table(df_2col$sex)
-#X_F_Personal3 <- get_distribution_table(df_F_Personal, "Female",100) #distribution within category
-#X_M_Personal3 <- get_distribution_table(df_M_Personal, "Male", 487) #distribution within category
-#Sex_All_Personal3 <- rbind(X_F_Personal3, X_M_Personal3)
-
-
-#Figure4c_Plot1
-Figure4c_Plot1 <- ggplot(Sex_All_Personal , aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
-  geom_bar(stat="identity", position=position_dodge(), colour="white") + 
-  ggtitle("All edits from the Congress IT network by gender (Personal life) (devided by total number of edits per gender") +
-  xlab("Category") + 
-  theme_bw() + 
-  ylab("Share of gender edits ") +
-  scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_PersonalLife)  +
-  scale_fill_manual(labels = c("Female", "Male"), values = c( "darkolivegreen1","yellowgreen")) + 
-  theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
 
 
 #Figure4c_Plot2
@@ -763,13 +740,6 @@ Figure4c_Plot2 <- ggplot(Sex_All_Personal2 , aes(x=Category, y=Share, fill=MoC_C
   theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
 
 
-#Figure4c_Categories
-grid.arrange(Figure4c_Plot1, Figure4c_Plot2, ncol = 2, nrow = 1,
-             top=("Distribution of all edits from the Congress IT network over personal categories gender (3 different benchmarks"))
-
-
-
-
 
 #--------------------------------------------------------------------------------------------------------------------------
 # Figure4d_Categories:  Political edits  + All categories from Personal Life -> Male versus Female in one Barplot
@@ -778,46 +748,10 @@ grid.arrange(Figure4c_Plot1, Figure4c_Plot2, ncol = 2, nrow = 1,
 df_FP_Personal <- df_FP %>% dplyr::select(personal_categories)
 df_MP_Personal <- df_MP %>% dplyr::select(personal_categories)
 
-X_FP_Personal <- get_distribution_table(df_FP_Personal, "Female",186)
-X_MP_Personal <- get_distribution_table(df_MP_Personal, "Male", 1187)
-Sex_Political_Personal <- rbind(X_FP_Personal, X_MP_Personal)
-
-#Same but this time edits counts are divided by the total numbers of edtis per gender WITHIN the category Personal
 
 X_FP_Personal2 <- get_distribution_table(df_FP_Personal, "Female",74) #distribution within category
 X_MP_Personal2 <- get_distribution_table(df_MP_Personal, "Male", 649) #distribution within category
 Sex_Political_Personal2 <- rbind(X_FP_Personal2, X_MP_Personal2)
-
-
-X_FP_Personal21 <- get_distribution_table_SECOND(df_FP_Personal, "Female") #distribution within category
-X_MP_Personal21 <- get_distribution_table_SECOND(df_MP_Personal, "Male") #distribution within category
-Sex_Political_Personal21 <- rbind(X_FP_Personal21, X_MP_Personal21)
-
-
-# The other two specifications that were very similiar to X_FP_Personal
-
-#df_2col <- df %>% dplyr::select(c(pageid.x, sex))
-#df_2col <- unique(df_2col)
-#table(df_2col$sex)
-#X_FP_Personal3 <- get_distribution_table(df_FP_Personal, "Female",100) #divided by number of female MoCs 
-#X_MP_Personal3 <- get_distribution_table(df_MP_Personal, "Male", 487) #divided by number of male MoCs 
-#Sex_Political_Personal3 <- rbind(X_FP_Personal3, X_MP_Personal3)
-
-#X_FP_Personal4 <- get_distribution_table(df_FP_Personal, "Female",207) #divided by number of female MoCs adjusted for the fact that males see in general more edis
-#X_MP_Personal4 <- get_distribution_table(df_MP_Personal, "Male", 1256.46) #s.o.
-#Sex_Political_Personal4 <- rbind(X_FP_Personal4, X_MP_Personal4)
-
-
-#Figure4d_Plot1
-Figure4d_Plot1 <- ggplot(Sex_Political_Personal , aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
-  geom_bar(stat="identity", position=position_dodge(), colour="white") + 
-  ggtitle("Policital edits from the Congress IT network by gender (Personal life) (devided by total number of edits per gender") +
-  xlab("Category") + 
-  theme_bw() + 
-  ylab("Share of political gender edits ") +
-  scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_PersonalLife)  +
-  scale_fill_manual(labels = c("Female", "Male"), values = c( "darkolivegreen1","yellowgreen")) + 
-  theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
 
 
 #Figure4d_Plot2
@@ -834,21 +768,146 @@ Figure4d_Plot2 <- ggplot(Sex_Political_Personal2 , aes(x=Category, y=Share, fill
 
 
 #Figure4d_Categories
-grid.arrange(Figure4d_Plot1, Figure4d_Plot2, ncol = 2, nrow = 1,
+grid.arrange(Figure4c_Plot2 , Figure4d_Plot2, ncol = 2, nrow = 1,
              top=("Distribution of political edits from the Congress IT network over personal categories gender (3 different benchmarks"))
 
 
-# Out of the 4 Specifications I tried...
-# ... I chose first (diving by number of political edits that each gender sees in the whole dataset) and second (divided by the total numbers of political edits per gender WITHIN the category Personal )
-# first showing which share the topics have compared to all political edits of one gender
-  # males are almost everywhere higher, eventhough we have seen in broader categories that the share of political edits falling into the categorie personal is actually higher for women than for men, so how is  this possible? -> edits on men profiles seem to fall more often in several different categories and are therefore counted several times 
-  # possible solution: don't divide but total number of political edts but by the sum of total number of political edits falling in the 4 broad categories 
-# second showing that if we jsut look at all political edtis in the category "personal", how edits are distributed within the category 
-#the other two specifications look very similiar to the first one and are therefore dropped 
-# ohter two specificatins: 
-# a.edits counts are divided by the total numbers MoCs in each gender category 
-# b. again divided by total number of MoCs but Adjustede for the fact that men see in general more edits 
 
+
+# --------------------------------------------------------------------------------------------------------------------------
+#Figure4Compt1_Categories:  All edits  + All categories from Personal Life -> Top25 versus Bottom25 in one Barplot 
+# --------------------------------------------------------------------------------------------------------------------------
+
+
+df_T_Personal <- df_T %>% dplyr::select(personal_categories) 
+df_B_Personal <- df_B %>% dplyr::select(personal_categories)
+
+
+X_T <- get_distribution_table_SECOND(df_T_Personal, "Top 25%") 
+X_B <- get_distribution_table_SECOND(df_B_Personal, "Bottom 25%") 
+Compt_All <- rbind(X_T, X_B)
+
+
+#Figure4Compt1_Categories
+Figure4Compt1_Categories <- ggplot(Compt_All, aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
+  geom_bar(stat="identity", position=position_dodge(), colour="white") + 
+  ggtitle("Edits from the Congress IT network by competitiveness (Personal life)") +
+  xlab("Category") + 
+  theme_bw() + 
+  ylab("Share of all competitive-groups edits ") +
+  scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_PersonalLife)  +
+  scale_fill_manual(labels =c("Bottom 25%", "Top 25%"), values = c(  "plum", "orchid1")) + 
+  theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) 
+#+labs(fill = "Party") 
+
+
+
+# --------------------------------------------------------------------------------------------------------------------------
+#Figure4Compt2_Categories:   POLITICAL edits  + All categories from Personal Life -> Top25 versus Bottom25 in one Barplot 
+# --------------------------------------------------------------------------------------------------------------------------
+
+
+df_TP <- df %>% filter(Competitive_Dummy == "Top25") %>%  filter(politically_motivated == 1) 
+df_BP <- df %>% filter(Competitive_Dummy == "Bottom25") %>%  filter(politically_motivated == 1)
+
+df_TP_Personal <- df_TP %>% dplyr::select(personal_categories) 
+df_BP_Personal <- df_BP %>% dplyr::select(personal_categories)
+
+X_TP <- get_distribution_table_SECOND(df_TP_Personal, "Top25") 
+X_BP <- get_distribution_table_SECOND(df_BP_Personal, "Bottom25") 
+Compt_Political <- rbind(X_TP, X_BP)
+
+
+#FigureCompt2_Categories
+Figure4Compt2_Categories <- ggplot(Compt_Political, aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
+  geom_bar(stat="identity", position=position_dodge(), colour="white") + 
+  ggtitle("Political edits from the Congress IT network by competitiveness (Personal life)") +
+  xlab("Category") + 
+  theme_bw() + 
+  ylab("Share of political competitive-groups edits ") +
+  scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_PersonalLife)  +
+  scale_fill_manual(labels =c("Bottom 25%", "Top 25%"), values = c(  "plum", "orchid1")) + 
+  theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
+
+#FigureCompt_Categories
+grid.arrange(Figure4Compt1_Categories ,Figure4Compt2_Categories, ncol = 2, nrow = 1,
+             top=("Distribution of overall and political edits from the Congress IT network over personal categories by competitiveness (25%)"))
+
+
+
+
+## --------------------------------------------------------------------------------------------------------------------------
+#Figure4Compt3_Categories: Overall edits and political edits PERSONAL by competitiveness 50-50
+# --------------------------------------------------------------------------------------------------------------------------
+
+# Create dummy for 50 top - 50 bottom 
+
+Vote_Diff_Mean <- BothChambers_Session_109_to_114_Short %>% dplyr::select(c(pageid, vote_maxdiff_relative))
+Vote_Diff_Mean <- aggregate(Vote_Diff_Mean[, 2], list(Vote_Diff_Mean$pageid), mean)
+Vote_Diff_Mean<- rename(Vote_Diff_Mean, "vote_maxdiff_relative_MoC_MEAN" = x)
+Vote_Diff_Mean <- rename(Vote_Diff_Mean, "pageid.x" = Group.1)
+summary(Vote_Diff_Mean$vote_maxdiff_relative_MoC_MEAN)
+
+Vote_Diff_Mean$Competitive_Dummy50 <- 0
+
+for(i in 1:length(Vote_Diff_Mean$pageid)) {
+  if (Vote_Diff_Mean$vote_maxdiff_relative_MoC_MEAN[i] >=  0.26044) {
+    Vote_Diff_Mean$Competitive_Dummy50[i] = "Bottom50"}
+  else if (Vote_Diff_Mean$vote_maxdiff_relative_MoC_MEAN[i] < 0.26044) {
+    Vote_Diff_Mean$Competitive_Dummy50[i] = "Top50" 
+  }
+}
+
+Pageid_Competitive <- Vote_Diff_Mean %>% dplyr::select(c( "pageid.x", "Competitive_Dummy50"))
+df <- left_join(df, Pageid_Competitive, by = "pageid.x")
+
+# Create Figures for overall and political edits 
+
+df_T50 <- df %>% filter(Competitive_Dummy50 == "Top50")
+df_B50 <- df %>% filter(Competitive_Dummy50 == "Bottom50")
+df_T50_Personal <- df_T50 %>% dplyr::select(personal_categories) 
+df_B50_Personal <- df_B50 %>% dplyr::select(personal_categories)
+X_T50 <- get_distribution_table_SECOND(df_T50_Personal, "Top 25%") 
+X_B50 <- get_distribution_table_SECOND(df_B50_Personal, "Bottom 25%") 
+Compt_All50 <- rbind(X_T50, X_B50)
+
+#Figure4Compt3a_Categories
+Figure4Compt3a_Categories <- ggplot(Compt_All50, aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
+  geom_bar(stat="identity", position=position_dodge(), colour="white") + 
+  ggtitle("Edits from the Congress IT network by competitiveness (Personal life)") +
+  xlab("Category") + 
+  theme_bw() + 
+  ylab("Share of all competitive-groups edits ") +
+  scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_PersonalLife)  +
+  scale_fill_manual(labels =c("Bottom 25%", "Top 25%"), values = c(  "plum", "orchid1")) + 
+  theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) 
+#+labs(fill = "Party") 
+
+
+df_TP50 <- df_T50 %>%  filter(politically_motivated == 1) 
+df_BP50 <- df_B50  %>%  filter(politically_motivated == 1)
+df_TP_Personal50 <- df_TP50 %>% dplyr::select(personal_categories) 
+df_BP_Personal50 <- df_BP50 %>% dplyr::select(personal_categories)
+X_TP50 <- get_distribution_table_SECOND(df_TP_Personal50, "Top25") 
+X_BP50 <- get_distribution_table_SECOND(df_BP_Personal50, "Bottom25") 
+Compt_Political50 <- rbind(X_TP50, X_BP50)
+
+#FigureCompt3b_Categories
+Figure4Compt3b_Categories <- ggplot(Compt_Political50, aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
+  geom_bar(stat="identity", position=position_dodge(), colour="white") + 
+  ggtitle("Political edits from the Congress IT network by competitiveness (Personal life)") +
+  xlab("Category") + 
+  theme_bw() + 
+  ylab("Share of political competitive-groups edits ") +
+  scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_PersonalLife)  +
+  scale_fill_manual(labels =c("Bottom 25%", "Top 25%"), values = c(  "plum", "orchid1")) + 
+  theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
+
+
+
+#FigureComt3_Categories
+grid.arrange(Figure4Compt3a_Categories ,Figure4Compt3b_Categories, ncol = 2, nrow = 1,
+             top=("Distribution of overall and political edits from the Congress IT network over personal categories by competitiveness (50%)"))
 
 
 # --------------------------------------------------------------------------------------------------------------------------
@@ -1075,7 +1134,7 @@ data_HarmBeneChamber <- data.frame(MoC_Characteristic = c("House", "House", "Sen
 
 
 #Figure4g1_Plot2
-Figure4g1_Plot2 <- ggplot(data_HarmBeneParty , aes(x=fct_rev(fct_infreq(Category)), y=Share, fill=MoC_Characteristic,)) +
+Figure4g1_Plot2 <- ggplot(data_HarmBeneChamber , aes(x=fct_rev(fct_infreq(Category)), y=Share, fill=MoC_Characteristic,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
   ggtitle("Share of MoCs that see at least one harmful or beneficial political edit by chamber") +
   xlab("Category") + 
@@ -1171,64 +1230,6 @@ grid.arrange(Figure4g2_Plot1, Figure4g2_Plot2, ncol = 2, nrow = 1,
 
 
 
-
-
-# --------------------------------------------------------------------------------------------------------------------------
-#Figure4Compt1_Categories:  All edits  + All categories from Personal Life -> Top25 versus Bottom25 in one Barplot 
-# --------------------------------------------------------------------------------------------------------------------------
-
-
-df_T_Personal <- df_T %>% dplyr::select(personal_categories) 
-df_B_Personal <- df_B %>% dplyr::select(personal_categories)
-
-
-X_T <- get_distribution_table_SECOND(df_T_Personal, "Top 25%") 
-X_B <- get_distribution_table_SECOND(df_B_Personal, "Bottom 25%") 
-Compt_All <- rbind(X_T, X_B)
-
-
-#Figure4Compt1_Categories
-Figure4a_Categories <- ggplot(Compt_All, aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
-  geom_bar(stat="identity", position=position_dodge(), colour="white") + 
-  ggtitle("Edits from the Congress IT network by competitiveness (Personal life)") +
-  xlab("Category") + 
-  theme_bw() + 
-  ylab("Share of all competitive-groups edits ") +
-  scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_PersonalLife)  +
-  scale_fill_manual(labels =c("Bottom 25%", "Top 25%"), values = c(  "plum", "orchid1")) + 
-  theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) 
-#+labs(fill = "Party") 
-
-
-
-# --------------------------------------------------------------------------------------------------------------------------
-#Figure4Compt2_Categories:   POLITICAL edits  + All categories from Personal Life -> Top25 versus Bottom25 in one Barplot 
-# --------------------------------------------------------------------------------------------------------------------------
-
-
-df_TP <- df %>% filter(Competitive_Dummy == "Top25") %>%  filter(politically_motivated == 1) 
-df_BP <- df %>% filter(Competitive_Dummy == "Bottom25") %>%  filter(politically_motivated == 1)
-
-df_TP_Personal <- df_TP %>% dplyr::select(personal_categories) 
-df_BP_Personal <- df_BP %>% dplyr::select(personal_categories)
-
-X_TP <- get_distribution_table_SECOND(df_TP_Personal, "Top25") 
-X_BP <- get_distribution_table_SECOND(df_BP_Personal, "Bottom25") 
-Compt_Political <- rbind(X_TP, X_BP)
-
-
-#FigureCompt2_Categories
-Figure4Compt2_Categories <- ggplot(Compt_Political, aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
-  geom_bar(stat="identity", position=position_dodge(), colour="white") + 
-  ggtitle("Political edits from the Congress IT network by competitiveness (Personal life)") +
-  xlab("Category") + 
-  theme_bw() + 
-  ylab("Share of political competitive-groups edits ") +
-  scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_PersonalLife)  +
-  scale_fill_manual(labels =c("Bottom 25%", "Top 25%"), values = c(  "plum", "orchid1")) + 
-  theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
-
-
 # --------------------------------------------------------------------------------------------------------------------------
 #Figure4h_Categories:  Political versus Maintenance ->  competitive versus non competitive 
 # --------------------------------------------------------------------------------------------------------------------------
@@ -1240,8 +1241,10 @@ df_Main  <- df %>% filter(politically_motivated == 0) #1075
 Compet_Pol_A <- data.frame(table(df_Pol$Competitive_Dummy))
 Compet_Pol_A <- Compet_Pol_A[-1,]
 Compet_Pol_R <- Compet_Pol_A
-N_B <- length(unique(Vote_Diff_Mean$pageid.x[Vote_Diff_Mean$Competitive_Dummy =="Bottom25"]))
-N_T <- length(unique(Vote_Diff_Mean$pageid.x[Vote_Diff_Mean$Competitive_Dummy =="Top25"]))
+#old: N_B <- length(unique(Vote_Diff_Mean$pageid.x[Vote_Diff_Mean$Competitive_Dummy =="Bottom25"]))
+#old: N_T <- length(unique(Vote_Diff_Mean$pageid.x[Vote_Diff_Mean$Competitive_Dummy =="Top25"]))
+N_B <- length(unique(BothChambers_Session_109_to_114_Short$pageid_session[BothChambers_Session_109_to_114_Short$Competitive_Dummy =="Bottom25"]))
+N_T <- length(unique(BothChambers_Session_109_to_114_Short$pageid_session[BothChambers_Session_109_to_114_Short$Competitive_Dummy =="Top25"]))
 Compet_Pol_R[1,2] <- Compet_Pol_A[1,2] /N_B
 Compet_Pol_R[2,2] <- Compet_Pol_A[2,2] /N_T
 Compet_Pol_R$Freq <- round(Compet_Pol_R$Freq, digits = 2)
@@ -1249,8 +1252,10 @@ Compet_Pol_R$Freq <- round(Compet_Pol_R$Freq, digits = 2)
 Compet_Main_A <- data.frame(table(df_Main$Competitive_Dummy))
 Compet_Main_A <- Compet_Main_A[-1,]
 Compet_Main_R <- Compet_Main_A
-N_B <- length(unique(Vote_Diff_Mean$pageid.x[Vote_Diff_Mean$Competitive_Dummy =="Bottom25"]))
-N_T <- length(unique(Vote_Diff_Mean$pageid.x[Vote_Diff_Mean$Competitive_Dummy =="Top25"]))
+#old: N_B <- length(unique(Vote_Diff_Mean$pageid.x[Vote_Diff_Mean$Competitive_Dummy =="Bottom25"]))
+#old: N_T <- length(unique(Vote_Diff_Mean$pageid.x[Vote_Diff_Mean$Competitive_Dummy =="Top25"]))
+N_B <- length(unique(BothChambers_Session_109_to_114_Short$pageid_session[BothChambers_Session_109_to_114_Short$Competitive_Dummy =="Bottom25"]))
+N_T <- length(unique(BothChambers_Session_109_to_114_Short$pageid_session[BothChambers_Session_109_to_114_Short$Competitive_Dummy =="Top25"]))
 Compet_Main_R[1,2] <- Compet_Main_A[1,2] /N_B
 Compet_Main_R[2,2] <- Compet_Main_A[2,2] /N_T
 Compet_Main_R$Freq <- round(Compet_Main_R$Freq, digits = 2)
@@ -1287,8 +1292,14 @@ grid.arrange(Figure4h_Plot1, Figure4h_Plot2 , ncol = 2, nrow = 1,
              top=("Distribution of maintenance and political edits by competitiveness"))
 
 
-
-
+#Political
+0.51/0.27 #=  1.888889
+#Maintenace 
+0.43/0.14 #= 3.071
+#Within top25%
+0.27/0.14 #= 1.928571
+#Within Bottom25%
+0.51/0.43 #= 1.186
 
 # --------------------------------------------------------------------------------------------------------------------------
 #Figure4i_Categories:  Political versus Maintenance/ divided by total number of edits in senate or in house (respectively) 
@@ -1299,6 +1310,7 @@ df_Main  <- df %>% filter(politically_motivated == 0) #1075 edits
 
 chamberPolA <- data.frame(table(df_Pol$Chamber))
 chamberPolR <- chamberPolA
+# For different specification use: pageid_session instead of pageid to account for Senators serving longer 
 N_H <- length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$Chamber =="H"]))
 N_S <- length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$Chamber =="S"]))
 chamberPolR[1,2] <- chamberPolA[1,2] /N_H
@@ -1308,6 +1320,7 @@ chamberPolR$Freq <- round(chamberPolR$Freq, digits = 2)
 
 chamberMainA <- data.frame(table(df_Main$Chamber))
 chamberMainR <- chamberMainA
+# For different specification use: pageid_session instead of pageid to account for Senators serving longer 
 N_H <- length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$Chamber =="H"]))
 N_S <- length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$Chamber =="S"]))
 chamberMainR[1,2] <- chamberMainA[1,2] /N_H
@@ -1319,7 +1332,7 @@ chamberMainR$Freq <- round(chamberMainR$Freq, digits = 2)
 Figure4i_Plot1 <- ggplot(chamberPolR , aes(x=Var1, y=Freq, fill=Var1,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
   #scale_fill_brewer(palette = "Greys",name = "Party") + 
-  ggtitle("Political Edits by chamber") +
+  ggtitle("Political Edits by chamber per Legislator") +
   xlab("Chamber") + 
   theme_classic() +
   ylab("Number of Political Edits per MoC") +
@@ -1335,24 +1348,150 @@ Figure4i_Plot2 <- ggplot(chamberMainR , aes(x=Var1, y=Freq, fill=Var1,)) +
   ggtitle("Maintenance Edits by chamber") +
   xlab("Chamber") + 
   theme_classic() +
-  ylab("Number of Maintenance Edits per MoC") +
+  ylab("Number of Maintenance Edits per MoC per Legislator") +
   geom_text(aes(label=Freq), position=position_dodge(width=0.9), vjust=-0.20, size = 5)+
   scale_fill_manual(values = c(  "grey75","grey43")) +  
   scale_x_discrete(labels=c("House", "Senate")) +
   theme(legend.position = "none")
 
 
-#Figure4h_Categories:
+#Figure4i_Categories:
 grid.arrange(Figure4i_Plot1, Figure4i_Plot2 , ncol = 2, nrow = 1,
-             top=("Distribution of maintenance and political edits by chamber"))
+             top=("Distribution of maintenance and political edits by chamber per Legislator"))
+
+#House
+1.38/1.07 #= 1.28972
+#Senate 
+1.27/1.02 #= 1.245098
 
 
+# --------------------------------------------------------------------------------------------------------------------------
+#Figure4j_Categories:  Political versus Maintenance ->  Female versus Male
+# --------------------------------------------------------------------------------------------------------------------------
+
+df_Pol   <- df %>% filter(politically_motivated == 1) #1373 edits
+df_Main  <- df %>% filter(politically_motivated == 0) #1075
+
+
+Sex_Pol_A <- data.frame(table(df_Pol$sex))
+Sex_Pol_R <- Sex_Pol_A
+N_F <- length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$sex =="female"]))
+N_M <- length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$sex =="male"]))
+Sex_Pol_R[1,2] <- Sex_Pol_A[1,2] /N_F
+Sex_Pol_R[2,2] <- Sex_Pol_A[2,2] /N_M
+Sex_Pol_R$Freq <- round(Sex_Pol_R$Freq, digits = 2)
+
+Sex_Main_A <- data.frame(table(df_Main$sex))
+Sex_Main_R <- Sex_Main_A
+N_F <- length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$sex =="female"]))
+N_M <- length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$sex =="male"]))
+Sex_Main_R[1,2] <- Sex_Main_A[1,2] /N_F
+Sex_Main_R[2,2] <- Sex_Main_A[2,2] /N_M
+Sex_Main_R$Freq <- round(Sex_Main_R$Freq, digits = 2)
+
+
+Figure4j_Plot1 <- ggplot(Sex_Pol_R , aes(x=Var1, y=Freq, fill=Var1,)) +
+  geom_bar(stat="identity", position=position_dodge(), colour="white") + 
+  #scale_fill_brewer(palette = "Greys",name = "Party") + 
+  ggtitle("Political Edits by Gender") +
+  xlab("Gender") +
+  theme_classic() +
+  ylab("Number of Political Edits per MoC") +
+  geom_text(aes(label=Freq), position=position_dodge(width=0.9), vjust=-0.20, size = 5)+
+  scale_fill_manual(values = c( "darkolivegreen1","yellowgreen")) +  
+  scale_x_discrete(labels=c("Female", "Male")) +
+  theme(legend.position = "none")
+
+
+Figure4j_Plot2 <- ggplot(Sex_Main_R , aes(x=Var1, y=Freq, fill=Var1,)) +
+  geom_bar(stat="identity", position=position_dodge(), colour="white") + 
+  #scale_fill_brewer(palette = "Greys",name = "Party") + 
+  ggtitle("Maintenance Edits by Gender") +
+  xlab("Gender") + 
+  theme_classic() +
+  ylab("Number of Maintenance Edits per MoC") +
+  geom_text(aes(label=Freq), position=position_dodge(width=0.9), vjust=-0.20, size = 5)+
+  scale_fill_manual(values = c("darkolivegreen1","yellowgreen")) +  
+  scale_x_discrete(labels=c("Female", "Male")) +
+  theme(legend.position = "none")
+
+
+#Figure4j_Categories:
+grid.arrange(Figure4j_Plot1, Figure4j_Plot2 , ncol = 2, nrow = 1,
+             top=("Distribution of maintenance and political edits by gender"))
+
+# Male
+1.46/1.12 #= 1.303571
+#Female
+1.11/0.96 #= 1.15625
 
 
 
 
 # --------------------------------------------------------------------------------------------------------------------------
-#Figure4j_Categories: Ratio of political edits over all congress edits over all sessions 
+#Figure4k_Categories:  Political versus Maintenance ->  D verus R
+# --------------------------------------------------------------------------------------------------------------------------
+
+df_Pol   <- df %>% filter(politically_motivated == 1) #1373 edits
+df_Main  <- df %>% filter(politically_motivated == 0) #1075
+
+
+Party_Pol_A <- data.frame(table(df_Pol$party_dual))
+Party_Pol_R <- Party_Pol_A
+N_D <- length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$party_dual =="D"]))
+N_R <- length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$party_dual =="R"]))
+Party_Pol_R[1,2] <- Party_Pol_A[1,2] /N_D
+Party_Pol_R[2,2] <- Party_Pol_A[2,2] /N_R
+Party_Pol_R$Freq <- round(Party_Pol_R$Freq, digits = 2)
+
+Party_Main_A <- data.frame(table(df_Main$party_dual))
+Party_Main_R <- Party_Main_A
+N_D <- length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$party_dual =="D"]))
+N_R <- length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$party_dual =="R"]))
+Party_Main_R[1,2] <- Party_Main_A[1,2] /N_D
+Party_Main_R[2,2] <- Party_Main_A[2,2] /N_R
+Party_Main_R$Freq <- round(Party_Main_R$Freq, digits = 2)
+
+
+Figure4k_Plot1 <- ggplot(Party_Pol_R , aes(x=Var1, y=Freq, fill=Var1,)) +
+  geom_bar(stat="identity", position=position_dodge(), colour="white") + 
+  #scale_fill_brewer(palette = "Greys",name = "Party") + 
+  ggtitle("Political Edits by Party per MoC") +
+  xlab("Party") + 
+  theme_classic() +
+  ylab("Number of Political Edits per MoC") +
+  geom_text(aes(label=Freq), position=position_dodge(width=0.9), vjust=-0.20, size = 5)+
+  scale_fill_manual(values = c(  "steelblue1", "indianred1")) +  
+  scale_x_discrete(labels=c("Democrats", "Republicans")) +
+  theme(legend.position = "none")
+
+
+Figure4k_Plot2 <- ggplot(Party_Main_R , aes(x=Var1, y=Freq, fill=Var1,)) +
+  geom_bar(stat="identity", position=position_dodge(), colour="white") + 
+  #scale_fill_brewer(palette = "Greys",name = "Party") + 
+  ggtitle("Maintenance Edits by Party per MoC") +
+  xlab("Party") + 
+  theme_classic() +
+  ylab("Number of Maintenance Edits per MoC") +
+  geom_text(aes(label=Freq), position=position_dodge(width=0.9), vjust=-0.20, size = 5)+
+  scale_fill_manual(values = c( "steelblue1", "indianred1")) +  
+  scale_x_discrete(labels=c("Democrats", "Republicans")) +
+  theme(legend.position = "none")
+
+
+#Figure4k_Categories:
+grid.arrange(Figure4k_Plot1, Figure4k_Plot2 , ncol = 2, nrow = 1,
+             top=("Distribution of maintenance and political edits by party"))
+
+
+#Republicans
+1.52/1.04 #= 1.461538
+#Democrats
+1.26/1.16 #= 1.086207
+
+
+# --------------------------------------------------------------------------------------------------------------------------
+#Figure4l_Categories: Ratio of political edits over all congress edits over all sessions 
 # --------------------------------------------------------------------------------------------------------------------------
 
 # Ratio of political edits on all edits by Session
@@ -1376,7 +1515,6 @@ Figure4j1_Categories <- ggplot(data_Ratio_Sessions , aes(x= Session, y=Share)) +
   xlab("Session") + 
   theme_bw() + 
   ylab("Share of Political edits compared to all edits")
-
 
 
 
@@ -1438,10 +1576,115 @@ grid.arrange(Figure4j1_Categories , Figure4j2_Categories , Figure4j3_Categories 
 
 
 
+#------------------- Further General Statistics ----------------
+
+
+#Ratio of gender within parties 
+table(df_D$sex) /length(df_D$sex)
+table(df_R$sex) /length(df_R$sex)
+
+#Ratio of gender within chambers
+table(df_H$sex) /length(df_H$sex)
+table(df_S$sex) /length(df_S$sex)
+
+#Ratio of gender within competitiveness-groups
+table(df_T$sex) /length(df_T$sex)
+table(df_B$sex) /length(df_B$sex)
+
+#Ratio of party within competitiveness-groups
+table(df_T$party_dual) /length(df_T$party_dual)
+table(df_B$party_dual) /length(df_B$party_dual)
+
+#Ratio of chamber within competitiveness-groups
+table(df_T$Chamber) /length(df_T$Chamber)
+table(df_B$Chamber) /length(df_B$Chamber)
+
+#Average number of sessions served in competitiveness groups
+BothChambers_Top25 <- BothChambers_Session_109_to_114_Short %>% filter(Competitive_Dummy =="Top25")
+length(BothChambers_Top25$pageid_session) / length(unique(BothChambers_Top25$pageid))
+
+BothChambers_Bottom25 <- BothChambers_Session_109_to_114_Short %>% filter(Competitive_Dummy =="Bottom25")
+length(BothChambers_Bottom25$pageid_session)/ length(unique(BothChambers_Bottom25$pageid))
+
+#Add Figure4_AA_2_Categories: sAll Edist per MoC 
+#Chamber
+2.45/2.29 
+#Sex
+2.58/2.07
+#Compt
+0.78/0.6
+#Party 
+2.56/2.42
+
+#ADd Figure4_AB_Categories: Polititcal edits per MoC
+#Chamber
+1.38/1.27
+#Sex
+1.46/1.11
+#Compt
+0.43/0.39
+#Party 
+1.52/1.26
+
+#Differences in number of categories an edit falls in between Top25 - Bottom25
+sumT <- table(df_T$Answer.topic_career_dummy)[2] +table(df_T$Answer.topic_personal_dummy)[2] +table(df_T$Answer.topic_other_dummy)[2] +table(df_T$Answer.topic_views_dummy)[2]
+sumB <- table(df_B$Answer.topic_career_dummy)[2] +table(df_B$Answer.topic_personal_dummy)[2] +table(df_B$Answer.topic_other_dummy)[2] +table(df_B$Answer.topic_views_dummy)[2]
+
+sumT/length(df_T$revid)
+sumB/length(df_B$revid)
+
+#Differences in size of edits in between Top25 - Bottom25
+df_T_stats <- df_T %>% dplyr::select(c("revid", "size"))
+df_B_stats <- df_B %>% dplyr::select(c("revid", "size"))
+
+df_T_stats <- na.omit(df_T_stats)   
+df_B_stats <- na.omit(df_B_stats)   
+
+mean(df_T_stats$size) #=  16,406.12
+mean(df_B_stats$size) #=  14,633.41
+16406.12/14633.41 #=  1.121141
+
+#Difference in time served by Chamber 
+length(unique(BothChambers_Session_109_to_114_Short$pageid_session[BothChambers_Session_109_to_114_Short$Chamber == "S"]))/ length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$Chamber == "S"]))
+length(unique(BothChambers_Session_109_to_114_Short$pageid_session[BothChambers_Session_109_to_114_Short$Chamber == "H"]))/ length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$Chamber == "H"]))
+# Average number of session served per Senator: 3.444444
+# Average number of session served per Senator: 3.250602
+
+
+
+######## Ideenspeicher ###########
+
+
+BothChambers_Session_109_to_114_Short$Competitive_Dummy <- 0
+
+for(i in 1:length(BothChambers_Session_109_to_114_Short$Competitive_Dummy)) {
+  if (BothChambers_Session_109_to_114_Short$vote_maxdiff_relative[i] >=  0.431165) {
+    BothChambers_Session_109_to_114_Short$Competitive_Dummy[i] = "Bottom25"}
+  else if (BothChambers_Session_109_to_114_Short$vote_maxdiff_relative[i] <=   0.158327) {
+    BothChambers_Session_109_to_114_Short$Competitive_Dummy[i] = "Top25" 
+  }
+}
+
+
+# Merge IDs
+BothChambers_Session_109_to_114_Short <- BothChambers_Session_109_to_114_Short %>%  unite(pageid_session_chamber, pageid_session, Chamber, sep = "_", remove = FALSE)
+df <- df %>%  unite(pageid_session_chamber, pageid_session, Chamber, sep = "_", remove = FALSE)
+
+Pageid_Competitive <- BothChambers_Session_109_to_114_Short %>% dplyr::select(c( "pageid_session_chamber", "Competitive_Dummy"))
+doubles <- Pageid_Competitive %>% group_by(pageid_session_chamber) %>% filter(n()>1) # no doubles
 
 
 
 
+table(df$Competitive_Dummy.y)
+length(unique(BothChambers_Session_109_to_114_Short$pageid_session_chamber[BothChambers_Session_109_to_114_Short$Competitive_Dummy.y == "Bottom25"]))
+length(unique(BothChambers_Session_109_to_114_Short$pageid_session_chamber[BothChambers_Session_109_to_114_Short$Competitive_Dummy.y == "Top25"]))
+
+table(BothChambers_Session_109_to_114_Short$Competitive_Dummy.y)
+
+colnames(BothChambers_Session_109_to_114_Short)
+779/997
+345/578
 
 
 

@@ -616,11 +616,10 @@ grid.arrange(AD2, AR2, ncol = 1, nrow = 2)
 
 #Figure3F_EditsTime
 #F: Showing political edits over entire frame with timeframe marker around elections
-#once for MPs running in top 20% competitive Districts and once for lower 20% (1 Figure, 2 Graphs)
-
+#once for MPs running in top 25% competitive Districts and once for lower 25% (1 Figure, 2 Graphs)
 
 # Set NAs in competitiveness to median (which occur for US terretories. e.g. Puerto Rico, DC, etc.)
-# Median not mean to not distrub the distribution 
+# Median not mean to not disturb the distribution 
 
 summary(BothChambers_Session_109_to_114_Short$vote_maxdiff_relative)
 #  Min.     1st Qu.  Median    Mean       3rd Qu.    Max.      NA's 
@@ -631,36 +630,35 @@ for(i in 1:length(BothChambers_Session_109_to_114_Short$pageid)) {
     BothChambers_Session_109_to_114_Short$vote_maxdiff_relative[i] = 0.28742}
 }
 
+summary(BothChambers_Session_109_to_114_Short$vote_maxdiff_relative)
+BothChambers_Session_109_to_114_Short$Competitive_Dummy <- 0
 
-
-
-Vote_Diff_Mean <- BothChambers_Session_109_to_114_Short %>% dplyr::select(c(pageid, vote_maxdiff_relative))
-
-Vote_Diff_Mean <- aggregate(Vote_Diff_Mean[, 2], list(Vote_Diff_Mean$pageid), mean)
-Vote_Diff_Mean<- rename(Vote_Diff_Mean, "vote_maxdiff_relative_MoC_MEAN" = x)
-Vote_Diff_Mean <- rename(Vote_Diff_Mean, "pageid" = Group.1)
-
-summary(Vote_Diff_Mean$vote_maxdiff_relative_MoC_MEAN)
-#Min.       1st Qu.   Median     Mean  3rd Qu.   Max. 
-#0.000734 0.149963 0.260440 0.293957 0.401551 1.000000 
-
-Vote_Diff_Mean$Competitive_Dummy <- 0
-
-for(i in 1:length(Vote_Diff_Mean$pageid)) {
-  if (Vote_Diff_Mean$vote_maxdiff_relative_MoC_MEAN[i] >=  0.401551) {
-    Vote_Diff_Mean$Competitive_Dummy[i] = "Top25"}
-  else if (Vote_Diff_Mean$vote_maxdiff_relative_MoC_MEAN[i] <=   0.149963) {
-    Vote_Diff_Mean$Competitive_Dummy[i] = "Bottom25" 
+for(i in 1:length(BothChambers_Session_109_to_114_Short$Competitive_Dummy)) {
+  if (BothChambers_Session_109_to_114_Short$vote_maxdiff_relative[i] >=  0.431165) {
+    BothChambers_Session_109_to_114_Short$Competitive_Dummy[i] = "Bottom25"}
+  else if (BothChambers_Session_109_to_114_Short$vote_maxdiff_relative[i] <=   0.158327) {
+    BothChambers_Session_109_to_114_Short$Competitive_Dummy[i] = "Top25" 
   }
 }
 
 
-Pageid_Competitive <- Vote_Diff_Mean %>% dplyr::select(c( "pageid", "Competitive_Dummy"))
+Pageid_Competitive <- BothChambers_Session_109_to_114_Short %>% dplyr::select(c( "pageid_session", "Competitive_Dummy"))
 
-Inside_Congress_Edits_Politically_Competitive <- left_join(Inside_Congress_Edits_Politically, Pageid_Competitive, by = "pageid")
+Inside_Congress_Edits_Politically_Competitive <- left_join(Inside_Congress_Edits_Politically, Pageid_Competitive, by = "pageid_session")
 # Two edits are listed twice in Inside_Congress_Edits_Politically_Competitive 
 # However, they are both labels as 0 in Competitive_Dummy and will therefore be dropped in the following
-#doubles <- Inside_Congress_Edits_Politically_Competitive %>% group_by(revid) %>% filter(n()>1) # -> no doubles, each edit appears just once in the dataset
+doubles <- Inside_Congress_Edits_Politically_Competitive %>% group_by(revid) %>% filter(n()>1) 
+
+length(unique(Inside_Congress_Edits_Politically_Competitive$pageid[Inside_Congress_Edits_Politically_Competitive$Competitive_Dummy == "Top25"]))
+length(unique(Inside_Congress_Edits_Politically_Competitive$pageid[Inside_Congress_Edits_Politically_Competitive$Competitive_Dummy == "Bottom25"]))
+
+length(unique(Inside_Congress_Edits_Politically_Competitive$revid[Inside_Congress_Edits_Politically_Competitive$Competitive_Dummy == "Top25"]))
+length(unique(Inside_Congress_Edits_Politically_Competitive$revid[Inside_Congress_Edits_Politically_Competitive$Competitive_Dummy == "Bottom25"]))
+
+table(Inside_Congress_Edits_Politically_Competitive$Competitive_Dummy)
+#0      Bottom25    Top25 
+#1356      587       507
+
 
 
 data_CompetitiveT25 <- Inside_Congress_Edits_Politically_Competitive %>% filter(politically_motivated == 1) %>% filter(Competitive_Dummy == "Top25")
@@ -951,5 +949,27 @@ ggplot(data1, aes(x= date_LegislatoR)) +
 
 
 
+##### Ideenspeicher ##########
 
+
+
+Vote_Diff_Mean <- BothChambers_Session_109_to_114_Short %>% dplyr::select(c(pageid, vote_maxdiff_relative))
+
+Vote_Diff_Mean <- aggregate(Vote_Diff_Mean[, 2], list(Vote_Diff_Mean$pageid), mean)
+Vote_Diff_Mean<- rename(Vote_Diff_Mean, "vote_maxdiff_relative_MoC_MEAN" = x)
+Vote_Diff_Mean <- rename(Vote_Diff_Mean, "pageid" = Group.1)
+
+summary(Vote_Diff_Mean$vote_maxdiff_relative_MoC_MEAN)
+#Min.       1st Qu.   Median     Mean  3rd Qu.   Max. 
+#0.000734 0.149963 0.260440 0.293957 0.401551 1.000000 
+
+Vote_Diff_Mean$Competitive_Dummy <- 0
+
+for(i in 1:length(Vote_Diff_Mean$pageid)) {
+  if (Vote_Diff_Mean$vote_maxdiff_relative_MoC_MEAN[i] >=  0.401551) {
+    Vote_Diff_Mean$Competitive_Dummy[i] = "Bottom25"}
+  else if (Vote_Diff_Mean$vote_maxdiff_relative_MoC_MEAN[i] <=   0.149963) {
+    Vote_Diff_Mean$Competitive_Dummy[i] = "Top25" 
+  }
+}
 

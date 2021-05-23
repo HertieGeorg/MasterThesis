@@ -1,0 +1,50 @@
+
+<table style="text-align:center"><tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td colspan="5"><em>Dependent variable:</em></td></tr>
+<tr><td></td><td colspan="5" style="border-bottom: 1px solid black"></td></tr>
+<tr><td style="text-align:left"></td><td colspan="5">AllCongressEdits_Per_MoC_Session</td></tr>
+<tr><td style="text-align:left"></td><td><em>Poisson</em></td><td><em>glm: quasipoisson</em></td><td><em>negative</em></td><td colspan="2"><em>zero-inflated</em></td></tr>
+<tr><td style="text-align:left"></td><td><em></em></td><td><em>link = log</em></td><td><em>binomial</em></td><td colspan="2"><em>count data</em></td></tr>
+<tr><td style="text-align:left"></td><td>M1</td><td>Quasi</td><td>M2</td><td>M3</td><td>M3</td></tr>
+<tr><td style="text-align:left"></td><td>(1)</td><td>(2)</td><td>(3)</td><td>(4)</td><td>(5)</td></tr>
+<tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Category_Vote_MaxDiff</td><td>0.091<sup>**</sup></td><td>0.091<sup>**</sup></td><td>0.098<sup>**</sup></td><td>0.116</td><td>0.116<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.042)</td><td>(0.042)</td><td>(0.040)</td><td></td><td>(0.039)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">sexmale</td><td>0.167</td><td>0.167</td><td>0.136</td><td>0.197</td><td>0.197<sup>*</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.138)</td><td>(0.138)</td><td>(0.143)</td><td></td><td>(0.111)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">birthyear</td><td>0.016<sup>***</sup></td><td>0.016<sup>***</sup></td><td>0.017<sup>***</sup></td><td>0.015</td><td>0.015<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.005)</td><td>(0.005)</td><td>(0.005)</td><td></td><td>(0.004)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">ExternalEdits_per_MoC_Session</td><td>0.0001<sup>*</sup></td><td>0.0001<sup>*</sup></td><td>0.0003<sup>***</sup></td><td>0.00005</td><td>0.00005</td></tr>
+<tr><td style="text-align:left"></td><td>(0.0001)</td><td>(0.0001)</td><td>(0.0001)</td><td></td><td>(0.0001)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">session110</td><td>-0.211</td><td>-0.211</td><td>-0.199</td><td>-0.378</td><td>-0.378<sup>**</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.132)</td><td>(0.132)</td><td>(0.131)</td><td></td><td>(0.149)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">session111</td><td>-0.539<sup>***</sup></td><td>-0.539<sup>***</sup></td><td>-0.534<sup>***</sup></td><td>-0.585</td><td>-0.585<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.139)</td><td>(0.139)</td><td>(0.138)</td><td></td><td>(0.157)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">session112</td><td>-0.539<sup>***</sup></td><td>-0.539<sup>***</sup></td><td>-0.487<sup>***</sup></td><td>-0.504</td><td>-0.504<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.168)</td><td>(0.168)</td><td>(0.166)</td><td></td><td>(0.162)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">session113</td><td>-0.409<sup>**</sup></td><td>-0.409<sup>**</sup></td><td>-0.402<sup>***</sup></td><td>-0.553</td><td>-0.553<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.164)</td><td>(0.164)</td><td>(0.155)</td><td></td><td>(0.160)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">session114</td><td>-1.265<sup>***</sup></td><td>-1.265<sup>***</sup></td><td>-1.256<sup>***</sup></td><td>-1.328</td><td>-1.328<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.173)</td><td>(0.173)</td><td>(0.163)</td><td></td><td>(0.187)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">party_dualR</td><td>0.187<sup>*</sup></td><td>0.187<sup>*</sup></td><td>0.164</td><td>0.135</td><td>0.135</td></tr>
+<tr><td style="text-align:left"></td><td>(0.102)</td><td>(0.102)</td><td>(0.102)</td><td></td><td>(0.087)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">ChamberS</td><td>-0.033</td><td>-0.033</td><td>-0.101</td><td>-0.275</td><td>-0.275<sup>**</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.111)</td><td>(0.111)</td><td>(0.116)</td><td></td><td>(0.118)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">Constant</td><td>-1.214<sup>***</sup></td><td>-1.214<sup>***</sup></td><td>-1.255<sup>***</sup></td><td>-0.852</td><td>-0.852<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.344)</td><td>(0.344)</td><td>(0.308)</td><td></td><td>(0.296)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Observations</td><td>3,318</td><td>3,318</td><td>3,318</td><td>3,318</td><td>3,318</td></tr>
+<tr><td style="text-align:left">Log Likelihood</td><td>-5,177.196</td><td></td><td>-3,483.112</td><td>-3,450.044</td><td>-3,450.044</td></tr>
+<tr><td style="text-align:left">theta</td><td></td><td></td><td>0.238<sup>***</sup> (0.012)</td><td></td><td></td></tr>
+<tr><td style="text-align:left">Akaike Inf. Crit.</td><td>10,378.390</td><td></td><td>6,990.223</td><td></td><td></td></tr>
+<tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"><em>Note:</em></td><td colspan="5" style="text-align:right"><sup>*</sup>p<0.1; <sup>**</sup>p<0.05; <sup>***</sup>p<0.01</td></tr>
+</table>

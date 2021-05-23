@@ -5,27 +5,31 @@
 # 1.----------- Checking whether data is skewed: visualized probability distribution of numbers of edits seen by each MoC
 # See how many MoC do not have any edits from within congress in observed time frame 
 
-data <- Characteristics_Data_MoCs
+data <- BothChambers_Session_109_to_114_Short
 
-table(is.na(data$AllCongressEdits_Per_MoC)) #checking Na's
-data$AllCongressEdits_Per_MoC[is.na(data$AllCongressEdits_Per_MoC)] = 0 # replacing NAs with 0
+colnames(BothChambers_Session_109_to_114_Short)
+
+
+table(is.na(data$AllCongressEdits_Per_MoC_Session)) #checking Na's
+table(data$AllCongressEdits_Per_MoC_Session == 0) #checking zeros
 
 
 # Visualize Distribution: All Congress-Edits
 data %>% 
-  ggplot( aes(x = AllCongressEdits_Per_MoC)) +
+  ggplot( aes(x = AllCongressEdits_Per_MoC_Session)) +
   geom_histogram(bins = 40) +
   xlab("Number of Edits per Profile") 
 
 # Visualize Distribution without outliers: All Congress-Edits
 data %>%  
-  filter(AllCongressEdits_Per_MoC < 20) %>% 
-  ggplot(aes(x = AllCongressEdits_Per_MoC)) +
+  filter(AllCongressEdits_Per_MoC_Session < 20) %>% 
+  ggplot(aes(x = AllCongressEdits_Per_MoC_Session)) +
   geom_histogram(bins = 20) +
+  #scale_y_continuous(trans = 'log2')+
   xlab("Number of Edits per Profile") 
 
 # Number of ZEROS
-table(data$AllCongressEdits_Per_MoC == 0) 
+table(data$AllCongressEdits_Per_MoC_Session == 0) 
 #373 Zeros in All Congress-Edits
 
 
@@ -33,19 +37,19 @@ table(data$AllCongressEdits_Per_MoC == 0)
 
 # Now same for: Distributions of Political-Edits 
 
-table(is.na(data$All_Politically_CongressEdits_Per_MoC )) #checking Na's
+table(is.na(data$All_Politically_CongressEdits_Per_MoC_Session)) #checking Na's
 data$All_Politically_CongressEdits_Per_MoC[is.na(data$All_Politically_CongressEdits_Per_MoC)] = 0 # replacing NAs with 0
 
 # Visualize Distribution: Politically Edits
 data %>% 
-  ggplot( aes(x = All_Politically_CongressEdits_Per_MoC)) +
+  ggplot( aes(x = All_Politically_CongressEdits_Per_MoC_Session)) +
   geom_histogram(bins = 15) +
   xlab("Number of Edits per Profile") 
 
 # Visualize Distribution without outliers:  Politically Edits
 data %>%  
-  filter(All_Politically_CongressEdits_Per_MoC < 17) %>% 
-  ggplot(aes(x = All_Politically_CongressEdits_Per_MoC)) +
+  filter( All_Politically_CongressEdits_Per_MoC_Session< 17) %>% 
+  ggplot(aes(x =  All_Politically_CongressEdits_Per_MoC_Session)) +
   geom_histogram(bins = 17) +
   xlab("Number of Edits per Profile") 
 

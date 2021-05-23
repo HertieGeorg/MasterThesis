@@ -562,7 +562,7 @@ BothChambers_Session_109_to_114_Short$ExternalEdits_per_MoC_Session[is.na(BothCh
 
 
 #-------------------------------------------------------------------------------------------------------------------
-#---------------- Including Total Number of Views on Wikipedia Profile per Session   -------------------------------
+#----------------         Including Total Number of Views on Wikipedia Profile        ------------------------------
 
 
 # Get Column for popularity of MoCs from Page Views 
