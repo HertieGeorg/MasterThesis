@@ -1,0 +1,51 @@
+
+<table style="text-align:center"><caption><strong>Comparing Different Model Results (All Congress Edits)</strong></caption>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td colspan="4"><em>Dependent variable:</em></td></tr>
+<tr><td></td><td colspan="4" style="border-bottom: 1px solid black"></td></tr>
+<tr><td style="text-align:left"></td><td colspan="4">All_Politically_CongressEdits_Per_MoC_Session</td></tr>
+<tr><td style="text-align:left"></td><td><em>Poisson</em></td><td><em>glm: quasipoisson</em></td><td><em>negative</em></td><td><em>zero-inflated</em></td></tr>
+<tr><td style="text-align:left"></td><td><em></em></td><td><em>link = log</em></td><td><em>binomial</em></td><td><em>count data</em></td></tr>
+<tr><td style="text-align:left"></td><td>M1</td><td>Quasi</td><td>M2</td><td>M3</td></tr>
+<tr><td style="text-align:left"></td><td>(1)</td><td>(2)</td><td>(3)</td><td>(4)</td></tr>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">vote_maxdiff_relative</td><td>0.310</td><td>0.310</td><td>0.421</td><td>0.515<sup>*</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.266)</td><td>(0.266)</td><td>(0.294)</td><td>(0.279)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">sexmale</td><td>0.171</td><td>0.171</td><td>0.119</td><td>0.210</td></tr>
+<tr><td style="text-align:left"></td><td>(0.182)</td><td>(0.182)</td><td>(0.199)</td><td>(0.190)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">birthyear</td><td>0.015<sup>***</sup></td><td>0.015<sup>***</sup></td><td>0.016<sup>***</sup></td><td>0.014<sup>**</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.005)</td><td>(0.005)</td><td>(0.006)</td><td>(0.006)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">ExternalEdits_per_MoC_Session</td><td>0.0001<sup>**</sup></td><td>0.0001<sup>**</sup></td><td>0.0004<sup>***</sup></td><td>0.0001</td></tr>
+<tr><td style="text-align:left"></td><td>(0.0001)</td><td>(0.0001)</td><td>(0.0001)</td><td>(0.0002)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">session110</td><td>-0.421<sup>***</sup></td><td>-0.421<sup>***</sup></td><td>-0.390<sup>**</sup></td><td>-0.634<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.155)</td><td>(0.155)</td><td>(0.152)</td><td>(0.194)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">session111</td><td>-0.694<sup>***</sup></td><td>-0.694<sup>***</sup></td><td>-0.669<sup>***</sup></td><td>-0.729<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.168)</td><td>(0.168)</td><td>(0.170)</td><td>(0.198)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">session112</td><td>-0.782<sup>***</sup></td><td>-0.782<sup>***</sup></td><td>-0.684<sup>***</sup></td><td>-0.728<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.206)</td><td>(0.206)</td><td>(0.202)</td><td>(0.254)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">session113</td><td>-0.868<sup>***</sup></td><td>-0.868<sup>***</sup></td><td>-0.837<sup>***</sup></td><td>-0.985<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.192)</td><td>(0.192)</td><td>(0.182)</td><td>(0.224)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">session114</td><td>-1.784<sup>***</sup></td><td>-1.784<sup>***</sup></td><td>-1.794<sup>***</sup></td><td>-1.588<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.269)</td><td>(0.269)</td><td>(0.247)</td><td>(0.394)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">party_dualR</td><td>0.316<sup>**</sup></td><td>0.316<sup>**</sup></td><td>0.288<sup>**</sup></td><td>0.242<sup>*</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.126)</td><td>(0.126)</td><td>(0.132)</td><td>(0.134)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">ChamberS</td><td>-0.087</td><td>-0.087</td><td>-0.213</td><td>-0.446<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.136)</td><td>(0.136)</td><td>(0.142)</td><td>(0.154)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">Constant</td><td>-1.476<sup>***</sup></td><td>-1.476<sup>***</sup></td><td>-1.585<sup>***</sup></td><td>-1.026<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.341)</td><td>(0.341)</td><td>(0.334)</td><td>(0.389)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Observations</td><td>3,318</td><td>3,318</td><td>3,318</td><td>3,318</td></tr>
+<tr><td style="text-align:left">Log Likelihood</td><td>-3,422.403</td><td></td><td>-2,423.408</td><td>-2,385.050</td></tr>
+<tr><td style="text-align:left">theta</td><td></td><td></td><td>0.177<sup>***</sup> (0.012)</td><td></td></tr>
+<tr><td style="text-align:left">Akaike Inf. Crit.</td><td>6,868.807</td><td></td><td>4,870.815</td><td></td></tr>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"><em>Note:</em></td><td colspan="4" style="text-align:right"><sup>*</sup>p<0.1; <sup>**</sup>p<0.05; <sup>***</sup>p<0.01</td></tr>
+</table>

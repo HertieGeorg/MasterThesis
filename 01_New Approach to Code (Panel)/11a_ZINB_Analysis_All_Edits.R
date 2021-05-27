@@ -66,14 +66,6 @@ for(i in 1:length(df_Zinb $pageid)) {
   if (is.na(df_Zinb $vote_maxdiff_relative[i]) ==  TRUE) {
     df_Zinb $vote_maxdiff_relative[i] = 0.32365}
 }
-#  Make Categorical Variable out of Combined_Mean_vote_maxdiff_relative
-#     Get quartiles for Vote_maxdiff_relative
-Number_of_Breaks =  c(0,1/4,2/4, 3/4, 1) 
-xs = quantile(df_Zinb$vote_maxdiff_relative, Number_of_Breaks)
-xs[1] = 0 #set lowest break to 0 
-df_Zinb <- df_Zinb %>% mutate(Category_Vote_MaxDiff = cut(vote_maxdiff_relative, breaks=xs ))#, labels= LABELS))
-df_Zinb$Category_Vote_MaxDiff <- as.double(df_Zinb$Category_Vote_MaxDiff)
-table(df_Zinb$Category_Vote_MaxDiff) #check whether it worked
 
 
 # 2. birthyear (reduce to 2 digits, as all are born in the same century) 
@@ -120,7 +112,7 @@ round(corTable , 2)
 
 #Let’s start with the simplest model, a Poisson GLM: 
 
-M1 <- glm(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff + sex + birthyear +
+M1 <- glm(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative  + sex + birthyear +
              ExternalEdits_per_MoC_Session + session + party_dual + Chamber,
           family = 'poisson',
           data = df_Zinb)
@@ -155,7 +147,7 @@ abline(0,1) ## 'variance = mean' line
 # We can see that the majority of the variance is larger than the mean, which is a warning of overdispersion.
 
 #Dealing with Dispersion: 1. Allow Dispersion Estimation
-M1_quasi <- glm(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff + sex + birthyear + 
+M1_quasi <- glm(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative  + sex + birthyear + 
                   ExternalEdits_per_MoC_Session + session + party_dual + Chamber,
           family=quasipoisson,
           data = df_Zinb)
@@ -173,7 +165,7 @@ M1_quasi_Robust <- coeftest(M1_quasi, vcov = vcovCL(M1_quasi, cluster = df_Zinb$
 # A good way to address overdispersion in count data is to use a Negative Binomial Model  
 
 
-M2_negBinom <- glm.nb(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff + sex + birthyear +
+M2_negBinom <- glm.nb(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative  + sex + birthyear +
                         ExternalEdits_per_MoC_Session + session + party_dual + Chamber, data = df_Zinb)
 
 #Robust Standart Erros on legislator-level
@@ -195,10 +187,10 @@ summary(M2_negBinom)
 
 # MODEL THREE: ZINB
 
-M3_ZeroInfl <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff  + sex + birthyear + ExternalEdits_per_MoC_Session + session + party_dual + Chamber  | session + ExternalEdits_per_MoC_Session ,
+M3_ZeroInfl <- zeroinfl(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative   + sex + birthyear + ExternalEdits_per_MoC_Session + session + party_dual + Chamber  | session + ExternalEdits_per_MoC_Session ,
                         data = df_Zinb , dist = "negbin")
 
-M3_ZeroInfl2 <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff + sex + birthyear +
+M3_ZeroInfl2 <- zeroinfl(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative  + sex + birthyear +
                           ExternalEdits_per_MoC_Session + session + party_dual + Chamber |  ExternalEdits_per_MoC_Session,
                          data = df_Zinb , dist = "negbin")
 
@@ -254,7 +246,7 @@ stargazer(M1, M1_quasi, M2_negBinom, M3_ZeroInfl,
 quantile(df_Zinb$AllCongressEdits_Per_MoC_Session, prob = seq(0, 1, length = 200), type = 5) #Top 1% = bigger than 10
 df_Zinb_AltSpecA <- df_Zinb %>% filter(AllCongressEdits_Per_MoC_Session <= 10)
 
-M3_ZeroInfl_AltSpecA <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff + sex + birthyear +
+M3_ZeroInfl_AltSpecA <- zeroinfl(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative  + sex + birthyear +
                            ExternalEdits_per_MoC_Session + session + party_dual + Chamber | session + ExternalEdits_per_MoC_Session ,
                         data = df_Zinb_AltSpecA , dist = "negbin")
 #M3_ZeroInfl_AltSpecA_Robust <- coeftest(M3_ZeroInfl_AltSpecA, vcov = vcovCL(M3_ZeroInfl_AltSpecA, cluster = df_Zinb_AltSpecA$pageid))
@@ -268,7 +260,7 @@ M3_ZeroInfl_AltSpecA_robust.se <- as.double(M3_ZeroInfl_AltSpecA_robust.se) # fo
 
 # 2. ZinB model with additional variable "Views"
 
-M3_ZeroInfl_View <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff + sex + birthyear + ExternalEdits_per_MoC_Session + session + party_dual + Chamber + ViewCategory  | session + ViewCategory + ExternalEdits_per_MoC_Session,
+M3_ZeroInfl_View <- zeroinfl(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative  + sex + birthyear + ExternalEdits_per_MoC_Session + session + party_dual + Chamber + ViewCategory  | session + ViewCategory + ExternalEdits_per_MoC_Session,
                                data = df_Zinb , dist = "negbin")
 
 #M3_ZeroInfl_View_Robust <- coeftest(M3_ZeroInfl_View , vcov = vcovCL(M3_ZeroInfl_View , cluster = df_Zinb$pageid))
@@ -290,7 +282,7 @@ Double_Mocs <- unique(doubles$pageid)
 `%notin%` <- Negate(`%in%`)
 df_Zinb_Unique <- df_Zinb %>% filter(pageid %notin% Double_Mocs)
 
-M3_ZeroInfl_AltSpec_NoDoubles <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff + sex + birthyear +
+M3_ZeroInfl_AltSpec_NoDoubles <- zeroinfl(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative + sex + birthyear +
                                    ExternalEdits_per_MoC_Session + session + party_dual + Chamber | session + ExternalEdits_per_MoC_Session ,
                                  data = df_Zinb_Unique , dist = "negbin")
 
@@ -322,6 +314,7 @@ xs = quantile(df_Zinb$vote_maxdiff_relative, Number_of_Breaks)
 xs[1] = 0 #set lowest break to 0 
 df_Zinb <- df_Zinb %>% mutate(Category_Vote_MaxDiff_2 = cut(vote_maxdiff_relative, breaks=xs ))#, labels= LABELS))
 df_Zinb$Category_Vote_MaxDiff_2 <- as.double(df_Zinb$Category_Vote_MaxDiff_2)
+df_Zinb$Category_Vote_MaxDiff_2 <- df_Zinb$Category_Vote_MaxDiff_2 / 2 #normalistion 
 table(df_Zinb$Category_Vote_MaxDiff_2) #check whether it worked
 
 
@@ -331,7 +324,19 @@ xs = quantile(df_Zinb$vote_maxdiff_relative, Number_of_Breaks)
 xs[1] = 0 #set lowest break to 0 
 df_Zinb <- df_Zinb %>% mutate(Category_Vote_MaxDiff_3 = cut(vote_maxdiff_relative, breaks=xs ))#, labels= LABELS))
 df_Zinb$Category_Vote_MaxDiff_3 <- as.double(df_Zinb$Category_Vote_MaxDiff_3)
+df_Zinb$Category_Vote_MaxDiff_3 <- df_Zinb$Category_Vote_MaxDiff_3 / 3 #normalistion 
 table(df_Zinb$Category_Vote_MaxDiff_3) #check whether it worked
+
+
+# 1/4 Categories
+Number_of_Breaks =  c(0,1/4,2/4, 3/4, 1) 
+xs = quantile(df_Zinb$vote_maxdiff_relative, Number_of_Breaks)
+xs[1] = 0 #set lowest break to 0 
+df_Zinb <- df_Zinb %>% mutate(Category_Vote_MaxDiff_4 = cut(vote_maxdiff_relative, breaks=xs ))#, labels= LABELS))
+df_Zinb$Category_Vote_MaxDiff_4 <- as.double(df_Zinb$Category_Vote_MaxDiff_4)
+df_Zinb$Category_Vote_MaxDiff_4 <- df_Zinb$Category_Vote_MaxDiff_4 / 4 #normalisation 
+table(df_Zinb$Category_Vote_MaxDiff_4) #check whether it worked
+
 
 # 1/5 Categories 
 Number_of_Breaks =  c(0,1/5,2/5, 3/5, 4/5, 1) 
@@ -339,6 +344,7 @@ xs = quantile(df_Zinb$vote_maxdiff_relative, Number_of_Breaks)
 xs[1] = 0 #set lowest break to 0 
 df_Zinb <- df_Zinb %>% mutate(Category_Vote_MaxDiff_5 = cut(vote_maxdiff_relative, breaks=xs ))#, labels= LABELS))
 df_Zinb$Category_Vote_MaxDiff_5 <- as.double(df_Zinb$Category_Vote_MaxDiff_5)
+df_Zinb$Category_Vote_MaxDiff_5 <- df_Zinb$Category_Vote_MaxDiff_5 / 5 #normalistion 
 table(df_Zinb$Category_Vote_MaxDiff_5) #check whether it worked
 
 
@@ -348,21 +354,12 @@ xs = quantile(df_Zinb$vote_maxdiff_relative, Number_of_Breaks)
 xs[1] = 0 #set lowest break to 0 
 df_Zinb <- df_Zinb %>% mutate(Category_Vote_MaxDiff_6 = cut(vote_maxdiff_relative, breaks=xs ))#, labels= LABELS))
 df_Zinb$Category_Vote_MaxDiff_6 <- as.double(df_Zinb$Category_Vote_MaxDiff_6)
+df_Zinb$Category_Vote_MaxDiff_6 <- df_Zinb$Category_Vote_MaxDiff_6 / 6 #normalistion 
 table(df_Zinb$Category_Vote_MaxDiff_6) #check whether it worked
 
 
-# Ad 1/3
-M3_ZeroInfl_AltSpec1 <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff_3 + sex + birthyear +
-                                   ExternalEdits_per_MoC_Session + session + party_dual + Chamber | session + ExternalEdits_per_MoC_Session,
-                                 data = df_Zinb , dist = "negbin")
-#M3_ZeroInfl_AltSpec1_Robust <- coeftest(M3_ZeroInfl_AltSpec1, vcov = vcovCL(M3_ZeroInfl_AltSpec1, cluster = df_Zinb$pageid))
-M3_ZeroInfl_AltSpec1_cov <- vcovCL(M3_ZeroInfl_AltSpec1 , cluster = df_Zinb$pageid)
-M3_ZeroInfl_AltSpec1_robust.se <- sqrt(diag(M3_ZeroInfl_AltSpec1_cov))
-M3_ZeroInfl_AltSpec1_robust.se <- as.double(M3_ZeroInfl_AltSpec1_robust.se) 
-
-
-# Ad 1/5
-M3_ZeroInfl_AltSpec2 <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff_5 + sex + birthyear +
+# Ad 1/2
+M3_ZeroInfl_AltSpec2 <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff_2 + sex + birthyear +
                                    ExternalEdits_per_MoC_Session + session + party_dual + Chamber | session + ExternalEdits_per_MoC_Session ,
                                  data = df_Zinb , dist = "negbin")
 #M3_ZeroInfl_AltSpec2_Robust <- coeftest(M3_ZeroInfl_AltSpec2, vcov = vcovCL(M3_ZeroInfl_AltSpec2, cluster = df_Zinb$pageid))
@@ -371,9 +368,9 @@ M3_ZeroInfl_AltSpec2_robust.se <- sqrt(diag(M3_ZeroInfl_AltSpec2_cov))
 M3_ZeroInfl_AltSpec2_robust.se <- as.double(M3_ZeroInfl_AltSpec2_robust.se) 
 
 
-# Ad 1/6
-M3_ZeroInfl_AltSpec3 <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff_6 + sex + birthyear +
-                                   ExternalEdits_per_MoC_Session + session + party_dual + Chamber | session + ExternalEdits_per_MoC_Session ,
+# Ad 1/3
+M3_ZeroInfl_AltSpec3 <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff_3 + sex + birthyear +
+                                   ExternalEdits_per_MoC_Session + session + party_dual + Chamber | session + ExternalEdits_per_MoC_Session,
                                  data = df_Zinb , dist = "negbin")
 #M3_ZeroInfl_AltSpec3_Robust <- coeftest(M3_ZeroInfl_AltSpec3, vcov = vcovCL(M3_ZeroInfl_AltSpec3, cluster = df_Zinb$pageid))
 M3_ZeroInfl_AltSpec3_cov <- vcovCL(M3_ZeroInfl_AltSpec3 , cluster = df_Zinb$pageid)
@@ -381,9 +378,9 @@ M3_ZeroInfl_AltSpec3_robust.se <- sqrt(diag(M3_ZeroInfl_AltSpec3_cov))
 M3_ZeroInfl_AltSpec3_robust.se <- as.double(M3_ZeroInfl_AltSpec3_robust.se) 
 
 
-# vote_maxdiff_relative
-M3_ZeroInfl_AltSpec4 <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ vote_maxdiff_relative + sex + birthyear +
-                                   ExternalEdits_per_MoC_Session + session + party_dual + Chamber | session + ExternalEdits_per_MoC_Session ,
+# Ad 1/4
+M3_ZeroInfl_AltSpec4 <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff_4 + sex + birthyear +
+                                   ExternalEdits_per_MoC_Session + session + party_dual + Chamber | session + ExternalEdits_per_MoC_Session,
                                  data = df_Zinb , dist = "negbin")
 #M3_ZeroInfl_AltSpec4_Robust <- coeftest(M3_ZeroInfl_AltSpec4, vcov = vcovCL(M3_ZeroInfl_AltSpec4, cluster = df_Zinb$pageid))
 M3_ZeroInfl_AltSpec4_cov <- vcovCL(M3_ZeroInfl_AltSpec4 , cluster = df_Zinb$pageid)
@@ -391,8 +388,8 @@ M3_ZeroInfl_AltSpec4_robust.se <- sqrt(diag(M3_ZeroInfl_AltSpec4_cov))
 M3_ZeroInfl_AltSpec4_robust.se <- as.double(M3_ZeroInfl_AltSpec4_robust.se) 
 
 
-# Ad 1/2
-M3_ZeroInfl_AltSpec5 <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff_2 + sex + birthyear +
+# Ad 1/5
+M3_ZeroInfl_AltSpec5 <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff_5 + sex + birthyear +
                                    ExternalEdits_per_MoC_Session + session + party_dual + Chamber | session + ExternalEdits_per_MoC_Session ,
                                  data = df_Zinb , dist = "negbin")
 #M3_ZeroInfl_AltSpec5_Robust <- coeftest(M3_ZeroInfl_AltSpec5, vcov = vcovCL(M3_ZeroInfl_AltSpec5, cluster = df_Zinb$pageid))
@@ -401,11 +398,23 @@ M3_ZeroInfl_AltSpec5_robust.se <- sqrt(diag(M3_ZeroInfl_AltSpec5_cov))
 M3_ZeroInfl_AltSpec5_robust.se <- as.double(M3_ZeroInfl_AltSpec5_robust.se) 
 
 
+# Ad 1/6
+M3_ZeroInfl_AltSpec6 <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff_6 + sex + birthyear +
+                                   ExternalEdits_per_MoC_Session + session + party_dual + Chamber | session + ExternalEdits_per_MoC_Session ,
+                                 data = df_Zinb , dist = "negbin")
+#M3_ZeroInfl_AltSpec6_Robust <- coeftest(M3_ZeroInfl_AltSpec6, vcov = vcovCL(M3_ZeroInfl_AltSpec6, cluster = df_Zinb$pageid))
+M3_ZeroInfl_AltSpec6_cov <- vcovCL(M3_ZeroInfl_AltSpec6 , cluster = df_Zinb$pageid)
+M3_ZeroInfl_AltSpec6_robust.se <- sqrt(diag(M3_ZeroInfl_AltSpec6_cov))
+M3_ZeroInfl_AltSpec6_robust.se <- as.double(M3_ZeroInfl_AltSpec6_robust.se) 
+
+
+
+
 # Out: AllEdits(3_Appendix)_ZinB_VoteDiffCategories.html 
 
-stargazer(M3_ZeroInfl_AltSpec5, M3_ZeroInfl_AltSpec1, M3_ZeroInfl, M3_ZeroInfl_AltSpec2, M3_ZeroInfl_AltSpec3, M3_ZeroInfl_AltSpec4,
-          se = list(M3_ZeroInfl_AltSpec5_robust.se, M3_ZeroInfl_AltSpec1_robust.se, M3_ZeroInfl_robust.se, M3_ZeroInfl_AltSpec2_robust.se, M3_ZeroInfl_AltSpec3_robust.se, M3_ZeroInfl_AltSpec5_robust.se), 
-          column.labels=c("1/2", "1/3", "Standart(1/4)","1/5","1/6", "noCategory"), 
+stargazer(M3_ZeroInfl_AltSpec2, M3_ZeroInfl_AltSpec3, M3_ZeroInfl_AltSpec4, M3_ZeroInfl_AltSpec5, M3_ZeroInfl_AltSpec6, M3_ZeroInfl,
+          se = list(M3_ZeroInfl_AltSpec2_robust.se, M3_ZeroInfl_AltSpec3_robust.se, M3_ZeroInfl_AltSpec4_robust.se, M3_ZeroInfl_AltSpec5_robust.se, M3_ZeroInfl_AltSpec6_robust.se, M3_ZeroInfl_robust.se), 
+          column.labels=c("1/2", "1/3", "1/4","1/5","1/6", "noCategory"), 
           out="AllEdits(3_Appendix)_ZinB_VoteDiffCategories.html",  type = "text",  
           title="Zero-inflated models: different vote_diff-Categories", align=TRUE) 
 
@@ -418,7 +427,7 @@ stargazer(M3_ZeroInfl_AltSpec5, M3_ZeroInfl_AltSpec1, M3_ZeroInfl, M3_ZeroInfl_A
 # 5. Using different variables for the count-logit-process
 
     # All but Category_Vote_MaxDiff
-M3_ZeroInfl_AltCount <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff + sex + birthyear +
+M3_ZeroInfl_AltCount <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ vote_maxdiff_relative + sex + birthyear +
                           ExternalEdits_per_MoC_Session + session + party_dual + Chamber |  sex + birthyear +
                             ExternalEdits_per_MoC_Session + session + party_dual + Chamber ,
                         data = df_Zinb , dist = "negbin")
@@ -429,8 +438,8 @@ M3_ZeroInfl_AltCount_robust.se  <- as.double(M3_ZeroInfl_AltCount_robust.se)
 
 
     # Regular +  Category_Vote_MaxDiff
-M3_ZeroInfl_AltCount2 <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff + sex + birthyear +
-                                   ExternalEdits_per_MoC_Session + session + party_dual + Chamber | session + ExternalEdits_per_MoC_Session + Category_Vote_MaxDiff,
+M3_ZeroInfl_AltCount2 <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ vote_maxdiff_relative + sex + birthyear +
+                                   ExternalEdits_per_MoC_Session + session + party_dual + Chamber | session + ExternalEdits_per_MoC_Session + vote_maxdiff_relative,
                                  data = df_Zinb , dist = "negbin")
 #M3_ZeroInfl_AltCount2_Robust <- coeftest(M3_ZeroInfl_AltCount2, vcov = vcovCL(M3_ZeroInfl_AltCount2, cluster = df_Zinb$pageid))
 M3_ZeroInfl_AltCount2_cov <- vcovCL(M3_ZeroInfl_AltCount2, cluster = df_Zinb$pageid)
@@ -472,10 +481,6 @@ summary(M4_Hurdle)
 
 # With clustered standart errors by individual MoC
 M4_Hurdle_Robust <- coeftest(M4_Hurdle , vcov = vcovCL(M4_Hurdle, cluster = df_Zinb$pageid))
-
-
-
-
 
 
 
