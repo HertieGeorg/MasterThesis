@@ -1,6 +1,6 @@
 #10a_Analysis_Skewedness_Edits
 
-
+library(gridExtra)
 
 # 1.----------- Checking whether data is skewed: visualized probability distribution of numbers of edits seen by each MoC
 # See how many MoC do not have any edits from within congress in observed time frame 
@@ -21,19 +21,56 @@ data %>%
   xlab("Number of Edits per Profile") 
 
 # Visualize Distribution without outliers: All Congress-Edits
-data %>%  
-  filter(AllCongressEdits_Per_MoC_Session < 20) %>% 
+
+Zeros_AE <- data %>%  
+  filter(AllCongressEdits_Per_MoC_Session < 16) %>% 
   ggplot(aes(x = AllCongressEdits_Per_MoC_Session)) +
-  geom_histogram(bins = 20) +
+  geom_histogram(bins = 16, fill="black") +
   #scale_y_continuous(trans = 'log2')+
+  xlab("Number of All Congress Edits")+
+  ylab("Frequency") +
+  theme_bw() + 
+  scale_fill_manual("green") + 
+  ggtitle("All Congress Edits") 
+
+# Check for Zero-Inflation in the data
+100*sum(data$AllCongressEdits_Per_MoC_Session == 0)/nrow(data) #72.06% zero for All Congress Edits
+
+
+
+# Visualize Distribution: Beneficial Political Edits
+data %>% 
+  ggplot( aes(x = All_Positive_Politically_CongressEdits_Per_MoC_Session)) +
+  geom_histogram(bins = 40) +
   xlab("Number of Edits per Profile") 
 
-# Number of ZEROS
-table(data$AllCongressEdits_Per_MoC_Session == 0) 
-#373 Zeros in All Congress-Edits
+# Visualize Distribution without outliers: Beneficial Political Congress-Edits
+Zeros_BPE <- data %>%  
+  filter(All_Positive_Politically_CongressEdits_Per_MoC_Session < 12) %>% 
+  ggplot(aes(x = All_Positive_Politically_CongressEdits_Per_MoC_Session)) +
+  geom_histogram(bins = 12, fill="black") +
+  #scale_y_continuous(trans = 'log2')+
+  xlab("Number of Beneficial Political Edits")+
+  ylab("Frequency") +
+  theme_bw() + 
+  scale_fill_manual("green") + 
+  ggtitle("Beneficial Political Congress Edits") 
+
+# Check for Zero-Inflation in the data
+100*sum(data$All_Positive_Politically_CongressEdits_Per_MoC_Session== 0)/nrow(data) #83.75527% zero for Beneficial Political Congress Edits
 
 
 
+#Figure_Exessive_Zeros 
+grid.arrange(Zeros_AE ,Zeros_BPE , ncol = 2, nrow = 1)
+            # top=("Frequency Distribution of Congress Edits over MoC-Session pairs without outliers"))
+
+#72.06% zero for All Congress Edits
+#83.75527% zero for Beneficial Political Congress Edits
+
+
+
+# ------ Others ----------
 
 # Now same for: Distributions of Political-Edits 
 

@@ -1,4 +1,4 @@
-# 10_ZINB_Analysis for ALL CONGRESS EDITS 
+# 11a_ZINB_Analysis for ALL CONGRESS EDITS 
 
 install.packages("pscl")
 install.packages("MASS")
@@ -14,7 +14,7 @@ library(MASS)
 library(boot)
 library(lattice)
 library(AER)
-library(lmtest) #e provides coeftest function 
+library(lmtest) #provides coeftest function 
 library(sandwich) # provides vcovHC function for calculating robust standard errors
 library(stargazer)
 library(jtools)
@@ -90,7 +90,7 @@ df_Zinb_IV$Chamber <- stringr::str_replace_all(df_Zinb_IV$Chamber , "H", "1")
 df_Zinb_IV$Chamber <- stringr::str_replace_all(df_Zinb_IV$Chamber , "S", "0")
 df_Zinb_IV$Chamber <- as.double(df_Zinb_IV$Chamber) 
 df_Zinb_IV$session <- as.double(df_Zinb_IV$session) 
-df_Zinb_IV <- df_Zinb_IV %>%  dplyr::select(c(birthyear, sex, Chamber, party_dual, session, ExternalEdits_per_MoC_Session ,Category_Vote_MaxDiff, ViewCategory))
+df_Zinb_IV <- df_Zinb_IV %>%  dplyr::select(c(birthyear, sex, Chamber, party_dual, session, ExternalEdits_per_MoC_Session , vote_maxdiff_relative, ViewCategory))
 corTable <- cor(df_Zinb_IV)
 round(corTable , 2)
 # birthyear is correlated with session = trivial 
@@ -107,11 +107,10 @@ round(corTable , 2)
 
 ############################    MODELS    ############################
 
-#Let’s do a quick check for Zero-Inflation in the data
+# Check for Zero-Inflation in the data
 100*sum(df_Zinb$AllCongressEdits_Per_MoC_Session == 0)/nrow(df_Zinb) #72.06% sind Zeros
 
-#Let’s start with the simplest model, a Poisson GLM: 
-
+# 1) Poisson GLM: 
 M1 <- glm(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative  + sex + birthyear +
              ExternalEdits_per_MoC_Session + session + party_dual + Chamber,
           family = 'poisson',
@@ -119,16 +118,10 @@ M1 <- glm(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative  + sex + bir
 
 #With Robust Standart Erros on legislator-level
 M1_Robust <- coeftest(M1, vcov = vcovCL(M1, cluster = df_Zinb$pageid))
-
-tidy(M1_Robust)
-
-tidy(M1)
 summ(M1, confint = T, digits = 3, vifs = T)   
 # Regarding Pseudo R-Squared-Values: https://web.archive.org/web/20130701052120/http://www.ats.ucla.edu:80/stat/mult_pkg/faq/general/Psuedo_RSquareds.htm
-
 # Interpretation of Coefficients: 
 # eg: ViewCategory =  0.07656, means that an increase of 1 in ViewCategory causes an increase in Edits of exp( 0.07656) = 1.079567
-
 
 ## Check for over/underdispersion in the model
 
@@ -146,35 +139,19 @@ plot(log(fitted(M1)),log((df_Zinb$AllCongressEdits_Per_MoC- fitted(M1))^2),xlab=
 abline(0,1) ## 'variance = mean' line
 # We can see that the majority of the variance is larger than the mean, which is a warning of overdispersion.
 
-#Dealing with Dispersion: 1. Allow Dispersion Estimation
-M1_quasi <- glm(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative  + sex + birthyear + 
-                  ExternalEdits_per_MoC_Session + session + party_dual + Chamber,
-          family=quasipoisson,
-          data = df_Zinb)
-
-summary(M1_quasi) # Dispersion parameter is the same as calculated manually 
-summ(M1_quasi, confint = T, digits = 3, vifs = T)   
-
-
-#Robust Standart Erros on legislator-level
-M1_quasi_Robust <- coeftest(M1_quasi, vcov = vcovCL(M1_quasi, cluster = df_Zinb$pageid))
 
 
 
-# MODEL TWO: Negative BinomialGLM
-# A good way to address overdispersion in count data is to use a Negative Binomial Model  
 
+# 2) Negative Binomial GLM
 
 M2_negBinom <- glm.nb(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative  + sex + birthyear +
                         ExternalEdits_per_MoC_Session + session + party_dual + Chamber, data = df_Zinb)
-
 #Robust Standart Erros on legislator-level
 M2_negBinom_Robust <- coeftest(M2_negBinom , vcov = vcovCL(M2_negBinom , cluster = df_Zinb$pageid))
 
-
 summary(M2_negBinom)
 # Interpretation of regression coefficients of Negative Binommial is identical to standart Poisson Model (exp() usw.)
-# Negative BinomialGLM is better fit to data, because ratio of deviance over degrees of freedom is only slightly larger than 1 here (and way better than Poisson)
 
 # Potential References: References: https://biometry.github.io/APES/LectureNotes/2016-JAGS/Overdispersion/OverdispersionJAGS.pdf
 # Faraway, Julian J. Extending the linear model with R: generalized linear, mixed effects and nonparametric regression models. CRC press, 2016.
@@ -182,37 +159,84 @@ summary(M2_negBinom)
 # https://data.princeton.edu/wws509/r/overdispersion
 
 
+# 3) Zero-Inflated Poisson GLM
+#Source for Code: https://fukamilab.github.io/BIO202/04-C-zero-data.html
+
+M3_ZIP <- zeroinfl(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative   + sex + birthyear + ExternalEdits_per_MoC_Session + session + party_dual + Chamber  | session + ExternalEdits_per_MoC_Session ,
+                         dist = 'poisson',
+                         data = df_Zinb)
+summary(M3_ZIP)
+M3_ZIP_Robust <- coeftest(M3_ZIP , vcov = vcovCL(M3_ZIP, cluster = df_Zinb$pageid))
+
+
+# Dispersion Statistic
+E2 <- resid(M3_ZIP, type = "pearson")
+N  <- nrow(df_Zinb)
+p  <- length(coef(M3_ZIP))  
+sum(E2^2) / (N - p) # =  1.972686 -> still quite some overdispersion 
 
 
 
-# MODEL THREE: ZINB
+# 4) Hurdle regression
+# Source for Code: https://cran.r-project.org/web/packages/pscl/vignettes/countreg.pdf
 
-M3_ZeroInfl <- zeroinfl(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative   + sex + birthyear + ExternalEdits_per_MoC_Session + session + party_dual + Chamber  | session + ExternalEdits_per_MoC_Session ,
+
+M4_Hurdle  <- hurdle(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative   + sex + birthyear + 
+                       ExternalEdits_per_MoC_Session + session + party_dual + Chamber  | session + ExternalEdits_per_MoC_Session ,
+                     data = df_Zinb,  dist = "negbin")
+summary(M4_Hurdle)
+# With clustered standart errors by individual MoC
+M4_Hurdle_Robust <- coeftest(M4_Hurdle , vcov = vcovCL(M4_Hurdle, cluster = df_Zinb$pageid))
+
+
+
+# 5) ZINB
+
+M3_ZeroInfl <- zeroinfl(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative   + sex + birthyear + 
+                          ExternalEdits_per_MoC_Session + session + party_dual + Chamber  | session + ExternalEdits_per_MoC_Session ,
+                        data = df_Zinb , dist = "negbin")
+M3_ZeroInfl_Robust <- coeftest(M3_ZeroInfl, vcov = vcovCL(M3_ZeroInfl, cluster = df_Zinb$pageid))
+summary(M3_ZeroInfl)
+
+M3_ZeroInfl_All <- zeroinfl(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative   + sex + birthyear + 
+                          ExternalEdits_per_MoC_Session + session + party_dual + Chamber  | vote_maxdiff_relative   + sex + birthyear + 
+                           ExternalEdits_per_MoC_Session + session + party_dual + Chamber,
                         data = df_Zinb , dist = "negbin")
 
-M3_ZeroInfl2 <- zeroinfl(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative  + sex + birthyear +
-                          ExternalEdits_per_MoC_Session + session + party_dual + Chamber |  ExternalEdits_per_MoC_Session,
-                         data = df_Zinb , dist = "negbin")
 
-# Waldtest can be used to compare different variable selection 
-waldtest(M3_ZeroInfl, M3_ZeroInfl2)
+M3_ZeroInfl_All_Robust <- coeftest(M3_ZeroInfl_All, vcov = vcovCL(M3_ZeroInfl_All, cluster = df_Zinb$pageid))
+summary(M3_ZeroInfl_All)
+
+
+# Dispersion Statistic 
+E2 <- resid(M3_ZeroInfl, type = "pearson")
+N  <- nrow(df_Zinb)
+p  <- length(coef(M3_ZeroInfl)) + 1 # '+1' is due to theta
+sum(E2^2) / (N - p) #= 1.225373 -> best value so far 
+
+
+
 
 # Running ZINB with robust standard errors:
 # Source for standart errors: https://data.library.virginia.edu/understanding-robust-standard-errors/
 # Source for code for Standart Errors: https://stackoverflow.com/questions/35372090/clustered-standard-error-for-zero-inflated-negative-binomial-model
 
-# With clustered standard errors by individual MoC
-#M3_ZeroInfl_Robust <- coeftest(M3_ZeroInfl, vcov = vcovCL(M3_ZeroInfl, cluster = df_Zinb$pageid))
+
 
 
 M1cov <- vcovCL(M1, cluster = df_Zinb$pageid)
 M1_robust.se <- sqrt(diag(M1cov))
 
-M1_quasi_cov <- vcovCL(M1_quasi, cluster = df_Zinb$pageid)
-M1_quasi_robust.se <- sqrt(diag(M1_quasi_cov))
-
 M2_negBinom_cov <- vcovCL(M2_negBinom, cluster = df_Zinb$pageid)
 M2_negBinom_robust.se <- sqrt(diag(M2_negBinom_cov))
+
+M4_Hurdle_cov <- vcovCL(M4_Hurdle, cluster = df_Zinb$pageid)
+M4_Hurdle_robust.se <- sqrt(diag(M4_Hurdle_cov))
+M4_Hurdle_robust.se  <- as.double(M4_Hurdle_robust.se) 
+
+M3_ZIP_cov <- vcovCL(M3_ZIP , cluster = df_Zinb$pageid)
+M3_ZIP_robust.se <- sqrt(diag(M3_ZIP_cov))
+M3_ZIP_robust.se <- as.double(M3_ZIP_robust.se) 
 
 M3_ZeroInfl_cov <- vcovCL(M3_ZeroInfl, cluster = df_Zinb$pageid)
 M3_ZeroInfl_robust.se <- sqrt(diag(M3_ZeroInfl_cov))
@@ -220,18 +244,51 @@ M3_ZeroInfl_robust.se <- sqrt(diag(M3_ZeroInfl_cov))
 M3_ZeroInfl_robust.se  <- as.double(M3_ZeroInfl_robust.se) # for some reason the standard erros are not displayed without this transformation (prob. due to scientific notation)
 
 # Out: AlllEdits(1)_Model_Results.html
-stargazer(M1, M1_quasi, M2_negBinom, M3_ZeroInfl, 
-          se = list(M1_robust.se, M1_quasi_robust.se, M2_negBinom_robust.se, M3_ZeroInfl_robust.se), 
-          column.labels=c("M1","Quasi", "M2_NegBinom", "M3_ZeroInfl"), 
+stargazer(M1,  M2_negBinom, M4_Hurdle, M3_ZIP, M3_ZeroInfl, 
+          se = list(M1_robust.se, M2_negBinom_robust.se,M4_Hurdle_robust.se, M3_ZIP_robust.se, M3_ZeroInfl_robust.se), 
+          column.labels=c("M1", "M2_NegBinom", "M4_Hurdle", "M3_ZIP", "M3_ZeroInfl"), 
           out="AllEdits(1)_Model_Results.html",  type = "text", 
           title="Comparing Different Model Results (All Congress Edits)", align=TRUE) 
 
+# Out: AlllEdits(1b)_Model_Results.html (Logit-Teil)
+stargazer( M4_Hurdle, M3_ZIP, M3_ZeroInfl,  zero.component = TRUE,
+          se = list(M4_Hurdle_robust.se, M3_ZIP_robust.se, M3_ZeroInfl_robust.se), 
+          column.labels=c("M4_Hurdle", "M3_ZIP", "M3_ZeroInfl"), 
+          out="AllEdits(1b)_Model_Results.html",  type = "text", 
+          title="Comparing Different Model Results (All Congress Edits)", align=TRUE) 
 
+# AIC and BIC values for all 5 models 
+AIC(M1, M2_negBinom, M4_Hurdle, M3_ZIP, M3_ZeroInfl, k = 2)
+BIC(M1,  M2_negBinom, M4_Hurdle, M3_ZIP, M3_ZeroInfl)
+
+
+
+# Table_AIC_BIC
+
+install.packages("formattable")
+library(formattable)
+
+Model <-  c("Poisson", "Negative binomial", "Hurdle" ,"Zero-inflated Poisson", "Zero-inflated negative binomial") 
+df    <-  c(12, 13, 20, 19, 20) 
+AIC   <-  c(10376.358, 6989.523, 6958.927, 8063.269, 6939.883) 
+BIC   <-  c(10449.643, 7068.916, 7081.069, 8179.304, 7062.025) 
+
+x <- data.frame(Model, df, AIC, BIC)
+
+improvement_formatter <- formatter("span", style = x ~ style(font.weight = "bold", 
+                                                             color = ifelse(x > 6000, "green", "black")))
+
+formattable(x, align =c("l","c","r","r"), 
+            list(`Year` = formatter("span", style = ~ style(color = "lightblack",font.weight = "bold")),
+                 area(row = 5, col = -1:-2) ~ improvement_formatter))
+            
+          
 # When using clustered standard errors, Poisson and Quasi-Poisson have the exact same values
 #tidy(M1)
 #tidy(M1_quasi)
 #tidy(M1_Robust)
 #tidy(M1_quasi_Robust)
+
 
 
 
@@ -247,7 +304,7 @@ quantile(df_Zinb$AllCongressEdits_Per_MoC_Session, prob = seq(0, 1, length = 200
 df_Zinb_AltSpecA <- df_Zinb %>% filter(AllCongressEdits_Per_MoC_Session <= 10)
 
 M3_ZeroInfl_AltSpecA <- zeroinfl(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative  + sex + birthyear +
-                           ExternalEdits_per_MoC_Session + session + party_dual + Chamber | session + ExternalEdits_per_MoC_Session ,
+                           ExternalEdits_per_MoC_Session + session + party_dual + Chamber |  ExternalEdits_per_MoC_Session + session,
                         data = df_Zinb_AltSpecA , dist = "negbin")
 #M3_ZeroInfl_AltSpecA_Robust <- coeftest(M3_ZeroInfl_AltSpecA, vcov = vcovCL(M3_ZeroInfl_AltSpecA, cluster = df_Zinb_AltSpecA$pageid))
 M3_ZeroInfl_AltSpecA_cov <- vcovCL(M3_ZeroInfl_AltSpecA, cluster = df_Zinb_AltSpecA$pageid)
@@ -260,13 +317,55 @@ M3_ZeroInfl_AltSpecA_robust.se <- as.double(M3_ZeroInfl_AltSpecA_robust.se) # fo
 
 # 2. ZinB model with additional variable "Views"
 
-M3_ZeroInfl_View <- zeroinfl(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative  + sex + birthyear + ExternalEdits_per_MoC_Session + session + party_dual + Chamber + ViewCategory  | session + ViewCategory + ExternalEdits_per_MoC_Session,
-                               data = df_Zinb , dist = "negbin")
+# It was not possible to incoporate a variable for popularity based on page-views
+# as data was just avaiable from 2009 upwards and excluding sessions 109-111 would reduce the data set so drastically in size 
+# that the zinb-models do not work anymore 
 
+# load: Views_per_pageid_session
+df_Zinb_Views <- left_join(df_Zinb, Views_per_pageid_session, by = "pageid_session")
+df_Zinb_Views <- df_Zinb_Views %>% drop_na(ProfileViewsPerSession09_to_16)
+
+# Using Summary Statistics to Compute Categories for High of Number of Views (1-5)
+summary(df_Zinb_Views$ProfileViewsPerSession09_to_16)
+# Categories: 1. lower 25%, 2. 26%-50%, 3. 51%-75%, 4. 76%-95% , 5. 96%-100%
+df_Zinb_Views$ViewCategoryPerSession = 0
+for(i in 1:length(df_Zinb_Views$ProfileViewsPerSession09_to_16)) {
+  if (df_Zinb_Views$ProfileViewsPerSession09_to_16[i] <= 34148) {
+    df_Zinb_Views$ViewCategoryPerSession[i] = 1   } #firtst quartile
+  if (df_Zinb_Views$ProfileViewsPerSession09_to_16[i] > 34148 && df_Zinb_Views$ProfileViewsPerSession09_to_16[i] <= 52212) {
+    df_Zinb_Views$ViewCategoryPerSession[i] = 2   } # second quartile
+  if (df_Zinb_Views$ProfileViewsPerSession09_to_16[i] > 52212  && df_Zinb_Views$ProfileViewsPerSession09_to_16[i] <=  110466) {
+    df_Zinb_Views$ViewCategoryPerSession[i] = 3  }} # third quartile
+# Get last 5% - threshold: 
+ShortLived_df <- df_Zinb_Views%>% filter( ViewCategoryPerSession == 0) #contains the last quartile -> taking the last two decils (25%*0,1*2 = 5%)
+quantile(ShortLived_df$ProfileViewsPerSession09_to_16, prob = seq(0, 1, length = 11), type = 5) # 5% = bigger than 435811.8
+# Use 5% threshold to compute last 2 categories: 
+for(i in 1:length(df_Zinb_Views$ProfileViewsPerSession09_to_16)) {
+  if (df_Zinb_Views$ProfileViewsPerSession09_to_16[i] > 110466 && df_Zinb_Views$ProfileViewsPerSession09_to_16[i] <= 435811 ) {
+    df_Zinb_Views$ViewCategoryPerSession[i] = 4    } #forth quartile minus the top 5%
+  if (df_Zinb_Views$ProfileViewsPerSession09_to_16[i] > 435811) {
+    df_Zinb_Views$ViewCategoryPerSession[i] = 5   }} # last 5%
+
+M3_ZeroInfl_View <- zeroinfl(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative   + sex + birthyear + 
+                          ExternalEdits_per_MoC_Session + session + party_dual + Chamber + ViewCategoryPerSession | ViewCategoryPerSession + session + ExternalEdits_per_MoC_Session ,
+                        data = df_Zinb_Views , dist = "negbin")
+
+
+M4_Hurdle_Views  <- hurdle(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative   + sex + birthyear + 
+                       ExternalEdits_per_MoC_Session + session + party_dual + Chamber  + ViewCategoryPerSession  | session   + ViewCategoryPerSession + ExternalEdits_per_MoC_Session ,
+                     data = df_Zinb_Views,  dist = "negbin")
+summary(M4_Hurdle_Views)
+# With clustered standart errors by individual MoC
+M4_Hurdle_Views_Robust <- coeftest(M4_Hurdle_Views , vcov = vcovCL(M4_Hurdle_Views, cluster = df_Zinb_Views$pageid))
+
+
+summary(M3_ZeroInfl_View)
+M3_ZeroInfl_View_Rob <- coeftest(M3_ZeroInfl_View, vcov = vcovCL(M3_ZeroInfl_View, cluster = df_Zinb_Views$pageid))
 #M3_ZeroInfl_View_Robust <- coeftest(M3_ZeroInfl_View , vcov = vcovCL(M3_ZeroInfl_View , cluster = df_Zinb$pageid))
-M3_ZeroInfl_View_cov <- vcovCL(M3_ZeroInfl_View, cluster = df_Zinb$pageid)
+M3_ZeroInfl_View_cov <- vcovCL(M3_ZeroInfl_View, cluster = df_Zinb_Views$pageid)
 M3_ZeroInfl_View_cov_robust.se <- sqrt(diag(M3_ZeroInfl_View_cov))
 M3_ZeroInfl_View_cov_robust.se <- as.double(M3_ZeroInfl_View_cov_robust.se) # for some reason the standard erros are not displayed without this transformation (prob. due to scientific notation)
+
 
 
 
@@ -283,7 +382,7 @@ Double_Mocs <- unique(doubles$pageid)
 df_Zinb_Unique <- df_Zinb %>% filter(pageid %notin% Double_Mocs)
 
 M3_ZeroInfl_AltSpec_NoDoubles <- zeroinfl(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative + sex + birthyear +
-                                   ExternalEdits_per_MoC_Session + session + party_dual + Chamber | session + ExternalEdits_per_MoC_Session ,
+                                   ExternalEdits_per_MoC_Session + session + party_dual + Chamber |  ExternalEdits_per_MoC_Session + session ,
                                  data = df_Zinb_Unique , dist = "negbin")
 
 #M3_ZeroInfl_AltSpec_NoDoubles_Robust <- coeftest(M3_ZeroInfl_AltSpec_NoDoubles, vcov = vcovCL(M3_ZeroInfl_AltSpec_NoDoubles, cluster = df_Zinb_Unique$pageid))
@@ -296,9 +395,9 @@ M3_ZeroInfl_AltSpec_NoDoubles_robust.se <- as.double(M3_ZeroInfl_AltSpec_NoDoubl
 
 # Out: AllEdits(2)_ZinB_Specifications.html
 
-stargazer(M3_ZeroInfl, M3_ZeroInfl_AltSpecA, M3_ZeroInfl_AltSpec_NoDoubles, M3_ZeroInfl_View,
-          se = list(M3_ZeroInfl_robust.se, M3_ZeroInfl_AltSpecA_robust.se, M3_ZeroInfl_AltSpec_NoDoubles_robust.se, M3_ZeroInfl_View_cov_robust.se), 
-          column.labels=c( "Standard", "99%EditsCounts", "UniqueMoCs", "PlusPopularity"), 
+stargazer(M3_ZeroInfl, M3_ZeroInfl_AltSpecA, M3_ZeroInfl_AltSpec_NoDoubles,   #zero.component = TRUE,
+          se = list(M3_ZeroInfl_robust.se, M3_ZeroInfl_AltSpecA_robust.se, M3_ZeroInfl_AltSpec_NoDoubles_robust.se), 
+          column.labels=c( "Standard", "99%EditsCounts", "UniqueMoCs"), 
           out="AllEdits(2)_ZinB_Specifications.html",  type = "text", 
           title="Zero-inflated models: different specifications(1)", align=TRUE) 
 
@@ -469,20 +568,30 @@ stargazer(M3_ZeroInfl, M3_ZeroInfl_AltCount, M3_ZeroInfl_AltCount2, zero.compone
 ############ Ideenspeicher ############## 
 
 
+# quasi-Poisson to address overdispersion
+
+# 2) quasi-Poisson GLM
+M1_quasi <- glm(AllCongressEdits_Per_MoC_Session ~  vote_maxdiff_relative  + sex + birthyear + 
+                  ExternalEdits_per_MoC_Session + session + party_dual + Chamber,
+                family=quasipoisson,
+                data = df_Zinb)
+
+summary(M1_quasi) # Dispersion parameter is the same as calculated manually 
+summ(M1_quasi, confint = T, digits = 3, vifs = T)   
+#Robust Standart Erros on legislator-level
+M1_quasi_Robust <- coeftest(M1_quasi, vcov = vcovCL(M1_quasi, cluster = df_Zinb$pageid))
 
 
-# MODELL FOUR: Hurdle regression 
-# Source: https://cran.r-project.org/web/packages/pscl/vignettes/countreg.pdf
-
-M4_Hurdle  <- hurdle(AllCongressEdits_Per_MoC_Session ~ Category_Vote_MaxDiff + sex + birthyear +
-                       ViewCategory + ExternalEdits_per_MoC_Session + session + party_dual + Chamber | session + ExternalEdits_per_MoC_Session + ViewCategory,
-                     data = df_Zinb,  dist = "negbin")
-summary(M4_Hurdle)
-
-# With clustered standart errors by individual MoC
-M4_Hurdle_Robust <- coeftest(M4_Hurdle , vcov = vcovCL(M4_Hurdle, cluster = df_Zinb$pageid))
+M1_quasi_cov <- vcovCL(M1_quasi, cluster = df_Zinb$pageid)
+M1_quasi_robust.se <- sqrt(diag(M1_quasi_cov))
 
 
+
+
+
+
+# Waldtest can be used to compare different variable selection 
+waldtest(M3_ZeroInfl, M3_ZeroInfl2)
 
 
 # get output in latex-code or html
@@ -497,6 +606,7 @@ htmlreg(list(M3_ZeroInfl, M3_ZeroInfl, M3_ZeroInfl) , override.se = se, override
 htmlreg(M3_ZeroInfl_Robust , file = "mytable.html", override.se = se, override.pvalues = pval)
 
 tidy(M3_ZeroInfl_Robust)
+
 
 
 

@@ -598,6 +598,47 @@ abcd$date <- as.character(abcd$date)
 abcd$Year <- stringr::str_extract(abcd$date  , "^\\d{4}") 
 abcd$Year <- as.double(abcd$Year)
 
+# 1. Views Version One: only includes MoCs that served between 2009 and 2016 (Views per Session)
+# Saved in separate Dataframe: Views_per_pageid_session
+
+# Filter for timeframe (but as data for house starts in 2009, it will be shifted back to 2009-2016)
+abcde <- abcd %>%  filter(Year >= 2009) %>% filter(Year <= 2016)
+length(unique(abcde$pageid))
+
+# Create session column
+abcde$session <- abcde$Year
+
+abcde$session <- stringr::str_replace_all(abcde$session, "2009", "111")
+abcde$session <- stringr::str_replace_all(abcde$session, "2010", "111")
+abcde$session <- stringr::str_replace_all(abcde$session, "2011", "112")
+abcde$session <- stringr::str_replace_all(abcde$session, "2012", "112")
+abcde$session <- stringr::str_replace_all(abcde$session, "2013", "113")
+abcde$session <- stringr::str_replace_all(abcde$session, "2014", "113")
+abcde$session <- stringr::str_replace_all(abcde$session, "2015", "114")
+abcde$session <- stringr::str_replace_all(abcde$session, "2016", "114")
+
+# Create Merge-id pageid_session
+abcde <- abcde %>%  unite(pageid_session, pageid, session, sep = "_", remove = FALSE)
+
+# Aggregate View Data by pageid_session
+abcdef <- abcde  %>% dplyr::select(c(pageid_session, traffic))
+abcdef <-  aggregate(abcdef[, 2], list(abcdef$pageid_session), sum)
+
+names(abcdef  )[names(abcdef ) == "Group.1"] <- "pageid_session"
+names(abcdef  )[names(abcdef  ) == "x"] <- "ProfileViewsPerSession09_to_16"
+
+Views_per_pageid_session <- abcdef
+
+# Out: Views_per_pageid_session
+# Saving Dataframe 
+save(Views_per_pageid_session , file = "Views_per_pageid_session.Rdata")
+
+# - End of  Views Version One -
+
+
+
+# 2. Views Version Two : all MoCs but just data from 2009 and 2016 aggregated over whole timeframe (not per Session)
+
 # Filter for timeframe (but as data for house starts in 2009, it will be shifted back to 2009-2018)
 abcde <- abcd %>%  filter(Year >= 2009) %>%  filter(Year <= 2018)
 length(unique(abcde$pageid))
@@ -644,7 +685,6 @@ for(i in 1:length(abcdef$ProfileViewsSum09_to_18)) {
     abcdef$ViewCategory[i] = 5  # last 5% 
   }
 }
-
 
 #Merge with MoC data: BothChambers_Session_109_to_114_Short
 BothChambers_Session_109_to_114_Short <-  left_join(BothChambers_Session_109_to_114_Short ,  abcdef , by = "pageid")
