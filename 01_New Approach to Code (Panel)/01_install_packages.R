@@ -6,6 +6,7 @@ install.packages("ggplot2")
 install.packages("readxl")
 install.packages("tidyverse")
 
+
 library(readxl)
 library(dplyr)
 library(readr)
@@ -50,3 +51,26 @@ install.packages("boot")
 library(pscl)
 library(MASS)
 library(boot)
+
+#11
+install.packages("formattable")
+install.packages("pscl")
+install.packages("MASS")
+install.packages("boot")
+install.packages("lmtest")
+install.packages("AER")
+install.packages("sandwich")
+install.packages("jtools")
+install.packages("stargazer")
+
+library(pscl)
+library(MASS)
+library(boot)
+library(lattice)
+library(AER)
+library(lmtest) #provides coeftest function 
+library(sandwich) # provides vcovHC function for calculating robust standard errors
+library(stargazer)
+library(jtools)
+library(formattable)
+

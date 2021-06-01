@@ -101,8 +101,7 @@ get_distribution_table_SECOND <- function(df_go, character) {
 
 
 
-# Next Step: Visualizations of many aspects of the Edit-Data 
-
+# Next Step: Visualizations of many different aspects of the Edit-Data 
 
 # --------------------------------------------------------------------------------------------------------------------------
 #Figure4_AA_Categories: Showing distribution of congress edits over party and gender and chamber in general 
