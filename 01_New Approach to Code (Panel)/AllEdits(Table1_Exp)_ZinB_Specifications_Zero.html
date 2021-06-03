@@ -1,0 +1,47 @@
+
+<table style="text-align:center"><caption><strong>Table 1. Modeling the likelihood of Congressional Edits using ZINB: Different Specifications</strong></caption>
+<tr><td colspan="4" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td colspan="3">Inflation Part (logit): Pr of Zero Edits</td></tr>
+<tr><td></td><td colspan="3" style="border-bottom: 1px solid black"></td></tr>
+<tr><td style="text-align:left"></td><td colspan="3"></td></tr>
+<tr><td style="text-align:left"></td><td>Full Sample</td><td>99 Percentile of<br>Congress Edits</td><td>99 Percentile of<br>External Edits</td></tr>
+<tr><td style="text-align:left"></td><td>(1)</td><td>(2)</td><td>(3)</td></tr>
+<tr><td colspan="4" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">District Competitiveness</td><td>-0.004</td><td>0.001</td><td>-0.003</td></tr>
+<tr><td style="text-align:left"></td><td>(0.008)</td><td>(0.006)</td><td>(0.009)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">Gender(Male)</td><td>0.470</td><td>0.140</td><td>0.750</td></tr>
+<tr><td style="text-align:left"></td><td>(1.179)</td><td>(0.826)</td><td>(1.863)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">Age</td><td>0.025</td><td>0.007</td><td>0.028</td></tr>
+<tr><td style="text-align:left"></td><td>(0.021)</td><td>(0.019)</td><td>(0.025)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">External Edits</td><td>-0.028<sup>**</sup></td><td>-0.017<sup>*</sup></td><td>-0.033<sup>**</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.011)</td><td>(0.010)</td><td>(0.014)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">110th Session</td><td>-0.419</td><td>-0.999<sup>***</sup></td><td>-0.390</td></tr>
+<tr><td style="text-align:left"></td><td>(0.277)</td><td>(0.0004)</td><td>(0.337)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">111th Session</td><td>-0.077</td><td>-0.044</td><td>-0.156</td></tr>
+<tr><td style="text-align:left"></td><td>(0.458)</td><td>(0.379)</td><td>(0.543)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">112th Session</td><td>-0.353</td><td>-0.469<sup>*</sup></td><td>-0.314</td></tr>
+<tr><td style="text-align:left"></td><td>(0.303)</td><td>(0.241)</td><td>(0.357)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">113th Session</td><td>-0.724<sup>***</sup></td><td>-0.672<sup>**</sup></td><td>-0.760<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.187)</td><td>(0.269)</td><td>(0.175)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">114th Session</td><td>-0.576<sup>**</sup></td><td>-0.328</td><td>-0.632<sup>**</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.280)</td><td>(0.463)</td><td>(0.259)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">Party Affiliation</td><td>-0.009</td><td>-0.254</td><td>0.040</td></tr>
+<tr><td style="text-align:left"></td><td>(0.361)</td><td>(0.235)</td><td>(0.429)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">Chamber(Senate)</td><td>1.802</td><td>1.467</td><td>1.572</td></tr>
+<tr><td style="text-align:left"></td><td>(2.569)</td><td>(2.018)</td><td>(3.041)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td></tr>
+<tr><td colspan="4" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Observations</td><td>3,318</td><td>3,290</td><td>3,285</td></tr>
+<tr><td style="text-align:left">Log Likelihood</td><td>-3,447.392</td><td>-3,213.864</td><td>-3,398.632</td></tr>
+<tr><td colspan="4" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"><em>Note:</em></td><td colspan="3" style="text-align:right">Age is higher for younger legislators (based on year of birth). Independents are allocated to the party they caucus with.</td></tr>
+<tr><td style="text-align:left"></td><td colspan="3" style="text-align:right">109th session as baseline. Cluster-robust standard errors taken by legislator.</td></tr>
+<tr><td style="text-align:left"></td><td colspan="3" style="text-align:right">Coef and SE are exponentiated and can be interpretated as percentge change.</td></tr>
+<tr><td style="text-align:left"></td><td colspan="3" style="text-align:right">*p<0.1; **p<0.05; ***p<0.01</td></tr>
+</table>

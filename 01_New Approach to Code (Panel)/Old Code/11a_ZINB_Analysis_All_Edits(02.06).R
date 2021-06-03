@@ -108,6 +108,20 @@ round(corTable , 2)
 # Chamber is highly correlated with popularity (views)
 
 
+# Function for converting standard errors into odds ratios
+# Taken from: https://www.andrewheiss.com/blog/2016/04/25/convert-logistic-regression-standard-errors-to-odds-ratios-with-r/
+# Author: Andrew Heiss
+
+get.or.se <- function(model) {   
+  broom::tidy(model) %>%
+    mutate(or = exp(estimate),
+           var.diag = diag(vcov(model)),
+           or.se = sqrt(or^2 * var.diag)) %>%
+    dplyr::select(or.se) %>% unlist %>% unname
+} #get.or.se(model)
+
+
+
 
 
 
@@ -287,6 +301,7 @@ BIC(M1,  M2_negBinom, M4_Hurdle, M3_ZIP, M3_ZeroInfl)
 
 
 
+
 # Table_AIC_BIC
 
 install.packages("formattable")
@@ -354,15 +369,97 @@ M3_ZeroInfl_AltSpecE_robust.se <- as.double(M3_ZeroInfl_AltSpecE_robust.se)
 
 
 
+
+# Exponentiated coefficients: M3_ZeroInfl
+M3_ZeroInfl_expCoef <- exp(coef((M3_ZeroInfl)))
+M3_ZeroInfl_expCoef <- matrix(M3_ZeroInfl_expCoef, ncol = 2)
+#rownames(M3_ZeroInfl_expCoef) <- c("Intercept", "District Competitiveness", "Gender(Male)", "Age", "External Edits", 
+#                       "110th Session", "111th Session", "112th Session", "113th Session", 
+#                       "114th Session", "Party Affiliation", "Chamber(Senate)")
+#colnames(M3_ZeroInfl_expCoef) <- c("Count_model","Zero_inflation_model")
+#M3_ZeroInfl_expCoef
+
+
+# Exponentiated coefficients: M3_ZeroInfl
+M3_ZeroInfl_AltSpecA_expCoef <- exp(coef((M3_ZeroInfl_AltSpecA)))
+M3_ZeroInfl_AltSpecA_expCoef <- matrix(M3_ZeroInfl_AltSpecA_expCoef, ncol = 2)
+
+# Exponentiated coefficients: M3_ZeroInfl
+M3_ZeroInfl_AltSpecE_expCoef <- exp(coef((M3_ZeroInfl_AltSpecE)))
+M3_ZeroInfl_AltSpecE_expCoef <- matrix(M3_ZeroInfl_AltSpecE_expCoef, ncol = 2)
+
+
+coef_M3_ZeroInfl = c(0.3709339 ,1.0052052 ,1.3020855 ,1.0190563 ,  1.0000338 ,0.6979092 ,0.5517877 ,0.5968306 , 0.5635001 ,0.2692415 ,1.1388842 ,0.8162883)
+coef_M3_ZeroInfl <- coef_M3_ZeroInfl -1
+
+coef_M3_ZeroInfl_AltSpecA = c(0.6497474492, 1.0051549561,1.1335816213, 1.0087307868, 0.9999825077, 0.5358255063,0.5510362951, 0.4789059059, 0.5111991140, 0.3290105583,1.0670804838, 0.9849050305)
+coef_M3_ZeroInfl_AltSpecA  <- coef_M3_ZeroInfl_AltSpecA  -1
+
+coef_M3_ZeroInfl_AltSpecE = c( 0.3163611, 1.0055362,1.2986405,1.0186174, 1.0005664,0.7202166, 0.5531552, 0.6403219, 0.6080137, 0.2833594, 1.1655937, 0.7345192)
+coef_M3_ZeroInfl_AltSpecE <- coef_M3_ZeroInfl_AltSpecE - 1
+
+
+
+
+# Exponentiated (and clustered) standart errors: M3_ZeroInfl
+
+# Per Hand berechen: 
+# Dafür brauche ich:
+# 1. Exponentiated coefficients (which are the same for both the normal and robust model)
+
+M3_ZeroInfl_expCoef_SE <- exp(coef((M3_ZeroInfl)))
+M3_ZeroInfl_expCoef_SE <- matrix(M3_ZeroInfl_expCoef_SE, ncol = 2) #for both logit and negbin
+# 1= "Count_model"; 2= "Zero_inflation_model"
+#M3_ZeroInfl_expCoef_SE <- M3_ZeroInfl_expCoef_SE[,1]
+
+# 2. Coefficient variance (which is also the same for both normal and robust as it is calculated based on coefficient)
+
+var.diag = diag(vcovCL(M3_ZeroInfl, cluster = df_Zinb$pageid)) #24 values 
+# already robust, da ich vcovCL statt vcov nehme, und nach pageid cluster
+
+# 3. SE berechnen  
+
+or = M3_ZeroInfl_expCoef_SE[]
+or.se = sqrt(or^2 * var.diag)
+se_M3_ZeroInfl = or.se[,1]
+
+
+#Again for AltSpecA
+var.diag = diag(vcovCL(M3_ZeroInfl_AltSpecA , cluster = df_Zinb_AltSpecA$pageid)) #24 values 
+or = M3_ZeroInfl_AltSpecA_expCoef[]
+or.se = sqrt(or^2 * var.diag)
+se_M3_ZeroInfl_AltSpecA = or.se[,1]
+
+
+
+#Again for AltSpecE
+var.diag = diag(vcovCL(M3_ZeroInfl_AltSpecE , cluster = df_Zinb_AltSpecE$pageid)) #24 values 
+or = M3_ZeroInfl_AltSpecE_expCoef[]
+or.se = sqrt(or^2 * var.diag)
+se_M3_ZeroInfl_AltSpecE = or.se[,1]
+
+
+
+
+
+#To Do: 
+# Get Coefficients that are exopotionaed 
+# Get robust standart erros that are also expotoned 
+# HINT: the stargazer tables as they are right know take the same standart erros for logist and negbin which is wrong!
+
+
+
 # Out: AlllEdits(2)_Model_Results_Count.html - Count part
 stargazer(M3_ZeroInfl, M3_ZeroInfl_AltSpecA, M3_ZeroInfl_AltSpecE,  
-          se = list(M3_ZeroInfl_robust.se, M3_ZeroInfl_AltSpecA_robust.se, M3_ZeroInfl_AltSpecE_robust.se), 
+          coef = list(coef_M3_ZeroInfl, coef_M3_ZeroInfl_AltSpecA, coef_M3_ZeroInfl_AltSpecE),
+          se = list(se_M3_ZeroInfl , se_M3_ZeroInfl_AltSpecA, se_M3_ZeroInfl_AltSpecE),
+          #se = list(M3_ZeroInfl_robust.se, M3_ZeroInfl_AltSpecA_robust.se, M3_ZeroInfl_AltSpecE_robust.se), 
           dep.var.caption  = c("Count Part (NegBin): Number of Edits"),
           dep.var.labels=c(""), 
-          column.labels = c("Full Sample", "99 Percentile of<br>Congress Edits", "99 Percentile of<br>External Edits"),
-          covariate.labels=c("District Competitiveness", "Gender(Male)", "Age", "External Edits", 
-                             "110th Session", "111th Session", "112th Session", "113th Session", 
-                             "114th Session", "Party Affiliation", "Chamber(Senate)"),
+          #column.labels = c("Full Sample", "99 Percentile of<br>Congress Edits", "99 Percentile of<br>External Edits"),
+          #covariate.labels=c("District Competitiveness", "Gender(Male)", "Age", "External Edits", 
+          #                   "110th Session", "111th Session", "112th Session", "113th Session", 
+           #                  "114th Session", "Party Affiliation", "Chamber(Senate)"),
           title="Table 2. Modelling the Number of Congressional Edits using ZINB: Different Specifications", model.names = F, 
           notes.append = F, notes.align = "r",
           notes = c("\\parbox[t]{\\textwidth}{Age is higher for younger legislators (based on year of birth). Independents are allocated to the party they caucus with. }", 
@@ -370,8 +467,9 @@ stargazer(M3_ZeroInfl, M3_ZeroInfl_AltSpecA, M3_ZeroInfl_AltSpecE,
                     # "\\parbox[t]{\\textwidth}{ }",
                     "\\parbox[t]{\\textwidth}{ *p<0.1; **p<0.05; ***p<0.01}"),
           align=TRUE, omit.stat=c("aic", "theta" ),
-          out="AllEdits(2)_ZinB_Specifications_Count.html", 
+         # out="AllEdits(2)_ZinB_Specifications_Count.html", 
           type = "text")
+
 
 
 
@@ -393,9 +491,6 @@ stargazer(M3_ZeroInfl, M3_ZeroInfl_AltSpecA, M3_ZeroInfl_AltSpecE,  zero.compone
                     "\\parbox[t]{\\textwidth}{ *p<0.1; **p<0.05; ***p<0.01}"),
           align=TRUE, omit.stat=c("aic", "theta" ),
           out="AllEdits(2)_ZinB_Specifications_Zero.html",  type = "text")
-
-
-
 
 
 
@@ -433,6 +528,7 @@ M3_ZeroInfl_AltCount3 <- zeroinfl(AllCongressEdits_Per_MoC_Session ~ vote_maxdif
 M3_ZeroInfl_AltCount3_cov <- vcovCL(M3_ZeroInfl_AltCount3, cluster = df_Zinb$pageid)
 M3_ZeroInfl_AltCount3_robust.se <- sqrt(diag(M3_ZeroInfl_AltCount3_cov))
 M3_ZeroInfl_AltCount3_robust.se  <- as.double(M3_ZeroInfl_AltCount3_robust.se) 
+
 
 
 
@@ -739,6 +835,15 @@ M3_ZeroInfl_AltSpec_NoDoubles <- zeroinfl(AllCongressEdits_Per_MoC_Session ~  vo
 M3_ZeroInfl_AltSpec_NoDoubles_cov <- vcovCL(M3_ZeroInfl_AltSpec_NoDoubles , cluster = df_Zinb_Unique$pageid)
 M3_ZeroInfl_AltSpec_NoDoubles_robust.se <- sqrt(diag(M3_ZeroInfl_AltSpec_NoDoubles_cov))
 M3_ZeroInfl_AltSpec_NoDoubles_robust.se <- as.double(M3_ZeroInfl_AltSpec_NoDoubles_robust.se) # for some reason the standard erros are not displayed without this transformation (prob. due to scientific notation)
+
+
+
+
+
+
+
+
+
 
 
 
