@@ -62,6 +62,7 @@ install.packages("AER")
 install.packages("sandwich")
 install.packages("jtools")
 install.packages("stargazer")
+install.packages("broom")
 
 library(pscl)
 library(MASS)
@@ -73,4 +74,5 @@ library(sandwich) # provides vcovHC function for calculating robust standard err
 library(stargazer)
 library(jtools)
 library(formattable)
-
+library(readr)  
+library(broom)

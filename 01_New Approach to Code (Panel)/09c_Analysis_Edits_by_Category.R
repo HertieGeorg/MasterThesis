@@ -1577,6 +1577,26 @@ grid.arrange(Figure4j1_Categories , Figure4j2_Categories , Figure4j3_Categories 
 
 #------------------- Further General Statistics ----------------
 
+# Editing as persistent phenomena
+df_ZinbPerPageID <- df_Zinb  %>% dplyr::select(c(pageid, AllCongressEdits_Per_MoC_Session))
+df_ZinbPerPageID_Sum <-  aggregate(df_ZinbPerPageID[, 2], list(df_ZinbPerPageID$pageid), sum)
+names(df_ZinbPerPageID_Sum  )[names(df_ZinbPerPageID_Sum ) == "Group.1"] <- "pageid"
+names(df_ZinbPerPageID_Sum  )[names(df_ZinbPerPageID_Sum  ) == "x"] <- "AllCongreeEdits"
+table(df_ZinbPerPageID_Sum$AllCongreeEdits)
+summary(df_ZinbPerPageID_Sum$AllCongreeEdits)
+# Mean edits per MoC: 2.497
+# 394 do not see any edits, that means 981-394 = 587 do see edits
+
+# Beneficial Political Edits
+df_ZinbPerPageID <- df_Zinb  %>% dplyr::select(c(pageid, All_Positive_Politically_CongressEdits_Per_MoC_Session))
+df_ZinbPerPageID_Sum <-  aggregate(df_ZinbPerPageID[, 2], list(df_ZinbPerPageID$pageid), sum)
+names(df_ZinbPerPageID_Sum  )[names(df_ZinbPerPageID_Sum ) == "Group.1"] <- "pageid"
+names(df_ZinbPerPageID_Sum  )[names(df_ZinbPerPageID_Sum  ) == "x"] <- "PositivePoliticallyCongreesEdits"
+table(df_ZinbPerPageID_Sum$PositivePoliticallyCongreesEdits)
+summary(df_ZinbPerPageID_Sum$PositivePoliticallyCongreesEdits)
+# 582 do not see any beneficial political edits, that means 981-582 = 399 do see edits
+#399/981
+
 
 #Ratio of gender within parties 
 table(df_D$sex) /length(df_D$sex)
@@ -1648,6 +1668,14 @@ length(unique(BothChambers_Session_109_to_114_Short$pageid_session[BothChambers_
 length(unique(BothChambers_Session_109_to_114_Short$pageid_session[BothChambers_Session_109_to_114_Short$Chamber == "H"]))/ length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$Chamber == "H"]))
 # Average number of session served per Senator: 3.444444
 # Average number of session served per Senator: 3.250602
+
+
+# Change in number of edits over time: 
+Maintenance_Edits <- Inside_Congress_Edits_Politically %>%filter(politically_motivated == 0)
+Maintenance_Edits$session <- stringr::str_extract(Maintenance_Edits$pageid_session, "...$") 
+table(Maintenance_Edits$session)
+# Session:   109 110 111 112 113 114 
+# Edits:     184 216 148 169 245 113 
 
 
 
