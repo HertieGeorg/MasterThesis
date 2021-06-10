@@ -150,7 +150,7 @@ Figure4X1_Plot1 <- ggplot(chamberA , aes(x=Var1, y=Freq, fill=Var1,)) +
   #ggtitle("Total Number of Congress Edits by Chamber") +
   xlab("Chamber") + 
   theme_classic() +
-  ylab("Total Number of Edits") +
+  ylab("Total number of edits") +
   geom_text(aes(label=Freq), position=position_dodge(width=0.9), vjust=-0.20, size = 5)+
   scale_fill_manual(values = c( "grey75","grey43")) +  
   scale_x_discrete(labels=c("House", "Senate")) +
@@ -162,17 +162,17 @@ Figure4X1_Plot2 <-  ggplot(sexA , aes(x=Var1, y=Freq, fill=Var1,)) +
   #ggtitle("Total Number of Congress Edits by Gender") +
   xlab("Gender") + 
   theme_classic() +
-  #ylab() +
+  ylab("Total number of edits") +
   geom_text(aes(label=Freq), position=position_dodge(width=0.9), vjust=-0.20, size = 5)+
   scale_fill_manual(values = c(  "darkolivegreen1","yellowgreen")) +  
   scale_x_discrete(labels=c("Female", "Male")) +
-  theme(legend.position = "none", axis.title.y = element_blank())
+  theme(legend.position = "none")
 
 Figure4X1_Plot3 <-  ggplot(CompetA , aes(x=Var1, y=Freq, fill=Var1,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
   scale_fill_brewer(palette = "Set1",name = "Party") + 
   #ggtitle("Total Number of Congress Edits by Competitiveness") +
-  xlab("MoC's election district competitiveness") + 
+  xlab("District competitiveness") + 
   theme_classic() +
   #ylab("none") +
   geom_text(aes(label=Freq), position=position_dodge(width=0.9), vjust=-0.20, size = 5)+
@@ -201,7 +201,7 @@ Figure4X2_Plot1 <- ggplot(chamberR , aes(x=Var1, y=Freq, fill=Var1,)) +
   #ggtitle("Number of Congress Edits per MoC by Party") +
   xlab("Chamber") + 
   theme_classic() +
-  ylab("Number of Edits per MoC") +
+  ylab("Number of edits per MoC") +
   geom_text(aes(label=Freq), position=position_dodge(width=0.9), vjust=-0.20, size = 5)+
   scale_fill_manual(values = c( "grey75","grey43")) +  
   scale_x_discrete(labels=c("House", "Senate")) +
@@ -213,17 +213,17 @@ Figure4X2_Plot2 <- ggplot(sexR , aes(x=Var1, y=Freq, fill=Var1,)) +
   #ggtitle("Number of Congress Edits per MoC by Party") +
   xlab("Gender") + 
   theme_classic() +
-  #ylab("none") +
+  ylab("Number of edits per MoC") +
   geom_text(aes(label=Freq), position=position_dodge(width=0.9), vjust=-0.20, size = 5)+
   scale_fill_manual(values = c(  "darkolivegreen1","yellowgreen")) +  
   scale_x_discrete(labels=c("Female", "Male")) +
-  theme(legend.position = "none",  axis.title.y = element_blank())
+  theme(legend.position = "none")
 
 Figure4X2_Plot3 <-  ggplot(CompetR , aes(x=Var1, y=Freq, fill=Var1,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
   #scale_fill_brewer(palette = "Set1",name = "Party") + 
   #ggtitle("Number of Congress Edits per MoC by Competitiveness") +
-  xlab("MoC's election district competitiveness") + 
+  xlab("District competitiveness") + 
   theme_classic() +
   #ylab("none") +
   geom_text(aes(label=Freq), position=position_dodge(width=0.9), vjust=-0.20, size = 5)+
@@ -244,9 +244,9 @@ Figure4X2_Plot4 <- ggplot(partyR , aes(x=Var1, y=Freq, fill=Var1,)) +
   theme(legend.position = "none",  axis.title.y = element_blank())
 
 #Figure4_AA_1_Categories  
-grid.arrange(Figure4X1_Plot1, Figure4X1_Plot2, Figure4X1_Plot3 ,Figure4X1_Plot4, ncol = 4, nrow = 1, top=("Total number of edits from the Congress IT network by chamber, gender, competitiveness and party"))
+grid.arrange(Figure4X1_Plot2, Figure4X1_Plot3 ,Figure4X1_Plot4, ncol = 3, nrow = 1, top=("Figure A3. Total number of Congress edits by gender, competitiveness, and party"))
 #Figure4_AA_2_Categories  
-grid.arrange(Figure4X2_Plot1, Figure4X2_Plot2, Figure4X2_Plot3 ,Figure4X2_Plot4, ncol = 4, nrow = 1, top=("Number of edits from the Congress IT network per MoC by chamber, gender, competitiveness and party"))
+grid.arrange( Figure4X2_Plot2, Figure4X2_Plot3 ,Figure4X2_Plot4, ncol = 3, nrow = 1, top=("Figure 11. Number of Congress edits per MoC by gender, competitiveness, and party"))
 
 
 
@@ -308,19 +308,19 @@ Figure4_AB_1_Plot2 <- ggplot(sex_P_R , aes(x=Var1, y=Freq, fill=Var1,)) +
   #ggtitle("Number of Congress Edits per MoC by Party") +
   xlab("Gender") + 
   theme_classic() +
-  #ylab("none") +
+  ylab("Number of political edits per MoC") +
   geom_text(aes(label=Freq), position=position_dodge(width=0.9), vjust=-0.20, size = 5)+
   scale_fill_manual(values = c(  "darkolivegreen1","yellowgreen")) +  
   scale_x_discrete(labels=c("Female", "Male")) +
-  theme(legend.position = "none",  axis.title.y = element_blank())
+  theme(legend.position = "none")#  axis.title.y = element_blank())
 
 Figure4_AB_1_Plot3 <-  ggplot(Compet_P_R , aes(x=Var1, y=Freq, fill=Var1,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
   #scale_fill_brewer(palette = "Set1",name = "Party") + 
   #ggtitle("Number of Congress Edits per MoC by Competitiveness") +
-  xlab("MoC's election district competitiveness") + 
+  xlab("District competitiveness") + 
   theme_classic() +
-  #ylab("none") +
+  ylab("") +
   geom_text(aes(label=Freq), position=position_dodge(width=0.9), vjust=-0.20, size = 5)+
   scale_fill_manual(values = c( "plum", "orchid1")) +  
   scale_x_discrete(labels=c("Bottom 25%", "Top 25%")) +
@@ -332,7 +332,7 @@ Figure4_AB_1_Plot4 <- ggplot(party_P_R , aes(x=Var1, y=Freq, fill=Var1,)) +
   scale_fill_brewer(palette = "Set1",name = "Party") + 
   #ggtitle("Number of Congress Edits per MoC by Party") +
   xlab("Party") + 
-  #ylab("none") +
+  ylab("") +
   theme_classic() +
   geom_text(aes(label=Freq), position=position_dodge(width=0.9), vjust=-0.20, size = 5)+
   scale_fill_manual(values = c( "steelblue1", "indianred1")) +  
@@ -340,7 +340,7 @@ Figure4_AB_1_Plot4 <- ggplot(party_P_R , aes(x=Var1, y=Freq, fill=Var1,)) +
   theme(legend.position = "none",  axis.title.y = element_blank())
 
 #Figure4_AB_Categories
-grid.arrange(Figure4_AB_1_Plot1, Figure4_AB_1_Plot2, Figure4_AB_1_Plot3,Figure4_AB_1_Plot4, ncol = 4, nrow = 1, top=("Number of political edits from the Congress IT network per MoC by chamber, gender, competitiveness and party"))
+grid.arrange( Figure4_AB_1_Plot2, Figure4_AB_1_Plot3,Figure4_AB_1_Plot4, ncol = 3, nrow = 1, top=("Figure 12. Number of political edits per MoC by gender, competitivenes, and party"))
 
 
 
@@ -415,10 +415,10 @@ Figure4_AC_1_Plot2 <- ggplot(Sex_All_Broad, aes(x=Category, y=Share, fill=MoC_Ch
   #ggtitle("Edits from the Congress IT network by gender (four broad categories)") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of all gender edits ") +
+  ylab("Share among all edits in the same characteristic-group") +
   scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_Broad )  +
   scale_fill_manual(labels = c("Female", "Male"), values = c( "darkolivegreen1","yellowgreen")) + 
-  theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
+  theme(legend.position = c(0.75, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
 
 #Figure4_AC_1_Plot3
 Figure4_AC_1_Plot3 <- ggplot(Compet_All_Broad, aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
@@ -426,10 +426,10 @@ Figure4_AC_1_Plot3 <- ggplot(Compet_All_Broad, aes(x=Category, y=Share, fill=MoC
   #ggtitle("Edits from the Congress IT network by competitiveness (four broad categories)") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of all competitive-group edits ") +
+  ylab("") +
   scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_Broad )  +
   scale_fill_manual(labels = c("Bottom 25% ", "Top 25%"), values = c( "plum", "orchid1")) + 
-  theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
+  theme(legend.position = c(0.75, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
 
 #Figure4_AC_1_Plot4
 Figure4_AC_1_Plot4 <- ggplot(Party_All_Broad, aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
@@ -437,16 +437,16 @@ Figure4_AC_1_Plot4 <- ggplot(Party_All_Broad, aes(x=Category, y=Share, fill=MoC_
   #ggtitle("Edits from the Congress IT network by party (four broad categories)") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of all party edits ") +
+  ylab("") +
   scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_Broad )  +
   scale_fill_manual(labels = c("Democrats", "Republicans"), values = c( "steelblue1", "indianred1")) + 
-  theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
+  theme(legend.position = c(0.75, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
 
 
 
-#Figure4_AC_1a_Categories
-grid.arrange(Figure4_AC_1_Plot1, Figure4_AC_1_Plot2, Figure4_AC_1_Plot3 , Figure4_AC_1_Plot4, ncol = 4, nrow = 1,
-             top=("Distribution of all edits from the Congress IT network over broad categories by chamber, gender, competitiveness and party"))
+#Figure A6: Figure4_AC_1a_Categories
+grid.arrange(Figure4_AC_1_Plot2, Figure4_AC_1_Plot3 , Figure4_AC_1_Plot4, ncol = 3, nrow = 1,
+             top=("Figure A3. Alternative normalization: Distribution of all Congress edits over broad categories by gender, competitiveness, and party"))
 
 
 #------- Alternative Specification of the samen graphs with other function----
@@ -491,10 +491,10 @@ Figure4_AC_1_Plot2x <- ggplot(Sex_All_Broadx, aes(x=Category, y=Share, fill=MoC_
   #ggtitle("Edits from the Congress IT network by gender (four broad categories)") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of all gender edits ") +
+  ylab("Share among all edits in the same characteristic-group") +
   scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_Broad )  +
   scale_fill_manual(labels = c("Female", "Male"), values = c( "darkolivegreen1","yellowgreen")) + 
-  theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
+  theme(legend.position = c(0.75, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
 
 #Figure4_AC_1_Plot3x
 Figure4_AC_1_Plot3x <- ggplot(Compt_All_Broadx, aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
@@ -502,10 +502,10 @@ Figure4_AC_1_Plot3x <- ggplot(Compt_All_Broadx, aes(x=Category, y=Share, fill=Mo
   #ggtitle("Edits from the Congress IT network by competitiveness (four broad categories)") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of all competitive-group edits ") +
+  ylab("") +
   scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_Broad )  +
   scale_fill_manual(labels = c("Bottom 25%", "Top 25%"), values = c( "plum", "orchid1")) + 
-  theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
+  theme(legend.position = c(0.75, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
 
 
 #Figure4_AC_1_Plot4x
@@ -514,14 +514,14 @@ Figure4_AC_1_Plot4x <- ggplot(Party_All_Broadx, aes(x=Category, y=Share, fill=Mo
   #ggtitle("Edits from the Congress IT network by party (four broad categories)") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of all party edits ") +
+  ylab("") +
   scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_Broad )  +
   scale_fill_manual(labels = c("Democrats", "Republicans"), values = c( "steelblue1", "indianred1")) + 
-  theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
+  theme(legend.position = c(0.75, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
 
-#Figure4_AC_1b_Categories
-grid.arrange(Figure4_AC_1_Plot1x, Figure4_AC_1_Plot2x, Figure4_AC_1_Plot3x ,Figure4_AC_1_Plot4x, ncol = 4, nrow = 1,
-             top=("Distribution of all edits from the Congress IT network over broad categories by chamber, gender, competitiveness and party (Other dividing-mechanism)"))
+#Figure 11: Figure4_AC_1b_Categories
+grid.arrange(Figure4_AC_1_Plot2x, Figure4_AC_1_Plot3x ,Figure4_AC_1_Plot4x, ncol = 3, nrow = 1,
+             top=("Figure 11. Distribution of all Congress edits over broad categories by gender, competitiveness, and party"))
 
 
 
@@ -595,10 +595,10 @@ Figure4_AC_2_Plot2 <- ggplot(Sex_Political_Broad, aes(x=Category, y=Share, fill=
   #ggtitle("Political Edits from the Congress IT network by gender (four broad categories)") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of political gender edits ") +
+  ylab("Share among all edits in the same characteristic-group") +
   scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_Broad )  +
   scale_fill_manual(labels = c("Female", "Male"), values = c( "darkolivegreen1","yellowgreen")) + 
-  theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
+  theme(legend.position = c(0.75, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
 
 #Figure4_AC_2_Plot3
 Figure4_AC_2_Plot3 <- ggplot(Compt_Political_Broad, aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
@@ -606,10 +606,10 @@ Figure4_AC_2_Plot3 <- ggplot(Compt_Political_Broad, aes(x=Category, y=Share, fil
   #ggtitle("Political Edits from the Congress IT network by party (four broad categories)") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of political competitive edits ") +
+  ylab("") +
   scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_Broad )  +
   scale_fill_manual(labels = c("Bottom 25%", "Top 25%"), values = c( "plum", "orchid1")) + 
-  theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
+  theme(legend.position = c(0.75, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
 
 
 #Figure4_AC_2_Plot4
@@ -618,14 +618,16 @@ Figure4_AC_2_Plot4 <- ggplot(Party_Political_Broad, aes(x=Category, y=Share, fil
   #ggtitle("Political Edits from the Congress IT network by party (four broad categories)") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of political party edits ") +
+  ylab("") +
   scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_Broad )  +
   scale_fill_manual(labels = c("Democrats", "Republicans"), values = c( "steelblue1", "indianred1")) + 
-  theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
+  theme(legend.position = c(0.75, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
 
-#Figure4_AC_2_Categories
-grid.arrange(Figure4_AC_2_Plot1, Figure4_AC_2_Plot2, Figure4_AC_2_Plot3, Figure4_AC_2_Plot4 , ncol = 4, nrow = 1,
-             top=("Distribution of political edits from the Congress IT network over broad categories by chamber, gender, competitiveness and party"))
+#Figure 12: Figure4_AC_2_Categories
+grid.arrange(Figure4_AC_2_Plot2, Figure4_AC_2_Plot3, Figure4_AC_2_Plot4 , ncol = 3, nrow = 1,
+             top=("Figure 12. Distribution of political edits over broad categories by gender, competitiveness, and party"))
+
+
 
 
 
@@ -654,18 +656,18 @@ X_D <- get_distribution_table_SECOND(df_D_Personal, "D") # Number of Edits: 1090
 X_R <- get_distribution_table_SECOND(df_R_Personal, "R") # Number of Edits: 1358
 Party_All <- rbind(X_D, X_R)
 
-labels_PersonalLife <- c("Achievements/Awards", "Activities/Membershios", 
-                         "Personal Character", "Early Life",
-                         "Family and current life", "Financial erarnings",
+labels_PersonalLife <- c("Achievements/Awards", "Activities/Memberships", 
+                         "Personal character", "Early life",
+                         "Family and current life", "Financial earnings",
                          "Religion")
 
-#Figure4a_Categories
+#Figure 13: Figure4a_Categories
 Figure4a_Categories <- ggplot(Party_All, aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
-  ggtitle("Edits from the Congress IT network by party (Personal life)") +
+  ggtitle("Figure 13. Congress edits over 'Personal life' by party") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of all party edits ") +
+  ylab("Share among all edits in the same characteristic-group") +
   scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_PersonalLife)  +
   scale_fill_manual(labels = c("Democrats", "Republicans"), values = c( "steelblue1", "indianred1")) + 
   theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) 
@@ -691,27 +693,19 @@ X_RP <- get_distribution_table_SECOND(df_RP_Personal, "R") #1358
 Party_Political <- rbind(X_DP, X_RP)
 
 
-labels_PersonalLife <- c("Achievements/Awards", "Activities/Memberships", 
-                         "Personal Character", "Early Life",
-                         "Family and current life", "Financial earnings",
-                         "Religion")
-
-#Figure4b_Categories
+#Figure 14: Figure4b_Categories
 Figure4b_Categories <- ggplot(Party_Political, aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
-  ggtitle("Political edits from the Congress IT network by party (Personal life)") +
+  ggtitle("Figure 14. Political edits over 'Personal life' by party") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of political party edits ") +
+  ylab("") +
   scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_PersonalLife)  +
   scale_fill_manual(labels = c("Democrats", "Republicans"), values = c( "steelblue1", "indianred1")) + 
   theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
 
-
-grid.arrange(Figure4a_Categories , Figure4b_Categories , ncol = 2, nrow = 1,
-             top=("All edits and political edits from the Congress IT network by party (Personal life)"))
-
-
+# Figure 13&14
+grid.arrange(Figure4a_Categories , Figure4b_Categories , ncol = 2, nrow = 1)
 
 
 
@@ -727,13 +721,13 @@ X_M_Personal2 <- get_distribution_table(df_M_Personal, "Male", 926) #distributio
 Sex_All_Personal2 <- rbind(X_F_Personal2, X_M_Personal2)
 
 
-#Figure4c_Plot2
+# Figure 15: Figure4c_Categories 
 Figure4c_Plot2 <- ggplot(Sex_All_Personal2 , aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
-  ggtitle("All edits from the Congress IT network by gender (Personal life) (devided by total number of edits WITHIN PERSONAl per gender") +
+  ggtitle("Figure 15. Congress edits over 'Personal life' by gender") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of gender edits ") +
+  ylab("Share among all edits in the same characteristic-group") +
   scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_PersonalLife)  +
   scale_fill_manual(labels = c("Female", "Male"), values = c( "darkolivegreen1","yellowgreen")) + 
   theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
@@ -753,22 +747,21 @@ X_MP_Personal2 <- get_distribution_table(df_MP_Personal, "Male", 649) #distribut
 Sex_Political_Personal2 <- rbind(X_FP_Personal2, X_MP_Personal2)
 
 
-#Figure4d_Plot2
+#Figure 16: Figure4d_Categories
 Figure4d_Plot2 <- ggplot(Sex_Political_Personal2 , aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
-  ggtitle("Political edits from the Congress IT network by gender (Personal life) (devided by total number of edits WITHIN PERSONAl per gender") +
+  ggtitle("Figure 16. Political edits over 'Personal life' by gender") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of political gender edits ") +
+  ylab("") +
   scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_PersonalLife)  +
   scale_fill_manual(labels = c("Female", "Male"), values = c( "darkolivegreen1","yellowgreen")) + 
   theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
 
 
 
-#Figure4d_Categories
-grid.arrange(Figure4c_Plot2 , Figure4d_Plot2, ncol = 2, nrow = 1,
-             top=("Distribution of political edits from the Congress IT network over personal categories gender (3 different benchmarks"))
+#Figure 15 & 16: Figure4c_Categories & Figure4d_Categories
+grid.arrange(Figure4c_Plot2 , Figure4d_Plot2, ncol = 2, nrow = 1)
 
 
 
@@ -787,17 +780,20 @@ X_B <- get_distribution_table_SECOND(df_B_Personal, "Bottom 25%")
 Compt_All <- rbind(X_T, X_B)
 
 
-#Figure4Compt1_Categories
+# Figure 17: Figure4Compt1_Categories 
 Figure4Compt1_Categories <- ggplot(Compt_All, aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
-  ggtitle("Edits from the Congress IT network by competitiveness (Personal life)") +
+  ggtitle("Figure 17. Congress edits over 'Personal life' by competitiveness") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of all competitive-groups edits ") +
+  ylab("Share among all edits in the same characteristic-group") +
   scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_PersonalLife)  +
   scale_fill_manual(labels =c("Bottom 25%", "Top 25%"), values = c(  "plum", "orchid1")) + 
   theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) 
 #+labs(fill = "Party") 
+
+
+
 
 
 
@@ -817,20 +813,19 @@ X_BP <- get_distribution_table_SECOND(df_BP_Personal, "Bottom25")
 Compt_Political <- rbind(X_TP, X_BP)
 
 
-#FigureCompt2_Categories
+# Figure 18: Figure4Compt2_Categories
 Figure4Compt2_Categories <- ggplot(Compt_Political, aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
-  ggtitle("Political edits from the Congress IT network by competitiveness (Personal life)") +
+  ggtitle("Figure 18. Political edits over 'Personal life' by competitiveness") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of political competitive-groups edits ") +
+  ylab("") +
   scale_x_discrete(guide = guide_axis(angle = 45), labels= labels_PersonalLife)  +
   scale_fill_manual(labels =c("Bottom 25%", "Top 25%"), values = c(  "plum", "orchid1")) + 
   theme(legend.position = c(0.85, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
 
-#FigureCompt_Categories
-grid.arrange(Figure4Compt1_Categories ,Figure4Compt2_Categories, ncol = 2, nrow = 1,
-             top=("Distribution of overall and political edits from the Congress IT network over personal categories by competitiveness (25%)"))
+#Figures 17 & 18: FigureCompt1_Categories & FigureCompt2_Categories
+grid.arrange(Figure4Compt1_Categories ,Figure4Compt2_Categories, ncol = 2, nrow = 1)
 
 
 
@@ -932,15 +927,15 @@ X_M_PC <- get_distribution_table(df_M_PC, "Male", 2101 )#number of edits on prof
 
 Sex_PC <- rbind(X_F_PC, X_M_PC)
 
-label_polCategories <- c("Harmful", "Beneficial")
+label_polCategories <- c("Harmful Edits", "Beneficial Edits")
 
 #Figure4e_Plot1
 Figure4e_Plot1 <- ggplot(Sex_PC , aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
-  ggtitle("Harmful and Beneficial Political edits from the Congress IT network by gender ") +
+  ggtitle("Share among all Congress edits in each gender-group") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of all gender edits ") +
+  ylab("") +
   scale_x_discrete(guide = guide_axis(angle =0), labels= label_polCategories)  +
   scale_fill_manual(labels = c("Female", "Male"), values = c( "darkolivegreen1","yellowgreen")) + 
   theme(legend.position = c(0.15, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
@@ -973,7 +968,7 @@ length(unique(df_M_PCH$pageid.x)) #75
 75/813
 
 data_HarmBeneSex <- data.frame(MoC_Characteristic = c("Male", "Male", "Female", "Female"),
-           Category = c("Harmful", "Beneficial","Harmful","Beneficial"),
+           Category = c("Harmful Edits", "Beneficial Edits","Harmful Edits","Beneficial Edits"),
            Share = c(75/813, 388/813, 11/168, 61/168))
 
 
@@ -981,10 +976,10 @@ data_HarmBeneSex <- data.frame(MoC_Characteristic = c("Male", "Male", "Female", 
 #Figure4e_Plot2
 Figure4e_Plot2 <- ggplot(data_HarmBeneSex , aes(x=fct_rev(fct_infreq(Category)), y=Share, fill=MoC_Characteristic,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
-  ggtitle("Share of MoCs that see at least one harmful or beneficial political edit by gender ") +
+  ggtitle("Share of MoCs that see at least one edit") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of MoCs that see respective type of edits by gender") +
+  ylab("") +
   #scale_x_discrete(guide = guide_axis(angle = 45), labels= label_polCategories)  +
   scale_fill_manual(labels = c("Female", "Male"), values = c( "darkolivegreen1","yellowgreen")) + 
   theme(legend.position = c(0.15, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
@@ -992,7 +987,7 @@ Figure4e_Plot2 <- ggplot(data_HarmBeneSex , aes(x=fct_rev(fct_infreq(Category)),
 
 #Figure4e_Categories
 grid.arrange(Figure4e_Plot1, Figure4e_Plot2, ncol = 2, nrow = 1,
-             top=("Distribution of harmful and beneficial political edits by gender"))
+             top=("Figure 19. Distribution of harmful and beneficial edits by gender"))
 
 
 # --------------------------------------------------------------------------------------------------------------------------
@@ -1013,13 +1008,16 @@ Party_PC <- rbind(X_D_PC, X_R_PC)
 #Figure4f_Plot1
 Figure4f_Plot1 <- ggplot(Party_PC , aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
-  ggtitle("Percentage of Harmful and Beneficial Political edits on all edits by party") +
+  ggtitle("Share among all Congress edits in each party-group") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of all party edits ") +
+  ylab(" ") +
   scale_x_discrete(guide = guide_axis(angle =0), labels= label_polCategories)  +
   scale_fill_manual(labels = c("Democratic", "Republican"), values = c( "steelblue1", "indianred1")) + 
   theme(legend.position = c(0.15, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
+
+
+
 
 
 
@@ -1049,7 +1047,7 @@ length(unique(df_R_PCH$pageid.x))
 49/530
 
 data_HarmBeneParty <- data.frame(MoC_Characteristic = c("Democratic", "Democratic", "Republican", "Republican"),
-                            Category = c("Harmful", "Beneficial","Harmful","Beneficial"),
+                            Category = c("Harmful Edits", "Beneficial Edits","Harmful Edits","Beneficial Edits"),
                             Share = c(37/451, 187/451, 49/530, 212/530))
 
 
@@ -1057,18 +1055,20 @@ data_HarmBeneParty <- data.frame(MoC_Characteristic = c("Democratic", "Democrati
 #Figure4f_Plot2
 Figure4f_Plot2 <- ggplot(data_HarmBeneParty , aes(x=fct_rev(fct_infreq(Category)), y=Share, fill=MoC_Characteristic,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
-  #ggtitle("Share of MoCs that see at least one harmful or beneficial political edit by party ") +
+  ggtitle("Share of MoCs that see at least one edit") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of MoCs that see respective type of edits by party") +
+  ylab("") +
   #scale_x_discrete(guide = guide_axis(angle = 45), labels= label_polCategories)  +
   scale_fill_manual(labels = c("Democratic", "Republican"), values = c( "steelblue1", "indianred1")) + 
   theme(legend.position = c(0.15, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
 
 
-#Figure4e_Categories
+
+
+#Figure A4: Figure4f_Categories 
 grid.arrange(Figure4f_Plot1, Figure4f_Plot2, ncol = 2, nrow = 1,
-             top=("Distribution of harmful and beneficial political edits by party"))
+             top=("Figure A4. Distribution of harmful and beneficial edits by party"))
 
 
 
@@ -1159,8 +1159,8 @@ df_T_PC <- df_T %>% dplyr::select(political_categories)
 df_B_PC <- df_B %>% dplyr::select(political_categories)
 
 
-X_T_PC <- get_distribution_table(df_T_PC, "Top 25%",779) #number of edits on profiles of Top25% competitive MoCs
-X_B_PC <- get_distribution_table(df_B_PC, "Bottom 25%", 345 )#number of edits on profiles of Bottom25% competitive MoCs
+X_T_PC <- get_distribution_table(df_T_PC, "Top 25%",345) #number of edits on profiles of Top25% competitive MoCs
+X_B_PC <- get_distribution_table(df_B_PC, "Bottom 25%", 779)#number of edits on profiles of Bottom25% competitive MoCs
 
 
 Compt_PC <- rbind(X_T_PC, X_B_PC)
@@ -1169,10 +1169,10 @@ Compt_PC <- rbind(X_T_PC, X_B_PC)
 #Figure4g2_Plot1
 Figure4g2_Plot1 <- ggplot(Compt_PC , aes(x=Category, y=Share, fill=MoC_Characteristic,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
-  ggtitle("Percentage of Harmful and Beneficial Political edits on all edits by competitive groups") +
+  ggtitle("Share among all Congress edits in each competitiveness-group") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of all competitive-groups edits ") +
+  ylab("") +
   scale_x_discrete(guide = guide_axis(angle =0), labels= label_polCategories)  +
   scale_fill_manual(labels = c("Bottom 25%", "Top 25%"), values = c(  "plum", "orchid1")) + 
   theme(legend.position = c(0.15, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
@@ -1189,43 +1189,42 @@ df_B_PCB <- df_B %>% filter(politically_motivated_positive ==1)
 df_B_PCH <- df_B %>% filter(politically_motivated_negative ==1)
 
 
-# Total number of democrats in oberserved time frame
-length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$Competitive_Dummy == "Top25"])) #246
-# Total number of republicans in oberserved time frame
-length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$Competitive_Dummy == "Bottom25"])) #245
-
+# Total number of top25 in oberserved time frame
+length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$Competitive_Dummy == "Top25"])) #245
+# Total number of bottom25 in oberserved time frame
+length(unique(BothChambers_Session_109_to_114_Short$pageid[BothChambers_Session_109_to_114_Short$Competitive_Dummy == "Bottom25"])) #246
 
 
 length(unique(df_T_PCB$pageid.x)) 
-121/246
-length(unique(df_T_PCH$pageid.x)) 
-22/246
-length(unique(df_B_PCB$pageid.x)) 
 73/245
-length(unique(df_B_PCH$pageid.x)) 
+length(unique(df_T_PCH$pageid.x)) 
 17/245
+length(unique(df_B_PCB$pageid.x)) 
+121/246
+length(unique(df_B_PCH$pageid.x)) 
+22/246
 
 data_HarmBeneCompt <- data.frame(MoC_Characteristic = c("Top 25%", "Top 25%", "Bottom 25%", "Bottom 25%"),
-                                   Category = c("Harmful", "Beneficial","Harmful","Beneficial"),
-                                   Share = c(22/246, 121/246, 17/245, 73/245))
+                                   Category = c("Harmful Edits", "Beneficial Edits","Harmful Edits","Beneficial Edits"),
+                                   Share = c(17/245, 73/245, 22/246, 121/246 ))
 
 
 
 #Figure4g2_Plot2
 Figure4g2_Plot2 <- ggplot(data_HarmBeneCompt , aes(x=fct_rev(fct_infreq(Category)), y=Share, fill=MoC_Characteristic,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
-  ggtitle("Share of MoCs that see at least one harmful or beneficial political edit by competitiveness") +
+  ggtitle("Share of MoCs that see at least one edit") +
   xlab("Category") + 
   theme_bw() + 
-  ylab("Share of MoCs that see respective type of edits by competitiveness") +
+  ylab("") +
   #scale_x_discrete(guide = guide_axis(angle = 45), labels= label_polCategories)  +
   scale_fill_manual(labels = c("Bottom 25%", "Top 25%"), values = c(  "plum", "orchid1")) + 
   theme(legend.position = c(0.15, 0.85), legend.title = element_blank(), axis.title.x = element_blank(),  legend.background = element_rect(fill = "grey95")) #+labs(fill = "Party") 
 
 
-#Figure4g1_Categories
+#Figure 20: Figure4g2_Categories
 grid.arrange(Figure4g2_Plot1, Figure4g2_Plot2, ncol = 2, nrow = 1,
-             top=("Distribution of harmful and beneficial political edits by competitiveness"))
+             top=("Figure 20. Distribution of harmful and beneficial edits by competitiveness"))
 
 
 
@@ -1509,16 +1508,21 @@ data_Ratio_Sessions <- data.frame(Session = c("109th", "110th","111th", "112th",
 #Figure4j1_Categories
 Figure4j1_Categories <- ggplot(data_Ratio_Sessions , aes(x= Session, y=Share)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white", fill = "orange3") + 
-  #ggtitle("Share of Political edits compared to all edits") +
-  ggtitle("Political Edits") +
+  #ggtitle("Share among all Congress edits") +
+  ggtitle("(a) Political edits") +
   xlab("Session") + 
   theme_bw() + 
-  ylab("Share of Political edits compared to all edits")
+  ylab("Share among all Congress edits")
 
+table(df$politically_motivated_positive)
+
+table(Inside_Congress_Edits_Politically_PositiveNegative$politically_motivated_positive)
 
 
 
 # Ratio of BENEFICIAL political edits on all edits by Session
+
+df$politically_motivated_positive[is.na(df$politically_motivated_positive)] <- 0
 
 nB109 <- length(df$session[df$session==109 & df$politically_motivated_positive == 1]) / length(df$session[df$session==109])
 nB110 <- length(df$session[df$session==110 & df$politically_motivated_positive == 1]) / length(df$session[df$session==110])
@@ -1536,16 +1540,19 @@ data_Ratio_Sessions_B <- data.frame(Session = c("109th", "110th","111th", "112th
 Figure4j2_Categories <- ggplot(data_Ratio_Sessions_B , aes(x= Session, y=Share)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white", fill = "orange2") + 
   #ggtitle("Share of Beneficial Political edits compared to all edits") +
-  ggtitle("Beneficial Political Edits") +
+  ggtitle("(b) Beneficial edits") +
   xlab("Session") + 
   theme_bw() + 
-  ylab("Share of Beneficial Political edits compared to all edits")
+  ylab("")
 
 
 
 
 
 # Ratio of HARMFUL political edits on all edits by Session
+
+df$politically_motivated_negative[is.na(df$politically_motivated_negative)] <- 0
+
 
 nH109 <- length(df$session[df$session==109 & df$politically_motivated_negative == 1]) / length(df$session[df$session==109])
 nH110 <- length(df$session[df$session==110 & df$politically_motivated_negative == 1]) / length(df$session[df$session==110])
@@ -1563,15 +1570,15 @@ data_Ratio_Sessions_H <- data.frame(Session = c("109th", "110th","111th", "112th
 Figure4j3_Categories <- ggplot(data_Ratio_Sessions_H , aes(x= Session, y=Share)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white", fill = "orange1") + 
   #ggtitle("Share of Harmful Political edits compared to all edits") +
-  ggtitle("Harmful Political Edits") +
+  ggtitle("(c) Harmful edits") +
   xlab("Session") + 
   theme_bw() + 
-  ylab("Share of Harmful Political edits compared to all edits")
+  ylab("")
 
 
-#Figure4j_Categories:
+#Figure 10: Figure4l_Categories
 grid.arrange(Figure4j1_Categories , Figure4j2_Categories , Figure4j3_Categories  , ncol = 3, nrow = 1,
-             top=("Share of certain groups of edits compared to all edits from the Congress IT networt by session"))
+             top=("Figure 10. Share of certain subgroups of edits among all Congress edits by session"))
 
 
 

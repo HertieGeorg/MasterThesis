@@ -47,7 +47,8 @@ list_of_biggest_general_election_dates_short <- as.Date(c("2006-11-07" , "2010-1
 #A: Overall Congress Edits vs. Overall-non-congress edits
 #Figure 1: Overall Congress Edits compared to overall-non-congress edits with time-frame marker around elections (1 Figure - 2 graphs) (with smooth line over all years) 
 
-
+house_us_history <- rbind(house_us_history, senate_us_history)
+                          
 # Choosing observed time frame 
 house_us_history$year <- stringr::str_extract(house_us_history$timestamp , "^\\d{4}") 
 house_us_history_109_114 <- house_us_history  %>%  filter(year >= 2005) %>%  filter(year <= 2016)
@@ -116,7 +117,8 @@ AA3 <- ggplot(house_us_history_109_114_short, aes(x= date)) +
   geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
   labs(y="Aggregated", x = "(a) All edits (109th-114th Session)") + 
   theme_classic() + 
-  xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+  scale_x_continuous(breaks =  list_of_biggest_general_election_dates_short, limits = as.Date(c("2005-01-24","2017-01-02")) ) 
+ # xlim( as.Date(c("2005-01-24","2017-01-02"))) 
 
 
 
@@ -148,7 +150,8 @@ BB3 <- ggplot(Inside_Congress_Edits_Politically, aes(x= date_LegislatoR)) +
   geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
   labs(y="Aggregated", x = "(b) Edits from the Congress IT network (109th-114th Session)") + 
   theme_classic() + 
-  xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+  scale_x_continuous(breaks =  list_of_biggest_general_election_dates_short, limits = as.Date(c("2005-01-24","2017-01-02")) ) 
+  #xlim( as.Date(c("2005-01-24","2017-01-02"))) 
 
 
 
@@ -193,11 +196,13 @@ AA2 <- ggplot(dataA, aes(x= date_LegislatoR)) +
   geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
   labs(y="Aggregated", x = "(a) Political edits from the Congress IT network") + 
   theme_classic() +
-  xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+  #xlim( as.Date(c("2005-01-24","2017-01-02"))) +
+  scale_x_continuous(breaks =  list_of_biggest_general_election_dates_short, limits = as.Date(c("2005-01-24","2017-01-02")) ) 
+
 
 
 # Grey marked area are the 6 Months after election date 
-BB2 <- ggplot(dataB, aes(x= date_LegislatoR)) + 
+BB2 <- ggplot(dataB, aes(x= date_LegislatoR)) +  
   geom_rect(aes(xmin = as.Date("2005-01-24"), ymin = 0,  # "2004-11-02"
                 xmax = as.Date("2005-05-02"), ymax = 35),
             fill = "lightgrey", alpha=0.01) +
@@ -223,8 +228,10 @@ BB2 <- ggplot(dataB, aes(x= date_LegislatoR)) +
   geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
   labs(y="Aggregated", x = "(b) Maintenance edits from the Congress IT network") + 
   theme_classic() + 
-  xlim( as.Date(c("2005-01-24","2017-01-03"))) 
+  #xlim( as.Date(c("2005-01-24","2017-01-03"))) +
+  scale_x_continuous(breaks =  list_of_biggest_general_election_dates_short, limits = as.Date(c("2005-01-24","2017-01-02")) ) 
 
+  
 #red3
 #royalblue4
 
@@ -469,7 +476,7 @@ grid.arrange(CC9, AA10, BB10, ncol = 1, nrow = 3)
 
 #----------------------------------------------------------------------------------
 
-
+# Graphs not included in Thesis 
 #E: Showing political edits over entire frame with timeframe marker around elections 
 #once for Democrats and once for Republicans (1 Figure, 2 Graphs)
 
@@ -544,11 +551,12 @@ AR1 <- ggplot(data_R1, aes(x= date_LegislatoR)) +
   xlim( as.Date(c("2005-01-24","2017-01-02"))) 
 
 #Figure3E_EditsTime
-grid.arrange(AD1, AR1, ncol = 1, nrow = 2)
+#grid.arrange(AD1, AR1, ncol = 1, nrow = 2)
 
 
 #------------------------------------------------------
 
+# Graphs not included into Thesis 
 #Figure3E2_EditsTime für den Appendix
 
 AD2 <- ggplot(data_D2, aes(x= date_LegislatoR)) + 
@@ -610,7 +618,7 @@ AR2 <- ggplot(data_R2, aes(x= date_LegislatoR)) +
 
 
 #Figure3E2_EditsTime für den Appendix
-grid.arrange(AD2, AR2, ncol = 1, nrow = 2)
+#grid.arrange(AD2, AR2, ncol = 1, nrow = 2)
 
 #-------------------------------------------------
 
@@ -692,7 +700,8 @@ ATop25 <- ggplot(data_CompetitiveT25, aes(x= date_LegislatoR)) +
   geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
   labs(y="Aggregated", x = "(a) Political edits from the Congress IT network on profiles of MoCs that run in the 25% most competitive elections districts")+
   theme_classic() +
-  xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+  scale_x_continuous(breaks =  list_of_biggest_general_election_dates_short, limits = as.Date(c("2005-01-24","2017-01-02")) ) 
+#  xlim( as.Date(c("2005-01-24","2017-01-02"))) 
 
 
 ABottom25 <- ggplot(data_CompetitiveB25, aes(x= date_LegislatoR)) + 
@@ -721,7 +730,8 @@ ABottom25 <- ggplot(data_CompetitiveB25, aes(x= date_LegislatoR)) +
   geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
   labs(y="Aggregated", x = "(b) Political edits from the Congress IT network on profiles of MoCs that run in the 25% least competitive elections districts")+
   theme_classic() +
-  xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+  scale_x_continuous(breaks =  list_of_biggest_general_election_dates_short, limits = as.Date(c("2005-01-24","2017-01-02")) ) 
+  #xlim( as.Date(c("2005-01-24","2017-01-02"))) 
 
 # We can  already see that Top25 (=425) see much more political edtis then Bottom25 (= 226) 
 
@@ -766,9 +776,10 @@ Political_A <- ggplot(dataA, aes(x= date_LegislatoR)) +
             fill = "lightgrey", alpha=0.01) +
   geom_histogram(bins=144, size = 0.6,  alpha=1, color = "black", fill = "black") + 
   geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
-  labs(y="Aggregated", x = "(a) All political edits from the Congress IT network") + 
-  theme_classic() +
-  xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+  labs(y="Aggregated", x = "(a) Political edits from the Congress IT network") + 
+  theme_classic() +  
+  scale_x_continuous(breaks =  list_of_biggest_general_election_dates_short, limits = as.Date(c("2005-01-24","2017-01-02")) ) 
+ # xlim( as.Date(c("2005-01-24","2017-01-02"))) 
 
 
 Political_BP <- ggplot(dataBP , aes(x= date_LegislatoR)) + 
@@ -795,9 +806,10 @@ Political_BP <- ggplot(dataBP , aes(x= date_LegislatoR)) +
             fill = "lightgrey", alpha=0.01) +
   geom_histogram(bins=144, size = 0.6,  alpha=1, color = "black", fill = "black") + 
   geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
-  labs(y="Aggregated", x = "(b) Beneficial political edits from the Congress IT network") + 
+  labs(y="Aggregated", x = "(b) Beneficial edits from the Congress IT network") + 
   theme_classic() +
-  xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+  scale_x_continuous(breaks =  list_of_biggest_general_election_dates_short, limits = as.Date(c("2005-01-24","2017-01-02")) ) 
+ # xlim( as.Date(c("2005-01-24","2017-01-02"))) 
 
 
 
@@ -825,9 +837,10 @@ Political_HP <- ggplot(dataHP , aes(x= date_LegislatoR)) +
             fill = "lightgrey", alpha=0.01) +
   geom_histogram(bins=144, size = 0.6,  alpha=1, color = "black", fill = "black") + 
   geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
-  labs(y="Aggregated", x = "(c) Harmful political edits from the Congress IT network") + 
+  labs(y="Aggregated", x = "(c) Harmful edits from the Congress IT network") + 
   theme_classic() +
-  xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+  scale_x_continuous(breaks =  list_of_biggest_general_election_dates_short, limits = as.Date(c("2005-01-24","2017-01-02")) ) 
+ # xlim( as.Date(c("2005-01-24","2017-01-02"))) 
 
 
 # Just a reminder that there is a slightley different selection process between 

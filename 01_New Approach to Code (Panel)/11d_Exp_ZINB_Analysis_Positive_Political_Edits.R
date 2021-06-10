@@ -371,14 +371,15 @@ stargazer(M3_ZeroInfl, M3_ZeroInfl_AltSpecA, M3_ZeroInfl_AltSpecE,
           covariate.labels=c("District Competitiveness", "Gender(Male)", "Age", "External Edits", 
                              "110th Session", "111th Session", "112th Session", "113th Session", 
                              "114th Session", "Party Affiliation(R)", "Chamber(Senate)"),
-          title="Table A5. Modelling the Number of Beneficial Political Edits using ZINB: Different Specifications (non exponentiated results)", model.names = F, 
+          title="Table A7. Modeling the number of beneficial edits using ZINB: Different specifications", model.names = F, 
           notes.append = F, notes.align = "r",
           notes = c("\\parbox[t]{\\textwidth}{Age is higher for younger legislators (based on year of birth). Independents are allocated to the party they caucus with. }", 
+                    "\\parbox[t]{\\textwidth}{District competitiveness is computed as the relative difference in votes to the second best candidate.}",
                     "\\parbox[t]{\\textwidth}{109th session as baseline. Cluster-robust standard errors taken by legislator.}",  
                     "\\parbox[t]{\\textwidth}{Coef and SE are not exponeniated.}",
                     "\\parbox[t]{\\textwidth}{ *p<0.1; **p<0.05; ***p<0.01}"),
           align=TRUE, omit.stat=c("aic", "theta" ),
-          out="BP_Edits(Table_A5_Appendix)_ZinB_Specifications_Count.html", 
+          out="Table A7 (BP_Edits(Table_A5_Appendix)_ZinB_Specifications_Count).html", 
           type = "text")
 
 
@@ -396,15 +397,16 @@ stargazer(M3_ZeroInfl, M3_ZeroInfl_AltSpecA, M3_ZeroInfl_AltSpecE,
           covariate.labels=c("District Competitiveness", "Gender(Male)", "Age", "External Edits", 
                              "110th Session", "111th Session", "112th Session", "113th Session", 
                              "114th Session", "Party Affiliation(R)", "Chamber(Senate)"),
-          title="Table A6. Modeling the likelihood of Beneficial Political Edits using ZINB: Different Specifications (non exponentiated results)", model.names = F, 
+          title="Table A6. Modeling the likelihood of beneficial edits using ZINB: Different specifications", model.names = F, 
           #style = "qje",  #model.numbers  = FALSE
           notes.append = F, notes.align = "r",
           notes = c("\\parbox[t]{\\textwidth}{Age is higher for younger legislators (based on year of birth). Independents are allocated to the party they caucus with. }", 
-                    "\\parbox[t]{\\textwidth}{109th session as baseline. Cluster-robust standard errors taken by legislator.}",  
+                    "\\parbox[t]{\\textwidth}{District competitiveness is computed as the relative difference in votes to the second best candidate.}",
+                     "\\parbox[t]{\\textwidth}{109th session as baseline. Cluster-robust standard errors taken by legislator.}",  
                     "\\parbox[t]{\\textwidth}{Coef and SE are not exponeniated.}",
                     "\\parbox[t]{\\textwidth}{ *p<0.1; **p<0.05; ***p<0.01}"),
           align=TRUE, omit.stat=c("aic", "theta" ),
-          out="BP_Edits(Table_A6_Appendix)_ZinB_Specifications_Zero.html",  type = "text")
+          out="Table A6 (BP_Edits(Table_A6_Appendix)_ZinB_Specifications_Zero).html",  type = "text")
 
 
 

@@ -27,11 +27,11 @@ Zeros_AE <- data %>%
   ggplot(aes(x = AllCongressEdits_Per_MoC_Session)) +
   geom_histogram(bins = 16, fill="black") +
   #scale_y_continuous(trans = 'log2')+
-  xlab("Number of All Congress Edits")+
+  xlab("Number of Congress edits per MoC and session")+
   ylab("Frequency") +
   theme_bw() + 
-  scale_fill_manual("green") + 
-  ggtitle("All Congress Edits") 
+  scale_fill_manual("green") 
+  #ggtitle("All Congress Edits") 
 
 # Check for Zero-Inflation in the data
 100*sum(data$AllCongressEdits_Per_MoC_Session == 0)/nrow(data) #72.06% zero for All Congress Edits
@@ -50,11 +50,11 @@ Zeros_BPE <- data %>%
   ggplot(aes(x = All_Positive_Politically_CongressEdits_Per_MoC_Session)) +
   geom_histogram(bins = 12, fill="black") +
   #scale_y_continuous(trans = 'log2')+
-  xlab("Number of Beneficial Political Edits")+
+  xlab("Number of beneficial edits per MoC and session")+
   ylab("Frequency") +
   theme_bw() + 
-  scale_fill_manual("green") + 
-  ggtitle("Beneficial Political Congress Edits") 
+  scale_fill_manual("green") 
+  #ggtitle("Beneficial Political Congress Edits") 
 
 # Check for Zero-Inflation in the data
 100*sum(data$All_Positive_Politically_CongressEdits_Per_MoC_Session== 0)/nrow(data) #83.75527% zero for Beneficial Political Congress Edits

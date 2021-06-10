@@ -81,15 +81,15 @@ Distribution_Topics_Congress_Edits <- left_join(Distribution_Topics_Politically 
 
 data_1a_Barplot <- data.frame(
   Response = factor(c("Political","Political","Political","Political", "Maintenance",  "Maintenance",  "Maintenance",  "Maintenance")),
-  Category = factor( c("Personal", "Career","Views","Other", "Personal", "Career","Views","Other"),
-                     levels=c("Personal", "Career","Views","Other")),
+  Category = factor( c("Personal life", "Career","Political positions","Other", "Personal life", "Career","Political positions","Other"),
+                     levels=c("Personal life", "Career","Political positions","Other")),
   percentage = c(489/2587, 1096/2587, 544/2587, 458/2587, 260/1344, 727/1344, 113/1344, 244/1344))
 
 Figure_1a_Barplot <- ggplot(data=data_1a_Barplot, aes(x=Category, y=percentage, fill=Response,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
   scale_fill_brewer(palette = "Set1",name = "Subgroups of Edits") + 
-  ggtitle("Distribution of Political versus Maintenance Edits: Broad Categories") +
-  xlab("Category") + 
+  ggtitle("(a) Main categories") +
+  xlab("") + 
   ylab("Distribution over Categories") +
   scale_x_discrete(guide = guide_axis(angle = 45))  +
   theme(legend.position = c(0.8, 0.85))
@@ -224,16 +224,16 @@ Distribution_TopicsPersonal_Congress_Edits <- left_join(Distribution_TopicPERSON
 # (1b) Bar-Plot: Political vs. Maintenance in PERSONAL 
 
 data_BarPlot_1b <- data.frame(Response = factor(c("Political","Political","Political","Political","Political","Political","Political", "Maintenance",  "Maintenance",  "Maintenance",  "Maintenance", "Maintenance",  "Maintenance",  "Maintenance")),
-                              Category = factor( c("Religion", "Financial Earnings","Family/Current Life","Character", "Early Life", "Achievements/Awards", "Activites/Memberships", "Religion", "Financial Earnings","Family/Current Life","Character", "Early Life", "Achievements/Awards", "Activites/Memberships"),
-                                                 levels=  c("Religion", "Financial Earnings","Family/Current Life","Character", "Early Life", "Achievements/Awards", "Activites/Memberships")),
+                              Category = factor( c("Religion", "Financial Earnings","Family/Current Life","Character", "Early Life", "Achievements/Awards", "Activities/Memberships", "Religion", "Financial Earnings","Family/Current Life","Character", "Early Life", "Achievements/Awards", "Activities/Memberships"),
+                                                 levels=  c("Religion", "Financial Earnings","Family/Current Life","Character", "Early Life", "Achievements/Awards", "Activities/Memberships")),
                               percentage = c(43/723, 73/723, 143/723, 200/723, 119/723, 75/723, 70/723, 18/310, 4/310, 110/310, 37/310, 102/310, 10/310, 29/310 ))
 
 BarPlot_1b <- ggplot(data_BarPlot_1b , aes(x=Category, y=percentage, fill=Response,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
   scale_fill_brewer(palette = "Set1",name = "Subgroups of Edits") + 
-  ggtitle("Distribution of Political versus Maintenance Edits in Category: Personal") +
-  xlab("Category") + 
-  ylab("Distribution over Categories") +
+  ggtitle("(b) Subcategory: Personal life") +
+  xlab("") + 
+  ylab("") +
   scale_x_discrete(guide = guide_axis(angle = 45))  +
   theme(legend.position = c(0.85, 0.85))
 
@@ -397,21 +397,21 @@ Distribution_TopicsCareer_Congress_Edits <- left_join(Distribution_TopicCareer_P
 # (1c) Bar-Plot: Political vs. Maintenance in CAREER
 
 data_BarPlot_1c <- data.frame(Response = factor(c("Political","Political","Political","Political","Political","Political","Political","Political", "Maintenance",  "Maintenance",  "Maintenance",  "Maintenance", "Maintenance",  "Maintenance",  "Maintenance",  "Maintenance")),
-                              Category = factor( c("Congress election campaign", "Political scandals/controversis","Activities during tenure","Legislation", "District service", 
-                                                   "Early political career", "Offices/memberships in Congress", "Early non-political career", "Congress election campaign", "Political scandals/controversis","Activities during tenure","Legislation", "District service", 
+                              Category = factor( c("Legislation","Congress election campaign", "Political scandals/controversies","Activities during tenure", "District service", 
+                                                   "Early political career", "Offices/memberships in Congress", "Early non-political career", "Legislation","Congress election campaign", "Political scandals/controversies","Activities during tenure", "District service", 
                                                    "Early political career", "Offices/memberships in Congress", "Early non-political career"),
-                                                 levels=  c("Congress election campaign", "Political scandals/controversis","Activities during tenure","Legislation", "District service", 
+                                                 levels=  c("Legislation","Congress election campaign", "Political scandals/controversies","Activities during tenure", "District service", 
                                                             "Early political career", "Offices/memberships in Congress", "Early non-political career")),
-                              percentage = c( 218/1683, 297/1683, 156/1683, 387/1683, 138/1683, 0/1683, 366/1683, 121/1683, 95/797, 8/797, 18/797, 77/797, 62/797, 23/797, 468/797, 46/797))
+                              percentage = c(387/1683, 218/1683, 297/1683, 156/1683, 138/1683, 0/1683, 366/1683, 121/1683, 77/797, 95/797, 8/797, 18/797,  62/797, 23/797, 468/797, 46/797))
 
 
 BarPlot_1c <- ggplot(data_BarPlot_1c , aes(x=Category, y=percentage, fill=Response,)) +
     geom_bar(stat="identity", position=position_dodge(), colour="white") + 
     scale_fill_brewer(palette = "Set1",name = "Subgroups of Edits") + 
-    ggtitle("Distribution of Political versus Maintenance Edits in Category: Career") +
-    xlab("Category") + 
+    ggtitle("(c) Subcategory: Career") +
+    xlab("") + 
     ylab("Distribution over Categories") +
-    scale_x_discrete(guide = guide_axis(angle = 70))  +
+    scale_x_discrete(guide = guide_axis(angle = 45))  +
     theme(legend.position = c(0.15, 0.85))
 
 
@@ -570,13 +570,11 @@ data_BarPlot_1d <- data.frame(Response = factor(c("Political","Political","Polit
 BarPlot_1d <- ggplot(data_BarPlot_1d , aes(x=Category, y=percentage, fill=Response,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
   scale_fill_brewer(palette = "Set1",name = "Subgroups of Edits") + 
-  ggtitle("Distribution of Political versus Maintenance Edits in Category: Views") +
-  xlab("Category") + 
-  ylab("Distribution over Categories") +
+  ggtitle("(d) Subcategory: Political positions") +
+  xlab("") + 
+  ylab("") +
   scale_x_discrete(guide = guide_axis(angle = 45))  +
   theme(legend.position = c(0.85, 0.85))
-
-
 
 
 # Using a Linear Model for basically the same: Views 
@@ -607,6 +605,13 @@ stargazer(linear_model1d , linear_model2d , linear_model3d , linear_model4d ,
           type = "text", style = "default", out="Table(1d)NEWDiff_Views.html")
 
 
+
+######## All 4 Plots in one Grid: Political versus Maintenance 
+
+
+grid.arrange(Figure_1a_Barplot , BarPlot_1b , BarPlot_1c , BarPlot_1d, 
+             ncol = 2, nrow = 2, 
+             top=("Total number of edits from the Congress IT network by chamber, gender, competitiveness and party"))
 
 
 # ----------------------------------------------------------------------------------------------------------------------------
@@ -700,11 +705,11 @@ data_BarPlot_1e <- data.frame(Response = factor(c("Political","Political","Polit
 BarPlot_1e <- ggplot(data_BarPlot_1e , aes(x=Category, y=percentage, fill=Response,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
   scale_fill_brewer(palette = "Set1",name = "Subgroups of Edits") + 
-  ggtitle("Distribution of Political versus Maintenance Edits in Category: Other") +
-  xlab("Category") + 
+  ggtitle("Figure A1. Political versus maintenance edits: Other") +
+  xlab("") +  
   ylab("Distribution over Categories") +
   scale_x_discrete(guide = guide_axis(angle = 45))  +
-  theme(legend.position = c(0.85, 0.85))
+  theme(legend.position = c(0.80, 0.85))
 
 
 
@@ -782,7 +787,6 @@ formattable(Distribution_Topics_Political_vs_Maintenance,
 
 
 
-
 # ------------------------------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------------------------------
 #----------------- 2. Comparison between beneficial political edits and harmful political edits --------------------
@@ -831,18 +835,20 @@ sum(75, 30, 84, 94) #/283
 
 data_BarPlot_2a <- data.frame(
   Response = factor(c("Beneficial Political", "Beneficial Political", "Beneficial Political", "Beneficial Political", "Harmful Political", "Harmful Political", "Harmful Political", "Harmful Political")),
-  Category = factor( c("Personal", "Career","Views","Other", "Personal", "Career","Views","Other"),
-                     levels=c("Personal", "Career","Views","Other")),
+  Category = factor( c("Personal life", "Career","Political positions","Other", "Personal life", "Career","Political positions","Other"),
+                     levels=c("Personal life", "Career","Political positions","Other")),
   percentage = c( 746/2427, 236/2427, 689/2427, 756/2427, 75/283, 30/283, 84/283, 94/283 ))
 
 BarPlot_2a <- ggplot(data= data_BarPlot_2a, aes(x=Category, y=percentage, fill=Response,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
   scale_fill_brewer(palette = "Set1",name = "Subgroups of Edits") + 
-  ggtitle("Distribution of Beneficial Political versus Harmful Political Edits") +
-  xlab("Category") + 
+  ggtitle("(a) Main categories") +
+  xlab("") + 
   ylab("Distribution over Categories") +
   scale_x_discrete(guide = guide_axis(angle = 45))  +
   theme(legend.position = c(0.31, 0.9))
+
+
 
 
 #    Using a Linear Model 
@@ -971,16 +977,16 @@ sum(1, 4, 11, 25, 7, 1, 2) #/51
 # (2b) Bar-Plot: Beneficial vs Harmful in PERSONAL 
 
 data_BarPlot_2b <- data.frame(Response = factor(c("Beneficial Political", "Beneficial Political", "Beneficial Political", "Beneficial Political", "Beneficial Political", "Beneficial Political", "Beneficial Political", "Harmful Political", "Harmful Political", "Harmful Political", "Harmful Political", "Harmful Political", "Harmful Political", "Harmful Political")),
-                              Category = factor( c("Religion", "Financial Earnings","Family/Current Life","Character", "Early Life", "Achievements/Awards", "Activites/Memberships", "Religion", "Financial Earnings","Family/Current Life","Character", "Early Life", "Achievements/Awards", "Activites/Memberships"),
-                                                 levels=  c("Religion", "Financial Earnings","Family/Current Life","Character", "Early Life", "Achievements/Awards", "Activites/Memberships")),
+                              Category = factor( c("Religion", "Financial Earnings","Family/Current Life","Character", "Early Life", "Achievements/Awards", "Activities/Memberships", "Religion", "Financial Earnings","Family/Current Life","Character", "Early Life", "Achievements/Awards", "Activities/Memberships"),
+                                                 levels=  c("Religion", "Financial Earnings","Family/Current Life","Character", "Early Life", "Achievements/Awards", "Activities/Memberships")),
                               percentage = c(41/645, 65/645, 125/645, 171/645, 105/645, 70/645, 68/645, 1/51, 4/51, 11/51, 25/51, 7/51, 1/51, 2/51 ))
 
 BarPlot_2b <- ggplot(data_BarPlot_2b , aes(x=Category, y=percentage, fill=Response,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
   scale_fill_brewer(palette = "Set1",name = "Subgroups of Edits") + 
-  ggtitle("Distribution of Beneficial versus Harmful Edits in Category: Personal") +
-  xlab("Category") + 
-  ylab("Distribution over Categories") +
+  ggtitle("(b) Subcategory: Personal life") +
+  xlab("") + 
+  ylab("") +
   scale_x_discrete(guide = guide_axis(angle = 45))  +
   theme(legend.position = c(0.85, 0.85))
 
@@ -1125,21 +1131,21 @@ sum(14, 27, 15, 18, 7, 3, 36, 5) #/125
 # (2c) Bar-Plot: Political vs. Maintenance in CAREER
 
 data_BarPlot_2c <- data.frame(Response = factor(c( "Beneficial Political", "Beneficial Political","Beneficial Political","Beneficial Political","Beneficial Political","Beneficial Political","Beneficial Political","Beneficial Political", "Harmful Political", "Harmful Political", "Harmful Political", "Harmful Political", "Harmful Political", "Harmful Political", "Harmful Political", "Harmful Political" )),
-                              Category = factor( c("Congress election campaign", "Political scandals/controversis","Activities during tenure","Legislation", "District service", 
-                                                   "Early political career", "Offices/memberships in Congress", "Early non-political career", "Congress election campaign", "Political scandals/controversis","Activities during tenure","Legislation", "District service", 
+                              Category = factor( c("Legislation","Congress election campaign", "Political scandals/controversies","Activities during tenure", "District service", 
+                                                   "Early political career", "Offices/memberships in Congress", "Early non-political career","Legislation", "Congress election campaign", "Political scandals/controversies","Activities during tenure", "District service", 
                                                    "Early political career", "Offices/memberships in Congress", "Early non-political career"),
-                                                 levels=  c("Congress election campaign", "Political scandals/controversis","Activities during tenure","Legislation", "District service", 
+                                                 levels=  c("Legislation", "Congress election campaign", "Political scandals/controversies","Activities during tenure","District service", 
                                                             "Early political career", "Offices/memberships in Congress", "Early non-political career")),
-                              percentage = c( 186/1457, 253/1457, 128/1457, 346/1457, 124/1457, 0/1457, 311/1457, 109/1457, 14/125, 27/125, 15/125, 18/125, 7/125, 3/125, 36/125, 5/125))
+                              percentage = c(346/1457, 186/1457, 253/1457, 128/1457, 124/1457, 0/1457, 311/1457, 109/1457, 18/125, 14/125, 27/125, 15/125,  7/125, 3/125, 36/125, 5/125))
 
 
 BarPlot_2c <- ggplot(data_BarPlot_2c , aes(x=Category, y=percentage, fill=Response,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
   scale_fill_brewer(palette = "Set1",name = "Subgroups of Edits") + 
-  ggtitle("Distribution of Beneficial versus Harmful Political Edits in Category: Career") +
-  xlab("Category") + 
+  ggtitle("(c) Subcategory: Career") +
+  xlab("") + 
   ylab("Distribution over Categories") +
-  scale_x_discrete(guide = guide_axis(angle = 70))  +
+  scale_x_discrete(guide = guide_axis(angle = 45))  +
   theme(legend.position = c(0.15, 0.9))
 
 
@@ -1272,9 +1278,9 @@ data_BarPlot_2d <- data.frame(Response = factor(c("Beneficial Political", "Benef
 BarPlot_2d <- ggplot(data_BarPlot_2d , aes(x=Category, y=percentage, fill=Response,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
   scale_fill_brewer(palette = "Set1",name = "Subgroups of Edits") + 
-  ggtitle("Distribution of Political versus Maintenance Edits in Category: Views") +
-  xlab("Category") + 
-  ylab("Distribution over Categories") +
+  ggtitle("(d) Subcategory: Political positions") +
+  xlab("") + 
+  ylab("") +
   scale_x_discrete(guide = guide_axis(angle = 45))  +
   theme(legend.position = c(0.85, 0.85))
 
@@ -1384,11 +1390,16 @@ data_BarPlot_2e <- data.frame(Response = factor(c("Beneficial Political","Benefi
 BarPlot_2e <- ggplot(data_BarPlot_2e , aes(x=Category, y=percentage, fill=Response,)) +
   geom_bar(stat="identity", position=position_dodge(), colour="white") + 
   scale_fill_brewer(palette = "Set1",name = "Subgroups of Edits") + 
-  ggtitle("Distribution of Beneficial versus Harmful Edits in Category: Other") +
-  xlab("Category") + 
-  ylab("Distribution over Categories") +
+  ggtitle("Figure A2. Beneficial versus harmful edits: Other") +
+  xlab("") + 
+  ylab("") +
   scale_x_discrete(guide = guide_axis(angle = 45))  +
-  theme(legend.position = c(0.85, 0.85))
+  theme(legend.position = c(0.80, 0.85))
+
+
+
+grid.arrange(BarPlot_1e, BarPlot_2e, ncol = 2, nrow = 1 )
+
 
 
 
