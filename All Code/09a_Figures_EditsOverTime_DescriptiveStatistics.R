@@ -1,0 +1,841 @@
+
+#09b_Fiugres_EditsOverTimes_DescriptiveStatistics
+
+#This script contains code for creating figures:
+# 1. All edits from within Congress over time (with markers for elections dates)
+# 2. Political edits from within Congress over time (with markers for elections dates)
+# 3. All edits and all edtis from within Congress in over time (comparison) in one graph 
+# 4. Comparison of distribution of topics between non political edits from within congress and political edits 
+
+
+
+
+#-------------------------------------------------------------------------------------------------------------------
+#------------------------ Figures: Edits from within Congress over time (compared to election dates) ---------------
+#-------------------------------------------------------------------------------------------------------------------
+
+
+
+# Defining the election year: Just the election year 
+
+
+# Load Edit Data (Sessions 109th-114th)
+data <- main_dataframe_true
+
+
+print(list_of_biggest_general_election_dates)
+# All elections dates before 2005 are not needed
+list_of_biggest_general_election_dates_short <- as.Date(c("2006-11-07" , "2010-11-02", "2004-11-02" , "2014-11-04" ,  "2008-11-04", 
+                                                          "2012-11-06" ,"2016-11-08")) #
+
+
+
+#---------------------------------------------------------------------------------
+
+
+#A: Overall Congress Edits vs. Overall-non-congress edits
+#Figure 1: Overall Congress Edits compared to overall-non-congress edits with time-frame marker around elections (1 Figure - 2 graphs) (with smooth line over all years) 
+
+# Careful! The following Code needs quite a while to run
+
+house_us_history <- rbind(house_us_history, senate_us_history)
+                          
+# Choosing observed time frame 
+house_us_history$year <- stringr::str_extract(house_us_history$timestamp , "^\\d{4}") 
+house_us_history_109_114 <- house_us_history  %>%  filter(year >= 2005) %>%  filter(year <= 2016)
+#Create Session Column
+house_us_history_109_114$session <- house_us_history_109_114$year
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2005", "109")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2006", "109")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2007", "110")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2008", "110")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2009", "111")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2010", "111")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2011", "112")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2012", "112")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2013", "113")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2014", "113")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2015", "114")
+house_us_history_109_114$session <- stringr::str_replace_all(house_us_history_109_114$session, "2016", "114")
+
+# Create merge-variable: pageid_session
+house_us_history_109_114 <- house_us_history_109_114 %>%  unite(pageid_session, pageid, session, sep = "_", remove = FALSE)
+
+
+# Choosing the examined MoHs -> load: BothChambers_Session_109_to_114_Short
+list_pageid_session_MoH <- unique(BothChambers_Session_109_to_114_Short$pageid_session) #create list that contains pageid_sessions of the examined MoHs
+house_us_history_109_114 <- house_us_history_109_114 %>%  filter(pageid_session %in% list_pageid_session_MoH) 
+
+# Creating Date Column without exat timestamp
+house_us_history_109_114$date <- stringr::str_extract(house_us_history_109_114$timestamp , "^\\d{4}-\\d{2}-\\d{2}") 
+house_us_history_109_114$date  <- stringr::str_replace_all(house_us_history_109_114$date , " ", "")  
+house_us_history_109_114$date <- as.Date(house_us_history_109_114$date)
+
+#Experiment to reduce number of observations by taking out a random sample 
+house_us_history_109_114$sample <- house_us_history_109_114$revid
+house_us_history_109_114$sample <- stringr::str_extract(house_us_history_109_114$sample, "\\d$") 
+table(house_us_history_109_114$sample) # is equally distributet over numbers 1-10 
+house_us_history_109_114_short <- sample_n(house_us_history_109_114, 39773) #10% of all observations N 397,733
+table(house_us_history_109_114_short$sample) # is also equally distributet over numbers 1-10 
+
+
+
+# The graphs only includes 10% of all observations, therefore y-scale must be taken times 10 to interpret it 
+# Grey marked area indicates election year 
+AA3 <- ggplot(house_us_history_109_114_short, aes(x= date)) + 
+  geom_rect(aes(xmin = as.Date("2004-01-24"), ymin = 0,  # "2004-11-02"
+                xmax = as.Date("2005-12-31"), ymax = 1300),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2006-01-01"), ymin = 0,  # "2006-11-07"
+                xmax = as.Date("2006-12-31"), ymax = 1300),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2008-01-01"), ymin = 0,  # "2008-11-04" 
+                xmax = as.Date("2008-12-31"), ymax = 1300),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2010-01-01"), ymin = 0,  # "2010-11-02"
+                xmax = as.Date("2010-12-31"), ymax = 1300),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2012-01-01"), ymin = 0,  #"2012-11-06"
+                xmax = as.Date("2012-12-31"), ymax = 1300),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2014-01-01"), ymin = 0,  #"2014-11-04"
+                xmax = as.Date("2014-12-31"), ymax = 1300),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2016-01-01"), ymin = 0,  # "2016-11-08"
+                xmax = as.Date("2016-12-31"), ymax = 1300),
+            fill = "lightgrey", alpha=0.01) +
+  geom_histogram(bins=144, size = 0.6, alpha=1,  color = "black", fill = "black") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
+  labs(y="Aggregated", x = "(a) All edits (109th-114th Session)") + 
+  theme_classic() + 
+  scale_x_continuous(breaks =  list_of_biggest_general_election_dates_short, limits = as.Date(c("2005-01-24","2017-01-02")) ) 
+ # xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+
+
+
+
+# Grey marked area indicates election year 
+BB3 <- ggplot(Inside_Congress_Edits_Politically, aes(x= date_LegislatoR)) + 
+  geom_rect(aes(xmin = as.Date("2004-01-24"), ymin = 0,  # "2004-11-02"
+                xmax = as.Date("2004-12-31"), ymax = 85),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2006-01-01"), ymin = 0,  # "2006-11-07"
+                xmax = as.Date("2006-12-31"), ymax = 85),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2008-01-01"), ymin = 0,  # "2008-11-04" 
+                xmax = as.Date("2008-12-31"), ymax = 85),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2010-01-01"), ymin = 0,  # "2010-11-02"
+                xmax = as.Date("2010-12-31"), ymax = 85),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2012-01-01"), ymin = 0,  #"2012-11-06"
+                xmax = as.Date("2012-12-31"), ymax = 85),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2014-01-01"), ymin = 0,  #"2014-11-04"
+                xmax = as.Date("2014-12-31"), ymax = 85),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2016-01-01"), ymin = 0,  # "2016-11-08"
+                xmax = as.Date("2016-12-31"), ymax = 85),
+            fill = "lightgrey", alpha=0.01) +
+  geom_histogram(bins=144, size = 0.6, alpha=1,  color = "black", fill = "black") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
+  labs(y="Aggregated", x = "(b) Edits from the Congress IT network (109th-114th Session)") + 
+  theme_classic() + 
+  scale_x_continuous(breaks =  list_of_biggest_general_election_dates_short, limits = as.Date(c("2005-01-24","2017-01-02")) ) 
+  #xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+
+
+
+# Figure3A_EditsTime
+grid.arrange(AA3, BB3, ncol = 1, nrow = 2)
+
+
+#-----------------------------------------------------
+
+#B:Political Edits and Maintenance-Edits 
+#Figure 2: Compare Political and Maintenance edits over time with 2 different timeframe marker (1 Figure, 2 graphs (with smooth line over all years) (first timeframe marker before election for political edits, and second after election for maintenance edits) with clear hard line for election date 
+
+
+
+dataA <- Inside_Congress_Edits_Politically %>% filter(politically_motivated == 1) 
+dataB <- Inside_Congress_Edits_Politically %>% filter(politically_motivated == 0)
+
+#Take 10 months before election to also see effects of primaries: starting start of january 
+AA2 <- ggplot(dataA, aes(x= date_LegislatoR)) + 
+  geom_rect(aes(xmin = as.Date("2004-01-01"), ymin = 0,  # "2004-11-02"
+                xmax = as.Date("2004-11-02"), ymax = 62),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2006-01-01"), ymin = 0,  # "2006-11-07"
+                xmax = as.Date("2006-11-07"), ymax = 62),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2008-01-01"), ymin = 0,  # "2008-11-04" 
+                xmax = as.Date("2008-11-04"), ymax = 62),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2010-01-01"), ymin = 0,  # "2010-11-02"
+                xmax = as.Date("2010-11-02"), ymax = 62),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2012-01-01"), ymin = 0,  #"2012-11-06"
+                xmax = as.Date("2012-11-06"), ymax = 62),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2014-01-01"), ymin = 0,  #"2014-11-04"
+                xmax = as.Date("2014-11-04"), ymax = 62),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2016-01-01"), ymin = 0,  # "2016-11-08"
+                xmax = as.Date("2016-11-08"), ymax = 62),
+            fill = "lightgrey", alpha=0.01) +
+  geom_histogram(bins=144, size = 0.6,  alpha=1, color = "blue", fill = "blue") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
+  labs(y="Aggregated", x = "(a) Political edits from the Congress IT network") + 
+  theme_classic() +
+  #xlim( as.Date(c("2005-01-24","2017-01-02"))) +
+  scale_x_continuous(breaks =  list_of_biggest_general_election_dates_short, limits = as.Date(c("2005-01-24","2017-01-02")) ) 
+
+
+
+# Grey marked area are the 6 Months after election date 
+BB2 <- ggplot(dataB, aes(x= date_LegislatoR)) +  
+  geom_rect(aes(xmin = as.Date("2005-01-24"), ymin = 0,  # "2004-11-02"
+                xmax = as.Date("2005-05-02"), ymax = 35),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2006-11-07"), ymin = 0,  # "2006-11-07"
+                xmax = as.Date("2007-05-07"), ymax = 35),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2008-11-04"), ymin = 0,  # "2008-11-04" 
+                xmax = as.Date("2009-05-04"), ymax = 35),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2010-11-02"), ymin = 0,  # "2010-11-02"
+                xmax = as.Date("2011-05-02"), ymax = 35),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2012-11-06"), ymin = 0,  #"2012-11-06"
+                xmax = as.Date("2013-05-06"), ymax = 35),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2014-11-04"), ymin = 0,  #"2014-11-04"
+                xmax = as.Date("2015-05-04"), ymax = 35),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2016-11-08"), ymin = 0,  # "2016-11-08"
+                xmax = as.Date("2017-01-03"), ymax = 35),
+            fill = "lightgrey", alpha=0.01) +
+  geom_histogram(bins=144, size = 0.6, alpha=1, color = "red", fill = "red") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
+  labs(y="Aggregated", x = "(b) Maintenance edits from the Congress IT network") + 
+  theme_classic() + 
+  #xlim( as.Date(c("2005-01-24","2017-01-03"))) +
+  scale_x_continuous(breaks =  list_of_biggest_general_election_dates_short, limits = as.Date(c("2005-01-24","2017-01-02")) ) 
+
+  
+#red3
+#royalblue4
+
+# Figure3B_EditsTime
+grid.arrange(AA2, BB2, ncol = 1, nrow = 2)
+
+
+#-----------------------------------------------------
+
+#C: Political Edits and Maintenance-Edits and Overall Edits 
+#Figure 3: Compared all 3 edit categories in election year with timeframe marker around election (1 Figure, 3 graphs) with clear hard line for election date 
+
+# Chosen Time Frame: End of January of Election Year to incorporate effects of primaries 
+# and End of March of next year to incorporate effects of first-tenure Congressman 
+
+Inside_Congress_Edits_Politically$year_dummy <- 0
+
+for(i in 1:length(Inside_Congress_Edits_Politically$year_dummy)) {
+  if (Inside_Congress_Edits_Politically$date_LegislatoR[i] <= "2007-01-31" && Inside_Congress_Edits_Politically$date_LegislatoR[i] >= "2006-01-31") {
+    Inside_Congress_Edits_Politically$year_dummy[i] = "2006 Election" 
+  }
+  else if (Inside_Congress_Edits_Politically$date_LegislatoR[i] <= "2009-01-31" && Inside_Congress_Edits_Politically$date_LegislatoR[i] >= "2008-01-31") {
+    Inside_Congress_Edits_Politically$year_dummy[i] = "2008 Election" 
+  }
+  else if (Inside_Congress_Edits_Politically$date_LegislatoR[i] <= "2011-01-31" && Inside_Congress_Edits_Politically$date_LegislatoR[i] >= "2010-01-31") {
+    Inside_Congress_Edits_Politically$year_dummy[i] = "2010 Election" 
+  }
+  else if (Inside_Congress_Edits_Politically$date_LegislatoR[i] <= "2013-01-31" && Inside_Congress_Edits_Politically$date_LegislatoR[i] >= "2012-01-31") {
+    Inside_Congress_Edits_Politically$year_dummy[i] = "2012 Election" 
+  }
+  else if (Inside_Congress_Edits_Politically$date_LegislatoR[i] <= "2015-01-31" && Inside_Congress_Edits_Politically$date_LegislatoR[i] >= "2014-01-31") {
+    Inside_Congress_Edits_Politically$year_dummy[i] = "2014 Election" 
+  }
+  else if (Inside_Congress_Edits_Politically$date_LegislatoR[i] <= "2017-01-02" && Inside_Congress_Edits_Politically$date_LegislatoR[i] >= "2016-01-31") {
+    Inside_Congress_Edits_Politically$year_dummy[i] = "2016 Election" 
+  }
+  else {
+    Inside_Congress_Edits_Politically$year_dummy[i] = 0
+  }
+}
+
+
+table(Inside_Congress_Edits_Politically$year_dummy) # worked quite well
+# Drop all other observations outside of election years 
+Inside_Congress_Edits_Politically_Years <- Inside_Congress_Edits_Politically %>%  filter(year_dummy != 0)
+
+
+
+CC9 <- ggplot(Inside_Congress_Edits_Politically_Years , aes(x= date_LegislatoR)) + 
+  geom_histogram(bins=72, size = 0.6, alpha=1,  color = "black", fill = "black") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
+  facet_grid(. ~ year_dummy,  scales = "free_x") + 
+  labs(y="Aggregated", x = "(a) All edits from the Congress IT network during elections years") + 
+  theme_classic() +
+  scale_x_date(date_labels = " %b'%y") 
+
+
+
+dataA_Years <- Inside_Congress_Edits_Politically_Years %>% filter(politically_motivated == 1) 
+dataB_Years <- Inside_Congress_Edits_Politically_Years %>% filter(politically_motivated == 0)
+
+
+AA9 <- ggplot(dataA_Years  , aes(x= date_LegislatoR)) + 
+  geom_histogram(bins=72, size = 0.6, alpha=1,  color = "blue", fill = "blue") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
+  facet_grid(. ~ year_dummy,  scales = "free_x") + 
+  labs(y="Aggregated", x = "(b) Political edits from the Congress IT network during elections years") + 
+  theme_classic()  +
+  scale_x_date(date_labels = " %b'%y")
+
+AA10 <- AA9 + theme(strip.text.x = element_blank()) 
+
+
+
+BB9 <- ggplot(dataB_Years , aes(x= date_LegislatoR)) + 
+  geom_histogram(bins=72, size = 0.6, alpha=1,  color = "red", fill = "red") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
+  facet_grid(. ~ year_dummy,  scales = "free_x") + 
+  labs(y="Aggregated", x = "(c) Maintenance edits from the Congress IT network during elections years") + 
+  theme_classic()  +
+  scale_x_date(date_labels = " %b'%y") 
+
+BB10 <- BB9 + theme(strip.text.x = element_blank()) 
+
+# Figure3C_EditsTime
+grid.arrange(CC9, AA10, BB10, ncol = 1, nrow = 3)
+
+
+
+# Figure3(Table)C_EditsTime
+#Number of Observations for each year in each category 
+
+x <- data.frame(table(Inside_Congress_Edits_Politically$year_dummy)) # worked quite well
+y <- data.frame(table(dataA_Years$year_dummy)) # Political
+z <- data.frame(table(dataB_Years$year_dummy)) # Maintenance
+
+x <- left_join(x, y, by = "Var1")
+x <- left_join(x, z, by = "Var1")
+x <- data.frame(x)
+
+x["Var1"] <- c("0", "2006", "2008", "2010", "2012", "2014", "2016") 
+x <- rename(x,  "Year" = "Var1")
+x <- rename(x,  "All Edits" = "Freq.x")
+x <- rename(x,  "Political Edits" = "Freq.y")
+x <-rename(x,  "Maintenance Edits" = "Freq")
+x  = x [-1,]
+
+row.names(x) <- NULL
+
+
+formattable(x, align =c("l","c","r","r"), 
+            list(`Year` = formatter("span", 
+                                    style = ~ style(color = "lightblack",
+                                                    font.weight = "bold"))))
+
+
+
+#-----------------------------------------------------------------
+
+#D: Political Edits and Maintenance-Edits and Overall Edits 
+#Figure 4: Compared all 3 edit categories in month around election (1 Figure, 3 graphs) with clear hard line for election date
+
+# Chosen Time Frame: End of January of Election Year to incorporate effects of primaries 
+# and End of March of next year to incorporate effects of first-tenure Congressman 
+
+Inside_Congress_Edits_Politically$month_dummy <- 0
+
+for(i in 1:length(Inside_Congress_Edits_Politically$month_dummy)) {
+  if (Inside_Congress_Edits_Politically$date_LegislatoR[i] <= "2006-11-21" && Inside_Congress_Edits_Politically$date_LegislatoR[i] >= "2006-08-17") {
+    Inside_Congress_Edits_Politically$month_dummy[i] = "2006 Election" 
+  }
+  else if (Inside_Congress_Edits_Politically$date_LegislatoR[i] <= "2008-11-18" && Inside_Congress_Edits_Politically$date_LegislatoR[i] >= "2008-08-14") {
+    Inside_Congress_Edits_Politically$month_dummy[i] = "2008 Election" 
+  }
+  else if (Inside_Congress_Edits_Politically$date_LegislatoR[i] <= "2010-11-16" && Inside_Congress_Edits_Politically$date_LegislatoR[i] >= "2010-08-12") {
+    Inside_Congress_Edits_Politically$month_dummy[i] = "2010 Election" 
+  }
+  else if (Inside_Congress_Edits_Politically$date_LegislatoR[i] <= "2012-11-20" && Inside_Congress_Edits_Politically$date_LegislatoR[i] >= "2012-08-16") {
+    Inside_Congress_Edits_Politically$month_dummy[i] = "2012 Election" 
+  }
+  else if (Inside_Congress_Edits_Politically$date_LegislatoR[i] <= "2014-11-18" && Inside_Congress_Edits_Politically$date_LegislatoR[i] >= "2014-08-20") {
+    Inside_Congress_Edits_Politically$month_dummy[i] = "2014 Election" 
+  }
+  else if (Inside_Congress_Edits_Politically$date_LegislatoR[i] <= "2016-11-22" && Inside_Congress_Edits_Politically$date_LegislatoR[i] >= "2016-08-18") {
+    Inside_Congress_Edits_Politically$month_dummy[i] = "2016 Election" 
+  }
+  else {
+    Inside_Congress_Edits_Politically$month_dummy[i] = 0
+  }
+}
+
+
+table(Inside_Congress_Edits_Politically$month_dummy) # worked quite well
+# Drop all other observations outside of election months 
+Inside_Congress_Edits_Politically_months <- Inside_Congress_Edits_Politically %>%  filter(month_dummy != 0)
+
+
+
+CC9 <- ggplot(Inside_Congress_Edits_Politically_months , aes(x= date_LegislatoR)) + 
+  geom_histogram(bins=30, size = 0.6, alpha=1,  color = "black", fill = "black") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.8)  + 
+  facet_grid(. ~ month_dummy,  scales = "free_x") + 
+  labs(y="Aggregated", x = "(a) All edits from the Congress IT network during election months") + 
+  theme_classic()  +
+  scale_x_date(date_labels = " %b'%y") 
+
+
+
+dataA_months <- Inside_Congress_Edits_Politically_months %>% filter(politically_motivated == 1) 
+#dataB_months <- Inside_Congress_Edits_Politically_months %>% filter(politically_motivated == 0)
+
+
+AA9 <- ggplot(dataA_months  , aes(x= date_LegislatoR)) + 
+  geom_histogram(bins=30, size = 0.6, alpha=1,  color = "blue", fill = "blue") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.8)  + 
+  facet_grid(. ~ month_dummy,  scales = "free_x") + 
+  labs(y="Aggregated", x = "(b) Political edits from the Congress IT network during election months") + 
+  theme_classic()  +
+  scale_x_date(date_labels = " %b'%y") 
+
+
+AA10 <- AA9 + theme(strip.text.x = element_blank()) 
+
+
+
+# Extra Data for Maintenacne Edits 
+Inside_Congress_Edits_Politically$month_maint <- 0
+
+for(i in 1:length(Inside_Congress_Edits_Politically$month_maint)) {
+  if (Inside_Congress_Edits_Politically$date_LegislatoR[i] <= "2007-01-16" && Inside_Congress_Edits_Politically$date_LegislatoR[i] >= "2006-10-27") {
+    Inside_Congress_Edits_Politically$month_maint[i] = "2006 Election" 
+  }
+  else if (Inside_Congress_Edits_Politically$date_LegislatoR[i] <= "2009-01-18" && Inside_Congress_Edits_Politically$date_LegislatoR[i] >= "2008-10-18") {
+    Inside_Congress_Edits_Politically$month_maint[i] = "2008 Election" 
+  }
+  else if (Inside_Congress_Edits_Politically$date_LegislatoR[i] <= "2011-01-16" && Inside_Congress_Edits_Politically$date_LegislatoR[i] >= "2010-10-16") {
+    Inside_Congress_Edits_Politically$month_maint[i] = "2010 Election" 
+  }
+  else if (Inside_Congress_Edits_Politically$date_LegislatoR[i] <= "2013-01-20" && Inside_Congress_Edits_Politically$date_LegislatoR[i] >= "2012-10-20") {
+    Inside_Congress_Edits_Politically$month_maint[i] = "2012 Election" 
+  }
+  else if (Inside_Congress_Edits_Politically$date_LegislatoR[i] <= "2015-01-18" && Inside_Congress_Edits_Politically$date_LegislatoR[i] >= "2014-10-18") {
+    Inside_Congress_Edits_Politically$month_maint[i] = "2014 Election" 
+  }
+  else if (Inside_Congress_Edits_Politically$date_LegislatoR[i] <= "2017-01-19" && Inside_Congress_Edits_Politically$date_LegislatoR[i] >= "2016-10-19") {
+    Inside_Congress_Edits_Politically$month_maint[i] = "2016 Election" 
+  }
+  else {
+    Inside_Congress_Edits_Politically$month_maint[i] = 0
+  }
+}
+
+
+
+table(Inside_Congress_Edits_Politically_month2$month_maint) # worked quite well
+# Drop all other observations outside of election months 
+Inside_Congress_Edits_Politically_month2 <- Inside_Congress_Edits_Politically %>%  filter(month_maint != 0)
+
+dataB_month2 <- Inside_Congress_Edits_Politically_month2 %>% filter(politically_motivated == 0)
+
+
+BB9 <- ggplot(dataB_month2 , aes(x= date_LegislatoR)) + 
+  geom_histogram(bins=30, size = 0.6, alpha=1,  color = "red", fill = "red") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.8)  + 
+  facet_grid(. ~ month_maint,  scales = "free_x") + 
+  labs(y="Aggregated", x = "(c) Maintenance edits from the Congress IT network during election months") + 
+  theme_classic() +
+  scale_x_date(date_labels = " %b'%y") 
+
+
+BB10 <- BB9 + theme(strip.text.x = element_blank()) 
+
+# Figure3D_EditsTime
+grid.arrange(CC9, AA10, BB10, ncol = 1, nrow = 3)
+
+
+
+
+#----------------------------------------------------------------------------------
+
+# Graphs not included in Thesis 
+#E: Showing political edits over entire frame with time frame marker around elections 
+#once for Democrats and once for Republicans (1 Figure, 2 Graphs)
+
+Pageid_Party <- BothChambers_Session_109_to_114_Short %>% dplyr::select(c("pageid", "party_dual"))
+Pageid_Party <- unique(Pageid_Party)
+Inside_Congress_Edits_Politically_Party <- left_join(Inside_Congress_Edits_Politically, Pageid_Party, by = "pageid")
+
+
+data_D1 <- Inside_Congress_Edits_Politically_Party %>% filter(politically_motivated == 1) %>% filter(party_dual == "D")
+data_D2 <- Inside_Congress_Edits_Politically_Party %>% filter(politically_motivated == 0) %>% filter(party_dual == "D") 
+
+data_R1 <- Inside_Congress_Edits_Politically_Party %>% filter(politically_motivated == 1) %>% filter(party_dual == "R")
+data_R2 <- Inside_Congress_Edits_Politically_Party %>% filter(politically_motivated == 0) %>% filter(party_dual == "R") 
+
+
+
+AD1 <- ggplot(data_D1, aes(x= date_LegislatoR)) + 
+  geom_rect(aes(xmin = as.Date("2004-01-02"), ymin = 0,  # "2004-11-02"
+                xmax = as.Date("2004-11-02"), ymax = 25),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2006-01-07"), ymin = 0,  # "2006-11-07"
+                xmax = as.Date("2006-11-07"), ymax = 25),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2008-01-04"), ymin = 0,  # "2008-11-04" 
+                xmax = as.Date("2008-11-04"), ymax = 25),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2010-01-02"), ymin = 0,  # "2010-11-02"
+                xmax = as.Date("2010-11-02"), ymax = 25),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2012-01-06"), ymin = 0,  #"2012-11-06"
+                xmax = as.Date("2012-11-06"), ymax = 25),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2014-01-04"), ymin = 0,  #"2014-11-04"
+                xmax = as.Date("2014-11-04"), ymax = 25),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2016-01-08"), ymin = 0,  # "2016-11-08"
+                xmax = as.Date("2016-11-08"), ymax = 25),
+            fill = "lightgrey", alpha=0.01) +
+  geom_histogram(bins=144, size = 0.6,  alpha=1, color = "blue", fill = "black") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
+  labs(y="Aggregated", x = "(a) Political edits from the Congress IT network on profiles of Democratic MoCs") + 
+  theme_classic() +
+  xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+
+
+AR1 <- ggplot(data_R1, aes(x= date_LegislatoR)) + 
+  geom_rect(aes(xmin = as.Date("2004-01-02"), ymin = 0,  # "2004-11-02"
+                xmax = as.Date("2004-11-02"), ymax = 40),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2006-01-07"), ymin = 0,  # "2006-11-07"
+                xmax = as.Date("2006-11-07"), ymax = 40),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2008-01-04"), ymin = 0,  # "2008-11-04" 
+                xmax = as.Date("2008-11-04"), ymax = 40),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2010-01-02"), ymin = 0,  # "2010-11-02"
+                xmax = as.Date("2010-11-02"), ymax = 40),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2012-01-06"), ymin = 0,  #"2012-11-06"
+                xmax = as.Date("2012-11-06"), ymax = 40),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2014-01-04"), ymin = 0,  #"2014-11-04"
+                xmax = as.Date("2014-11-04"), ymax = 40),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2016-01-08"), ymin = 0,  # "2016-11-08"
+                xmax = as.Date("2016-11-08"), ymax = 40),
+            fill = "lightgrey", alpha=0.01) +
+  geom_histogram(bins=144, size = 0.6,  alpha=1, color = "red", fill = "black") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
+  labs(y="Aggregated", x = "(b) Political edits from the Congress IT network on profiles of Republican MoCs") + 
+  theme_classic() +
+  xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+
+#Figure3E_EditsTime
+#grid.arrange(AD1, AR1, ncol = 1, nrow = 2)
+
+
+#------------------------------------------------------
+
+# Graphs not included into Thesis 
+#Figure3E2_EditsTime für den Appendix
+
+AD2 <- ggplot(data_D2, aes(x= date_LegislatoR)) + 
+  geom_rect(aes(xmin = as.Date("2004-11-02"), ymin = 0,  # "2004-11-02"
+                xmax = as.Date("2005-07-02"), ymax = 30),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2006-11-07"), ymin = 0,  # "2006-11-07"
+                xmax = as.Date("2007-07-07"), ymax = 30),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2008-11-04"), ymin = 0,  # "2008-11-04" 
+                xmax = as.Date("2009-07-04"), ymax = 30),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2010-11-02"), ymin = 0,  # "2010-11-02"
+                xmax = as.Date("2011-07-02"), ymax = 30),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2012-11-06"), ymin = 0,  #"2012-11-06"
+                xmax = as.Date("2013-07-06"), ymax = 30),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2014-11-04"), ymin = 0,  #"2014-11-04"
+                xmax = as.Date("2015-07-04"), ymax = 30),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2016-11-08"), ymin = 0,  # "2016-11-08"
+                xmax = as.Date("2017-07-02"), ymax = 30),
+            fill = "lightgrey", alpha=0.01) +
+  geom_histogram(bins=144, size = 0.6,  alpha=1, color = "blue", fill = "black") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "black", size=0.6)  + 
+  labs(y="Aggregated", x = "(a) Maintenance edits from the Congress IT network on profiles of Democratic MoCs") + 
+  theme_classic() +
+  xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+
+
+AR2 <- ggplot(data_R2, aes(x= date_LegislatoR)) + 
+  geom_rect(aes(xmin = as.Date("2004-11-02"), ymin = 0,  # "2004-11-02"
+                xmax = as.Date("2005-07-02"), ymax = 18),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2006-11-07"), ymin = 0,  # "2006-11-07"
+                xmax = as.Date("2007-07-07"), ymax = 18),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2008-11-04"), ymin = 0,  # "2008-11-04" 
+                xmax = as.Date("2009-07-04"), ymax = 18),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2010-11-02"), ymin = 0,  # "2010-11-02"
+                xmax = as.Date("2011-07-02"), ymax = 18),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2012-11-06"), ymin = 0,  #"2012-11-06"
+                xmax = as.Date("2013-07-06"), ymax = 18),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2014-11-04"), ymin = 0,  #"2014-11-04"
+                xmax = as.Date("2015-07-04"), ymax = 18),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2016-11-08"), ymin = 0,  # "2016-11-08"
+                xmax = as.Date("2017-07-02"), ymax = 18),
+            fill = "lightgrey", alpha=0.01) +
+  geom_histogram(bins=144, size = 0.6,  alpha=1, color = "red", fill = "black") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
+  labs(y="Aggregated", x = "(b) Maintenance edits from the Congress IT network on profiles of Republican MoCs") + 
+  theme_classic() +
+  xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+
+
+#Figure3E2_EditsTime for Appendix
+#grid.arrange(AD2, AR2, ncol = 1, nrow = 2)
+
+#-------------------------------------------------
+
+#Figure3F_EditsTime
+#F: Showing political edits over entire frame with timeframe marker around elections
+#once for MPs running in top 25% competitive Districts and once for lower 25% (1 Figure, 2 Graphs)
+
+# Set NAs in competitiveness to median (which occur for US terretories. e.g. Puerto Rico, DC, etc.)
+# Median not mean to not disturb the distribution 
+
+summary(BothChambers_Session_109_to_114_Short$vote_maxdiff_relative)
+#  Min.     1st Qu.  Median    Mean       3rd Qu.    Max.      NA's 
+#0.00011   0.15703   0.28742   0.32365   0.43315   1.00000      34 
+
+for(i in 1:length(BothChambers_Session_109_to_114_Short$pageid)) {
+  if (is.na(BothChambers_Session_109_to_114_Short$vote_maxdiff_relative[i]) ==  TRUE) {
+    BothChambers_Session_109_to_114_Short$vote_maxdiff_relative[i] = 0.28742}
+}
+
+summary(BothChambers_Session_109_to_114_Short$vote_maxdiff_relative)
+BothChambers_Session_109_to_114_Short$Competitive_Dummy <- 0
+
+for(i in 1:length(BothChambers_Session_109_to_114_Short$Competitive_Dummy)) {
+  if (BothChambers_Session_109_to_114_Short$vote_maxdiff_relative[i] >=  0.431165) {
+    BothChambers_Session_109_to_114_Short$Competitive_Dummy[i] = "Bottom25"}
+  else if (BothChambers_Session_109_to_114_Short$vote_maxdiff_relative[i] <=   0.158327) {
+    BothChambers_Session_109_to_114_Short$Competitive_Dummy[i] = "Top25" 
+  }
+}
+
+
+Pageid_Competitive <- BothChambers_Session_109_to_114_Short %>% dplyr::select(c( "pageid_session", "Competitive_Dummy"))
+
+Inside_Congress_Edits_Politically_Competitive <- left_join(Inside_Congress_Edits_Politically, Pageid_Competitive, by = "pageid_session")
+# Two edits are listed twice in Inside_Congress_Edits_Politically_Competitive 
+# However, they are both labels as 0 in Competitive_Dummy and will therefore be dropped in the following
+doubles <- Inside_Congress_Edits_Politically_Competitive %>% group_by(revid) %>% filter(n()>1) 
+
+length(unique(Inside_Congress_Edits_Politically_Competitive$pageid[Inside_Congress_Edits_Politically_Competitive$Competitive_Dummy == "Top25"]))
+length(unique(Inside_Congress_Edits_Politically_Competitive$pageid[Inside_Congress_Edits_Politically_Competitive$Competitive_Dummy == "Bottom25"]))
+
+length(unique(Inside_Congress_Edits_Politically_Competitive$revid[Inside_Congress_Edits_Politically_Competitive$Competitive_Dummy == "Top25"]))
+length(unique(Inside_Congress_Edits_Politically_Competitive$revid[Inside_Congress_Edits_Politically_Competitive$Competitive_Dummy == "Bottom25"]))
+
+table(Inside_Congress_Edits_Politically_Competitive$Competitive_Dummy)
+#0      Bottom25    Top25 
+#1356      587       507
+
+
+
+data_CompetitiveT25 <- Inside_Congress_Edits_Politically_Competitive %>% filter(politically_motivated == 1) %>% filter(Competitive_Dummy == "Top25")
+data_CompetitiveB25 <- Inside_Congress_Edits_Politically_Competitive %>% filter(politically_motivated == 1) %>% filter(Competitive_Dummy == "Bottom25")
+
+
+
+ATop25 <- ggplot(data_CompetitiveT25, aes(x= date_LegislatoR)) + 
+  geom_rect(aes(xmin = as.Date("2004-01-02"), ymin = 0,  # "2004-11-02"
+                xmax = as.Date("2004-11-02"), ymax = 25),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2006-01-07"), ymin = 0,  # "2006-11-07"
+                xmax = as.Date("2006-11-07"), ymax = 25),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2008-01-04"), ymin = 0,  # "2008-11-04" 
+                xmax = as.Date("2008-11-04"), ymax = 25),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2010-01-02"), ymin = 0,  # "2010-11-02"
+                xmax = as.Date("2010-11-02"), ymax = 25),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2012-01-06"), ymin = 0,  #"2012-11-06"
+                xmax = as.Date("2012-11-06"), ymax = 25),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2014-01-04"), ymin = 0,  #"2014-11-04"
+                xmax = as.Date("2014-11-04"), ymax = 25),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2016-01-08"), ymin = 0,  # "2016-11-08"
+                xmax = as.Date("2016-11-08"), ymax = 25),
+            fill = "lightgrey", alpha=0.01) +
+  geom_histogram(bins=72, size = 0.6,  alpha=1, color = "blue", fill = "blue") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
+  labs(y="Aggregated", x = "(a) Political edits from the Congress IT network on profiles of MoCs that run in the 25% most competitive elections districts")+
+  theme_classic() +
+  scale_x_continuous(breaks =  list_of_biggest_general_election_dates_short, limits = as.Date(c("2005-01-24","2017-01-02")) ) 
+#  xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+
+
+ABottom25 <- ggplot(data_CompetitiveB25, aes(x= date_LegislatoR)) + 
+  geom_rect(aes(xmin = as.Date("2004-01-02"), ymin = 0,  # "2004-11-02"
+                xmax = as.Date("2004-11-02"), ymax = 22),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2006-01-07"), ymin = 0,  # "2006-11-07"
+                xmax = as.Date("2006-11-07"), ymax = 22),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2008-01-04"), ymin = 0,  # "2008-11-04" 
+                xmax = as.Date("2008-11-04"), ymax = 22),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2010-01-02"), ymin = 0,  # "2010-11-02"
+                xmax = as.Date("2010-11-02"), ymax = 22),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2012-01-06"), ymin = 0,  #"2012-11-06"
+                xmax = as.Date("2012-11-06"), ymax = 22),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2014-01-04"), ymin = 0,  #"2014-11-04"
+                xmax = as.Date("2014-11-04"), ymax = 22),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2016-01-08"), ymin = 0,  # "2016-11-08"
+                xmax = as.Date("2016-11-08"), ymax = 22),
+            fill = "lightgrey", alpha=0.01) +
+  geom_histogram(bins=72, size = 0.6,  alpha=1, color = "blue", fill = "blue") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
+  labs(y="Aggregated", x = "(b) Political edits from the Congress IT network on profiles of MoCs that run in the 25% least competitive elections districts")+
+  theme_classic() +
+  scale_x_continuous(breaks =  list_of_biggest_general_election_dates_short, limits = as.Date(c("2005-01-24","2017-01-02")) ) 
+  #xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+
+# We can  already see that Top25 (=425) see much more political edtis then Bottom25 (= 226) 
+
+#Figure3F_EditsTime
+grid.arrange(ATop25, ABottom25, ncol = 1, nrow = 2)
+
+
+#---------------------------------------
+
+
+#Figure3G_EditsTime
+#G: Graph showing all political edits, beneficial political edits and harmful political edits 
+#over entire time frame with markers before elections and elections dates as line (1 Figure, 3 Graphs) 
+
+dataA <- Inside_Congress_Edits_Politically %>% filter(politically_motivated == 1) 
+dataBP <- Inside_Congress_Edits_Politically_PositiveNegative %>% filter(politically_motivated_positive == 1) 
+dataHP <- Inside_Congress_Edits_Politically_PositiveNegative %>% filter(politically_motivated_negative == 1) 
+
+
+
+Political_A <- ggplot(dataA, aes(x= date_LegislatoR)) + 
+  geom_rect(aes(xmin = as.Date("2004-01-02"), ymin = 0,  # "2004-11-02"
+                xmax = as.Date("2004-11-02"), ymax = 65),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2006-01-07"), ymin = 0,  # "2006-11-07"
+                xmax = as.Date("2006-11-07"), ymax = 65),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2008-01-04"), ymin = 0,  # "2008-11-04" 
+                xmax = as.Date("2008-11-04"), ymax = 65),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2010-01-02"), ymin = 0,  # "2010-11-02"
+                xmax = as.Date("2010-11-02"), ymax = 65),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2012-01-06"), ymin = 0,  #"2012-11-06"
+                xmax = as.Date("2012-11-06"), ymax = 65),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2014-01-04"), ymin = 0,  #"2014-11-04"
+                xmax = as.Date("2014-11-04"), ymax = 65),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2016-01-08"), ymin = 0,  # "2016-11-08"
+                xmax = as.Date("2016-11-08"), ymax = 65),
+            fill = "lightgrey", alpha=0.01) +
+  geom_histogram(bins=144, size = 0.6,  alpha=1, color = "black", fill = "black") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
+  labs(y="Aggregated", x = "(a) Political edits from the Congress IT network") + 
+  theme_classic() +  
+  scale_x_continuous(breaks =  list_of_biggest_general_election_dates_short, limits = as.Date(c("2005-01-24","2017-01-02")) ) 
+ # xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+
+
+Political_BP <- ggplot(dataBP , aes(x= date_LegislatoR)) + 
+  geom_rect(aes(xmin = as.Date("2004-01-02"), ymin = 0,  # "2004-11-02"
+                xmax = as.Date("2004-11-02"), ymax = 55),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2006-01-07"), ymin = 0,  # "2006-11-07"
+                xmax = as.Date("2006-11-07"), ymax = 55),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2008-01-04"), ymin = 0,  # "2008-11-04" 
+                xmax = as.Date("2008-11-04"), ymax = 55),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2010-01-02"), ymin = 0,  # "2010-11-02"
+                xmax = as.Date("2010-11-02"), ymax = 55),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2012-01-06"), ymin = 0,  #"2012-11-06"
+                xmax = as.Date("2012-11-06"), ymax = 55),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2014-01-04"), ymin = 0,  #"2014-11-04"
+                xmax = as.Date("2014-11-04"), ymax = 55),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2016-01-08"), ymin = 0,  # "2016-11-08"
+                xmax = as.Date("2016-11-08"), ymax = 55),
+            fill = "lightgrey", alpha=0.01) +
+  geom_histogram(bins=144, size = 0.6,  alpha=1, color = "black", fill = "black") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
+  labs(y="Aggregated", x = "(b) Beneficial edits from the Congress IT network") + 
+  theme_classic() +
+  scale_x_continuous(breaks =  list_of_biggest_general_election_dates_short, limits = as.Date(c("2005-01-24","2017-01-02")) ) 
+ # xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+
+
+
+Political_HP <- ggplot(dataHP , aes(x= date_LegislatoR)) + 
+  geom_rect(aes(xmin = as.Date("2004-01-02"), ymin = 0,  # "2004-11-02"
+                xmax = as.Date("2004-11-02"), ymax = 12),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2006-01-07"), ymin = 0,  # "2006-11-07"
+                xmax = as.Date("2006-11-07"), ymax = 12),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2008-01-04"), ymin = 0,  # "2008-11-04" 
+                xmax = as.Date("2008-11-04"), ymax = 12),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2010-01-02"), ymin = 0,  # "2010-11-02"
+                xmax = as.Date("2010-11-02"), ymax = 12),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2012-01-06"), ymin = 0,  #"2012-11-06"
+                xmax = as.Date("2012-11-06"), ymax = 12),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2014-01-04"), ymin = 0,  #"2014-11-04"
+                xmax = as.Date("2014-11-04"), ymax = 12),
+            fill = "lightgrey", alpha=0.01) +
+  geom_rect(aes(xmin = as.Date("2016-01-08"), ymin = 0,  # "2016-11-08"
+                xmax = as.Date("2016-11-08"), ymax = 12),
+            fill = "lightgrey", alpha=0.01) +
+  geom_histogram(bins=144, size = 0.6,  alpha=1, color = "black", fill = "black") + 
+  geom_vline(xintercept = list_of_biggest_general_election_dates_short,  linetype="dashed", color = "darkgreen", size=0.6)  + 
+  labs(y="Aggregated", x = "(c) Harmful edits from the Congress IT network") + 
+  theme_classic() +
+  scale_x_continuous(breaks =  list_of_biggest_general_election_dates_short, limits = as.Date(c("2005-01-24","2017-01-02")) ) 
+ # xlim( as.Date(c("2005-01-24","2017-01-02"))) 
+
+
+# Just a reminder that there is a slightley different selection process between 
+# political edits and the other two (beneficial and harmful)
+
+#Figure3G_EditsTime
+grid.arrange(Political_A, Political_BP, Political_HP , ncol = 1, nrow = 3)
+
+
+
+
